@@ -23,10 +23,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
     
+    const campaignObj = campaign as unknown as Record<string, unknown>
+    const targetLeads = (campaignObj.target_leads as string[]) || []
+    
     const { data: leads } = await db
       .from('leads')
       .select('*')
-      .in('id', campaign.target_leads || [])
+      .in('id', targetLeads)
     
     if (!leads || leads.length === 0) {
       return NextResponse.json({ error: 'No leads found for this campaign' }, { status: 404 })
@@ -36,10 +39,10 @@ export async function POST(request: NextRequest) {
     let failedCount = 0
     const results = []
     
-    if (campaign.type === 'email') {
+    if (campaignObj.type === 'email') {
       const sendgridKey = await getApiKey('sendgrid', 'Production Key')
       if (sendgridKey) {
-        for (const lead of leads) {
+        for (const lead of leads as Array<Record<string, unknown>>) {
           try {
             const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
               method: 'POST',
@@ -50,8 +53,8 @@ export async function POST(request: NextRequest) {
               body: JSON.stringify({
                 personalizations: [{ to: [{ email: lead.email, name: lead.name }] }],
                 from: { email: 'info@roshanalinfotech.com', name: 'Roshanal Infotech' },
-                subject: campaign.subject || 'Special Offer from Roshanal Infotech',
-                content: [{ type: 'text/plain', value: campaign.message_template }]
+                subject: campaignObj.subject || 'Special Offer from Roshanal Infotech',
+                content: [{ type: 'text/plain', value: campaignObj.message_template as string }]
               }),
               signal: AbortSignal.timeout(10000)
             })
@@ -68,12 +71,12 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } else if (campaign.type === 'sms') {
+    } else if (campaignObj.type === 'sms') {
       const twilioSid = await getApiKey('twilio_sid', 'Production Key')
       const twilioToken = await getApiKey('twilio_token', 'Production Key')
       
       if (twilioSid && twilioToken) {
-        for (const lead of leads) {
+        for (const lead of leads as Array<Record<string, unknown>>) {
           try {
             const response = await fetch(
               `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
@@ -84,9 +87,9 @@ export async function POST(request: NextRequest) {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: new URLSearchParams({
-                  From: campaign.from_number || '+1234567890',
-                  To: lead.phone,
-                  Body: campaign.message_template
+                  From: campaignObj.from_number as string || '+1234567890',
+                  To: lead.phone as string,
+                  Body: campaignObj.message_template as string
                 }),
                 signal: AbortSignal.timeout(10000)
               }
@@ -104,14 +107,14 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } else if (campaign.type === 'whatsapp') {
+    } else if (campaignObj.type === 'whatsapp') {
       const metaKey = await getApiKey('meta', 'Production Key')
       
       if (metaKey) {
-        for (const lead of leads) {
+        for (const lead of leads as Array<Record<string, unknown>>) {
           try {
             const response = await fetch(
-              `https://graph.facebook.com/v18.0/${campaign.whatsapp_phone_id}/messages`,
+              `https://graph.facebook.com/v18.0/${campaignObj.whatsapp_phone_id}/messages`,
               {
                 method: 'POST',
                 headers: {
@@ -120,8 +123,8 @@ export async function POST(request: NextRequest) {
                 },
                 body: JSON.stringify({
                   messaging_product: 'whatsapp',
-                  to: lead.phone,
-                  text: { body: campaign.message_template }
+                  to: lead.phone as string,
+                  text: { body: campaignObj.message_template as string }
                 }),
                 signal: AbortSignal.timeout(10000)
               }
@@ -154,7 +157,8 @@ export async function POST(request: NextRequest) {
       message: `Campaign sent: ${sentCount} successful, ${failedCount} failed`,
       stats: { sent: sentCount, failed: failedCount }
     })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
