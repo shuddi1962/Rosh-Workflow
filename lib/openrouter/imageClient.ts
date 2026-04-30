@@ -91,7 +91,7 @@ export async function generateImage(
     .insert(images.map(img => ({
       prompt,
       model,
-      model_label: OPENROUTER_IMAGE_MODELS[model]?.label || model,
+      model_label: OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS]?.label || model,
       image_url: img.url,
       aspect_ratio: img.aspect_ratio,
       status: 'ready',

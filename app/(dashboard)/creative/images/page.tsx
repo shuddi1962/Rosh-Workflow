@@ -1,9 +1,11 @@
+'use client'
+
 import { useState } from 'react'
 import { OPENROUTER_IMAGE_MODELS } from '@/lib/openrouter/imageClient'
 
 export default function ImageStudioPage() {
   const [prompt, setPrompt] = useState('Professional product photography of Hikvision camera...')
-  const [model, setModel] = useState('google/gemini-flash-3.1-image-preview')
+  const [model, setModel] = useState<string>('google/gemini-flash-3.1-image-preview')
   const [aspectRatio, setAspectRatio] = useState('1:1')
   const [loading, setLoading] = useState(false)
   const [images, setImages] = useState<string[]>([])
@@ -50,7 +52,7 @@ export default function ImageStudioPage() {
                 onChange={e => setModel(e.target.value)}
                 className="w-full p-3 bg-bg-base border border-border-default rounded-lg text-text-primary"
               >
-                {Object.entries(OPENROUTER_IMAGE_MODELS).map(([id, config]) => (
+                {Object.entries(OPENROUTER_IMAGE_MODELS).map(([id, config]: [string, any]) => (
                   <option key={id} value={id}>{config.label} — {config.approx_cost_per_image}</option>
                 ))}
               </select>
@@ -81,21 +83,21 @@ export default function ImageStudioPage() {
         
         <div className="bg-bg-surface rounded-lg border border-border-subtle p-6">
           <h3 className="font-clash font-semibold text-text-primary mb-4">Model Info</h3>
-          {model && OPENROUTER_IMAGE_MODELS[model] && (
+          {model && OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS] && (
             <div className="space-y-3">
               <div>
-                <p className="text-text-primary font-medium">{OPENROUTER_IMAGE_MODELS[model].label}</p>
-                <p className="text-text-muted text-sm">{OPENROUTER_IMAGE_MODELS[model].description}</p>
+                <p className="text-text-primary font-medium">{OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS].label}</p>
+                <p className="text-text-muted text-sm">{OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS].description}</p>
               </div>
               <div className="text-sm text-text-secondary">
-                <p><strong>Best for:</strong> {OPENROUTER_IMAGE_MODELS[model].best_for.join(', ')}</p>
-                <p><strong>Cost:</strong> {OPENROUTER_IMAGE_MODELS[model].approx_cost_per_image}</p>
-                <p><strong>Tier:</strong> {OPENROUTER_IMAGE_MODELS[model].cost_tier}</p>
+                <p><strong>Best for:</strong> {(OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS].best_for as string[]).join(', ')}</p>
+                <p><strong>Cost:</strong> {OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS].approx_cost_per_image}</p>
+                <p><strong>Tier:</strong> {OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS].cost_tier}</p>
               </div>
               <div>
                 <p className="text-text-secondary text-sm mb-1">Strengths:</p>
                 <ul className="list-disc pl-4 text-text-muted text-sm space-y-1">
-                  {OPENROUTER_IMAGE_MODELS[model].strengths.map((s: string, i: number) => (
+                  {(OPENROUTER_IMAGE_MODELS[model as keyof typeof OPENROUTER_IMAGE_MODELS].strengths as string[]).map((s: string, i: number) => (
                     <li key={i}>{s}</li>
                   ))}
                 </ul>
