@@ -14,7 +14,7 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto px-6">
         <section className="py-20 text-center">
           <h2 className="font-clash text-5xl font-bold text-text-primary mb-6">
-            Roshanal AI: Your 24/7<br />Marketing Engine
+            Roshanal AI: Your 24/7 Marketing Engine
           </h2>
           <p className="text-text-secondary text-xl mb-8 max-w-2xl mx-auto">
             AI-powered content generation, competitor intelligence, and social automation for Roshanal Infotech Limited, Port Harcourt.
