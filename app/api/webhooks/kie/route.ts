@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,8 +12,7 @@ export async function POST(request: NextRequest) {
     const { taskId, status, videoUrl, errorMessage } = body
     
     // Find the task in Insforge
-    const { data: task } = await insforgeAdmin
-      .database
+    const { data: task } = await db
       .from('video_tasks')
       .select('*')
       .eq('kie_task_id', taskId)
@@ -21,8 +22,7 @@ export async function POST(request: NextRequest) {
     
     if (status === 'SUCCESS' && videoUrl) {
       // Update the task
-      await insforgeAdmin
-        .database
+      await db
         .from('video_tasks')
         .update({ 
           status: 'DONE',
@@ -32,8 +32,7 @@ export async function POST(request: NextRequest) {
       
       // Update related video asset if exists
       if (task.asset_id) {
-        await insforgeAdmin
-          .database
+        await db
           .from('generated_videos')
           .update({ 
             video_url: videoUrl,
@@ -43,8 +42,7 @@ export async function POST(request: NextRequest) {
           .eq('id', task.asset_id)
       }
     } else if (status === 'FAILED') {
-      await insforgeAdmin
-        .database
+      await db
         .from('video_tasks')
         .update({ 
           status: 'FAILED',

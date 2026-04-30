@@ -1,11 +1,12 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('generated_images')
       .select('*')
       .order('created_at', { ascending: false })

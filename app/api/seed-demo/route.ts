@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import bcrypt from 'bcryptjs'
+
+const db = new DBClient()
 
 export async function POST(request: NextRequest) {
   const email = 'demo@roshanalinfotech.com'
   const password = 'demo123456'
   const passwordHash = await bcrypt.hash(password, 12)
 
-  const { data, error } = await insforgeAdmin
-    .database
+  const { data, error } = await db
     .from('users')
     .insert({
       id: 'demo-user-001',
@@ -25,9 +26,8 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
-      const { error: updateError } = await insforgeAdmin
-        .database
-        .from('users')
+      const { error: updateError } = await db
+         .from('users')
         .update({ password_hash: passwordHash, is_active: true })
         .eq('email', email)
 

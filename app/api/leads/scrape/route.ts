@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 import { runApifyActor, getApifyDataset } from '@/lib/apify/client'
 
 export async function POST(request: NextRequest) {
@@ -61,8 +63,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No leads found. Check Apify configuration.', leads: [] })
     }
     
-    const { error } = await insforgeAdmin
-      .database
+    const { error } = await db
       .from('leads')
       .insert(leads)
     

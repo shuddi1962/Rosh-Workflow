@@ -1,4 +1,4 @@
-import { insforgeAdmin } from '@/lib/insforge/client'
+import crypto from 'crypto'
 
 export function validateEnv() {
   const required = [
@@ -6,7 +6,9 @@ export function validateEnv() {
     'NEXT_PUBLIC_INSFORGE_ANON_KEY',
     'INSFORGE_API_KEY',
     'NEXTAUTH_SECRET',
-    'NEXTAUTH_URL'
+    'NEXTAUTH_URL',
+    'DB_HOST',
+    'DB_PASSWORD'
   ]
   
   const missing = required.filter(key => !process.env[key])
@@ -19,8 +21,10 @@ export function validateEnv() {
 }
 
 export async function getApiKey(service: string, keyName: string): Promise<string | null> {
-  const { data, error } = await insforgeAdmin
-    .database
+  const { DBClient } = await import('@/lib/insforge/server')
+  const db = new DBClient()
+  
+  const { data, error } = await db
     .from('api_keys')
     .select('encrypted_value')
     .eq('service', service)
@@ -30,32 +34,33 @@ export async function getApiKey(service: string, keyName: string): Promise<strin
   
   if (error || !data) return null
   
-  return decryptApiKey(data.encrypted_value)
+  return decryptApiKey((data as Record<string, string>).encrypted_value)
 }
 
 export function encryptApiKey(key: string): string {
-  const crypto = require('crypto')
-  const algorithm = 'AES-256-GCM'
-  const secret = process.env.ENCRYPTION_SECRET!
-  const iv = process.env.ENCRYPTION_IV!
+  const algorithm = 'aes-256-gcm'
+  const secret = process.env.ENCRYPTION_SECRET || Buffer.alloc(32, 'roshanal-encryption-secret-32!!')
+  const iv = crypto.randomBytes(16)
   
-  const cipher = crypto.createCipheriv(algorithm, Buffer.from(secret, 'hex'), Buffer.from(iv, 'hex'))
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(secret.slice(0, 32), 'utf8'), iv)
   let encrypted = cipher.update(key, 'utf8', 'hex')
   encrypted += cipher.final('hex')
   const authTag = cipher.getAuthTag().toString('hex')
   
-  return `${encrypted}:${authTag}`
+  return `${iv.toString('hex')}:${encrypted}:${authTag}`
 }
 
 export function decryptApiKey(encrypted: string): string {
-  const crypto = require('crypto')
-  const algorithm = 'AES-256-GCM'
-  const secret = process.env.ENCRYPTION_SECRET!
-  const iv = process.env.ENCRYPTION_IV!
+  const algorithm = 'aes-256-gcm'
+  const secret = process.env.ENCRYPTION_SECRET || Buffer.alloc(32, 'roshanal-encryption-secret-32!!')
   
-  const [encryptedData, authTag] = encrypted.split(':')
+  const [ivHex, encryptedData, authTag] = encrypted.split(':')
   
-  const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secret, 'hex'), Buffer.from(iv, 'hex'))
+  const decipher = crypto.createDecipheriv(
+    algorithm,
+    Buffer.from(secret.slice(0, 32), 'utf8'),
+    Buffer.from(ivHex, 'hex')
+  )
   decipher.setAuthTag(Buffer.from(authTag, 'hex'))
   
   let decrypted = decipher.update(encryptedData, 'hex', 'utf8')

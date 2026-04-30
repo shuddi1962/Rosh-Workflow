@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 const MARINE_KEYWORDS = [
   "outboard engine Nigeria",
@@ -106,8 +108,7 @@ async function fetchNewsAPI(keywords: string[]): Promise<TrendResult[]> {
 
 export async function GET(request: NextRequest) {
   try {
-    const { data: trends, error } = await insforgeAdmin
-      .database
+    const { data: trends, error } = await db
       .from('trends')
       .select('*')
       .order('momentum_score', { ascending: false })
@@ -149,8 +150,7 @@ export async function POST(request: NextRequest) {
       status: 'active'
     }))
     
-    const { error } = await insforgeAdmin
-      .database
+    const { error } = await db
       .from('trends')
       .insert(trendsToInsert)
     

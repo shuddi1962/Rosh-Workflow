@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { OPENROUTER_IMAGE_MODELS } from '@/lib/openrouter/imageClient'
+import { OPENROUTER_IMAGE_MODELS } from '@/lib/openrouter/models'
 
 export default function ImageStudioPage() {
   const [prompt, setPrompt] = useState('Professional product photography of Hikvision camera...')

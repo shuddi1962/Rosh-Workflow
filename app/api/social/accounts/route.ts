@@ -1,12 +1,13 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('social_accounts')
       .select('*')
       .order('platform', { ascending: true })
@@ -26,10 +27,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'platform and account_name are required' }, { status: 400 })
     }
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('social_accounts')
-      .insert([{
+      .insert({
         platform,
         account_name,
         account_id: account_id || '',
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         is_connected: !!access_token,
         post_count_today: 0,
         created_at: new Date().toISOString()
-      }])
+      })
       .select()
       .single()
     
@@ -57,8 +57,7 @@ export async function PUT(
     const updates = await request.json()
     updates.updated_at = new Date().toISOString()
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('social_accounts')
       .update(updates)
       .eq('id', params.id)

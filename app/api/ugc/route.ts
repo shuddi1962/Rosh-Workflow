@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,8 +20,7 @@ export async function POST(request: NextRequest) {
     
     let productContext = ''
     if (product_id) {
-      const { data: product } = await insforgeAdmin
-        .database
+      const { data: product } = await db
         .from('products')
         .select('*')
         .eq('id', product_id)
@@ -92,10 +93,9 @@ Make it Nigerian-context relevant, urgent, and drive to WhatsApp/phone call.`
       created_at: new Date().toISOString()
     }
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('ugc_ads')
-      .insert([ad])
+      .insert(ad)
       .select()
       .single()
     
@@ -109,8 +109,7 @@ Make it Nigerian-context relevant, urgent, and drive to WhatsApp/phone call.`
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('ugc_ads')
       .select('*')
       .order('created_at', { ascending: false })

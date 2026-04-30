@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('analytics_daily')
       .select('*')
       .order('date', { ascending: false })

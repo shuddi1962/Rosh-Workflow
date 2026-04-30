@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { encryptApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('api_keys')
       .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, updated_at')
       .order('service', { ascending: true })
@@ -28,10 +29,9 @@ export async function POST(request: Request) {
     
     const encrypted_value = encryptApiKey(value)
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('api_keys')
-      .insert([{ service, key_name, encrypted_value, is_active: true }])
+      .insert({ service, key_name, encrypted_value, is_active: true })
       .select()
       .single()
     

@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 const KIE_BASE_URL = 'https://api.kie.ai/api/v1'
 
@@ -42,17 +44,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Veo generation failed: ${JSON.stringify(data)}` }, { status: 500 })
     }
     
-    await insforgeAdmin
-      .database
+    await db
       .from('video_tasks')
-      .insert([{
+      .insert({
         kie_task_id: data.data.taskId,
         model: model || 'veo3-fast',
         prompt,
         status: 'PENDING',
         type: 'veo',
         created_at: new Date().toISOString(),
-      }])
+      })
     
     return NextResponse.json({ taskId: data.data.taskId })
   } catch (error: any) {
@@ -62,8 +63,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('video_tasks')
       .select('*')
       .order('created_at', { ascending: false })

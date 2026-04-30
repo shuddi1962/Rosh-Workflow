@@ -1,7 +1,7 @@
 const nextConfig = {
   output: 'standalone',
   experimental: {
-    serverComponentsExternalPackages: ['@insforge/sdk', 'sharp', 'jsonwebtoken', 'bcryptjs']
+    serverComponentsExternalPackages: ['pg', 'sharp', 'jsonwebtoken', 'bcryptjs']
   },
   images: {
     remotePatterns: [

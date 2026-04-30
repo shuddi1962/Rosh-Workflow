@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 const ROSHANAL_BUSINESS_PROFILE = {
   name: "Roshanal Infotech Limited",
@@ -47,8 +49,7 @@ export async function POST(request: NextRequest) {
     
     let productContext = ''
     if (product_id) {
-      const { data: product } = await insforgeAdmin
-        .database
+      const { data: product } = await db
         .from('products')
         .select('*')
         .eq('id', product_id)
@@ -66,8 +67,7 @@ Features: ${product.features?.join(', ')}
     
     let trendContext = ''
     if (trend_id) {
-      const { data: trend } = await insforgeAdmin
-        .database
+      const { data: trend } = await db
         .from('trends')
         .select('*')
         .eq('id', trend_id)
@@ -177,10 +177,9 @@ CTA: [call to action]`
       created_at: new Date().toISOString()
     }
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('social_posts')
-      .insert([post])
+      .insert(post)
       .select()
       .single()
     

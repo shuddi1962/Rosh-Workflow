@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,8 +13,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'post_id is required' }, { status: 400 })
     }
     
-    const { data: post, error: postError } = await insforgeAdmin
-      .database
+    const { data: post, error: postError } = await db
       .from('social_posts')
       .select('*')
       .eq('id', post_id)
@@ -37,8 +38,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    const { error: updateError } = await insforgeAdmin
-      .database
+    const { error: updateError } = await db
       .from('social_posts')
       .update({
         status: 'published',

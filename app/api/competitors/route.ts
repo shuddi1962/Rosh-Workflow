@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('competitors')
       .select('*')
       .order('name', { ascending: true })
@@ -20,10 +21,9 @@ export async function POST(request: Request) {
   try {
     const { name, website, division } = await request.json()
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('competitors')
-      .insert([{ name, website, division, active_ads: [], created_at: new Date().toISOString() }])
+      .insert({ name, website, division, active_ads: [], created_at: new Date().toISOString() })
       .select()
       .single()
     

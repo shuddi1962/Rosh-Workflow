@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
-import { encryptApiKey } from '@/lib/env'
+import { DBClient } from '@/lib/insforge/server'
+import { encryptApiKey, decryptApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 export async function PUT(
   request: Request,
@@ -9,25 +11,23 @@ export async function PUT(
   try {
     const { key_name, value, is_active } = await request.json()
     
-    const updates: any = {}
+    const updates: Record<string, unknown> = {}
     if (key_name !== undefined) updates.key_name = key_name
     if (is_active !== undefined) updates.is_active = is_active
     if (value) updates.encrypted_value = encryptApiKey(value)
     updates.updated_at = new Date().toISOString()
     
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('api_keys')
       .update(updates)
       .eq('id', params.id)
-      .select()
-      .single()
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     
     return NextResponse.json({ key: data })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -36,8 +36,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { error } = await insforgeAdmin
-      .database
+    const { error } = await db
       .from('api_keys')
       .delete()
       .eq('id', params.id)
@@ -45,8 +44,9 @@ export async function DELETE(
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -55,8 +55,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { data: keyData, error: keyError } = await insforgeAdmin
-      .database
+    const { data: keyData, error: keyError } = await db
       .from('api_keys')
       .select('encrypted_value, service')
       .eq('id', params.id)
@@ -64,10 +63,11 @@ export async function POST(
     
     if (keyError || !keyData) return NextResponse.json({ error: 'Key not found' }, { status: 404 })
     
-    const decrypted = encryptApiKey(keyData.encrypted_value)
+    const keyObj = keyData as unknown as Record<string, unknown>
+    const decrypted = decryptApiKey(keyObj.encrypted_value as string)
     
     let testResult = 'unknown'
-    if (keyData.service === 'anthropic') {
+    if (keyObj.service === 'anthropic') {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'x-api-key': decrypted, 'anthropic-version': '2023-06-01' },
@@ -76,14 +76,14 @@ export async function POST(
       testResult = response.ok ? 'success' : 'failed'
     }
     
-    await insforgeAdmin
-      .database
+    await db
       .from('api_keys')
       .update({ last_tested: new Date().toISOString(), last_test_result: testResult })
       .eq('id', params.id)
     
     return NextResponse.json({ result: testResult })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

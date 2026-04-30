@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    await insforgeAdmin
-      .database
+    await db
       .from('audit_logs')
-      .insert([{
+      .insert({
         user_id: 'system',
         action: 'twilio_webhook',
         entity_type: 'webhook',
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
         ip_address: '0.0.0.0',
         user_agent: 'twilio',
         created_at: new Date().toISOString()
-      }])
+      })
     
     return NextResponse.json({ success: true })
   } catch (error: any) {

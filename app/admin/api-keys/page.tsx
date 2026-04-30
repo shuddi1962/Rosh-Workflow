@@ -1,12 +1,12 @@
 import Link from 'next/link'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export default async function AdminApiKeysPage() {
-  const { insforgeAdmin } = await import('@/lib/insforge/client')
-  const { data: keys } = await insforgeAdmin
-    .database
+  const { data: keys } = await db
     .from('api_keys')
     .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, updated_at')
-    .order('service', { ascending: true })
   
   return (
     <div>
@@ -28,17 +28,17 @@ export default async function AdminApiKeysPage() {
             </tr>
           </thead>
           <tbody>
-            {keys?.map((key: any) => (
-              <tr key={key.id} className="border-t border-border-subtle">
-                <td className="p-4 text-text-primary">{key.service}</td>
-                <td className="p-4 text-text-secondary">{key.key_name}</td>
+            {(keys as Array<Record<string, unknown>>)?.map((key) => (
+              <tr key={key.id as string} className="border-t border-gray-200">
+                <td className="p-4 text-text-primary">{key.service as string}</td>
+                <td className="p-4 text-text-secondary">{key.key_name as string}</td>
                 <td className="p-4">
                   <span className={`px-2 py-1 rounded-full text-xs ${key.is_active ? 'bg-status-live/20 text-status-live' : 'bg-status-draft/20 text-status-draft'}`}>
                     {key.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td className="p-4 text-text-muted text-sm">{key.last_tested ? new Date(key.last_tested).toLocaleDateString() : 'Never'}</td>
-                <td className="p-4 text-text-secondary">{key.usage_today}</td>
+                <td className="p-4 text-text-muted text-sm">{key.last_tested ? new Date(key.last_tested as string).toLocaleDateString() : 'Never'}</td>
+                <td className="p-4 text-text-secondary">{key.usage_today as string}</td>
                 <td className="p-4">
                   <button className="text-accent-primary mr-2">Test</button>
                   <button className="text-accent-red">Delete</button>
@@ -47,7 +47,7 @@ export default async function AdminApiKeysPage() {
             ))}
           </tbody>
         </table>
-        {(!keys || keys.length === 0) && (
+        {(!keys || (keys as Array<unknown>).length === 0) && (
           <p className="p-8 text-text-muted text-center">No API keys configured yet.</p>
         )}
       </div>

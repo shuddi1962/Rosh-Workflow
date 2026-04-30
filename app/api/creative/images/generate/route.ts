@@ -1,6 +1,5 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
 import { OPENROUTER_IMAGE_MODELS } from '@/lib/openrouter/imageClient'
 
 export async function POST(request: NextRequest) {

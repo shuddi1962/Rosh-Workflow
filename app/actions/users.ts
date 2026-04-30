@@ -1,6 +1,8 @@
 'use server'
 
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function createUser(formData: FormData) {
   const { hashPassword } = await import('@/lib/auth')
@@ -12,15 +14,13 @@ export async function createUser(formData: FormData) {
   
   const password_hash = await hashPassword(password)
   
-  await insforgeAdmin
-    .database
+  await db
     .from('users')
-    .insert([{ email, password_hash, full_name, role, is_active: true }])
+    .insert({ email, password_hash, full_name, role, is_active: true })
 }
 
 export async function toggleUserStatus(userId: string, isActive: boolean) {
-  await insforgeAdmin
-    .database
+  await db
     .from('users')
     .update({ is_active: !isActive })
     .eq('id', userId)

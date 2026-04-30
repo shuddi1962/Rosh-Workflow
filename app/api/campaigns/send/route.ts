@@ -1,7 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
+
+const db = new DBClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,8 +13,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'campaign_id is required' }, { status: 400 })
     }
     
-    const { data: campaign, error: campError } = await insforgeAdmin
-      .database
+    const { data: campaign, error: campError } = await db
       .from('campaigns')
       .select('*')
       .eq('id', campaign_id)
@@ -22,8 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
     
-    const { data: leads } = await insforgeAdmin
-      .database
+    const { data: leads } = await db
       .from('leads')
       .select('*')
       .in('id', campaign.target_leads || [])
@@ -141,8 +141,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    await insforgeAdmin
-      .database
+    await db
       .from('campaigns')
       .update({
         status: 'sent',

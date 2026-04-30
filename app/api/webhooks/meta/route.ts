@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
+
+const db = new DBClient()
 
 export async function POST(request: Request) {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('audit_logs')
-      .insert([{
+      .insert({
         user_id: 'system',
         action: 'webhook_received',
         entity_type: 'webhook',
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
         ip_address: '0.0.0.0',
         user_agent: 'webhook',
         created_at: new Date().toISOString()
-      }])
+      })
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })

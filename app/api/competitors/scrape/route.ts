@@ -1,8 +1,10 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import { getApiKey } from '@/lib/env'
 import { runApifyActor, getApifyDataset } from '@/lib/apify/client'
+
+const db = new DBClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,8 +14,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'competitor_id is required' }, { status: 400 })
     }
     
-    const { data: competitor, error: compError } = await insforgeAdmin
-      .database
+    const { data: competitor, error: compError } = await db
       .from('competitors')
       .select('*')
       .eq('id', competitor_id)
@@ -44,8 +45,7 @@ export async function POST(request: NextRequest) {
       scrapeResult = run
     }
     
-    await insforgeAdmin
-      .database
+    await db
       .from('competitors')
       .update({ 
         last_scanned: new Date().toISOString(),
@@ -65,8 +65,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const { data, error } = await insforgeAdmin
-      .database
+    const { data, error } = await db
       .from('competitors')
       .select('*')
       .order('last_scanned', { ascending: false })

@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET!
 const JWT_EXPIRY = '15m'
 const REFRESH_EXPIRY = '7d'
+
+const db = new DBClient()
 
 export interface JWTPayload {
   userId: string
@@ -35,33 +37,31 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
-export async function authenticateUser(email: string, password: string): Promise<{ user: any; accessToken: string; refreshToken: string } | null> {
-  const { data, error } = await insforgeAdmin
-    .database
+export async function authenticateUser(email: string, password: string): Promise<{ user: Record<string, unknown>; accessToken: string; refreshToken: string } | null> {
+  const { data: user, error } = await db
     .from('users')
     .select('*')
     .eq('email', email)
     .single()
   
-  if (error || !data) return null
+  if (error || !user) return null
   
-  const valid = await verifyPassword(password, data.password_hash)
+  const valid = await verifyPassword(password, (user as Record<string, string>).password_hash)
   if (!valid) return null
   
+  await db
+    .from('users')
+    .update({ last_login: new Date().toISOString() })
+    .eq('id', (user as Record<string, string>).id)
+  
   const payload: JWTPayload = {
-    userId: data.id,
-    email: data.email,
-    role: data.role,
-    name: data.full_name
+    userId: (user as Record<string, string>).id,
+    email: (user as Record<string, string>).email,
+    role: (user as Record<string, string>).role,
+    name: (user as Record<string, string>).full_name
   }
   
   const { accessToken, refreshToken } = generateTokens(payload)
   
-  await insforgeAdmin
-    .database
-    .from('users')
-    .update({ last_login: new Date().toISOString() })
-    .eq('id', data.id)
-  
-  return { user: data, accessToken, refreshToken }
+  return { user, accessToken, refreshToken }
 }
