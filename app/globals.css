@@ -1,0 +1,52 @@
+:root {
+  --bg-void: #04060F;
+  --bg-base: #080C1A;
+  --bg-surface: #0E1220;
+  --bg-elevated: #151B2E;
+  --bg-overlay: #1C2438;
+  --border-ghost: rgba(255,255,255,0.03);
+  --border-subtle: rgba(255,255,255,0.07);
+  --border-default: rgba(255,255,255,0.11);
+  --border-hover: rgba(255,255,255,0.18);
+  --accent-primary: #1A56DB;
+  --accent-primary-glow: #3B82F6;
+  --accent-gold: #F59E0B;
+  --accent-gold-light: #FCD34D;
+  --accent-emerald: #10B981;
+  --accent-red: #EF4444;
+  --accent-orange: #F97316;
+  --accent-purple: #8B5CF6;
+  --text-primary: #F0F4FF;
+  --text-secondary: #8B9CC8;
+  --text-muted: #4A5475;
+  --text-on-accent: #FFFFFF;
+  --status-live: #10B981;
+  --status-scheduled: #3B82F6;
+  --status-draft: #F59E0B;
+  --status-failed: #EF4444;
+  --status-published: #10B981;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: 'Cabinet Grotesk', sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Clash Display', sans-serif;
+}
+
+code, .stats, .metrics {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-[#04060F] text-[#F0F4FF];
+  }
+}
