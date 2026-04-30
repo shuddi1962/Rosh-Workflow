@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg-void: #04060F;
   --bg-base: #080C1A;
@@ -35,18 +37,44 @@
 
 body {
   font-family: 'Cabinet Grotesk', sans-serif;
+  background-color: var(--bg-void);
+  color: var(--text-primary);
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Clash Display', sans-serif;
 }
 
-code, .stats, .metrics {
+code, .stats, .metrics, .font-jetbrains {
   font-family: 'JetBrains Mono', monospace;
 }
 
-@layer base {
-  body {
-    @apply bg-[#04060F] text-[#F0F4FF];
-  }
-}
+/* Tailwind v4 custom utilities */
+.bg-bg-void { background-color: var(--bg-void); }
+.bg-bg-base { background-color: var(--bg-base); }
+.bg-bg-surface { background-color: var(--bg-surface); }
+.bg-bg-elevated { background-color: var(--bg-elevated); }
+.bg-bg-overlay { background-color: var(--bg-overlay); }
+.border-border-ghost { border-color: var(--border-ghost); }
+.border-border-subtle { border-color: var(--border-subtle); }
+.border-border-default { border-color: var(--border-default); }
+.border-border-hover { border-color: var(--border-hover); }
+.text-text-primary { color: var(--text-primary); }
+.text-text-secondary { color: var(--text-secondary); }
+.text-text-muted { color: var(--text-muted); }
+.text-text-on-accent { color: var(--text-on-accent); }
+.text-status-live { color: var(--status-live); }
+.text-status-scheduled { color: var(--status-scheduled); }
+.text-status-draft { color: var(--status-draft); }
+.text-status-failed { color: var(--status-failed); }
+.text-accent-primary { color: var(--accent-primary); }
+.text-accent-gold { color: var(--accent-gold); }
+.text-accent-red { color: var(--accent-red); }
+.text-accent-purple { color: var(--accent-purple); }
+.bg-status-live-20 { background-color: rgba(16, 185, 129, 0.2); }
+.bg-status-draft-20 { background-color: rgba(245, 158, 11, 0.2); }
+.bg-accent-purple-20 { background-color: rgba(139, 92, 246, 0.2); }
+.bg-accent-blue-20 { background-color: rgba(59, 130, 246, 0.2); }
+.font-clash { font-family: 'Clash Display', sans-serif; }
+.font-cabinet { font-family: 'Cabinet Grotesk', sans-serif; }
+.font-jetbrains { font-family: 'JetBrains Mono', monospace; }

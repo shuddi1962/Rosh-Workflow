@@ -1,6 +1,4 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: 'standalone',
   experimental: {
     serverComponentsExternalPackages: ['@insforge/sdk', 'sharp', 'jsonwebtoken', 'bcryptjs']
@@ -26,4 +24,4 @@ const nextConfig: NextConfig = {
   }
 };
 
-export default nextConfig;
+module.exports = nextConfig;

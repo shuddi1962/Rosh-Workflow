@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { insforgeAdmin } from '@/lib/insforge/client'
-import { decryptApiKey } from '@/lib/env'
+import { encryptApiKey } from '@/lib/env'
 
 export async function PUT(
   request: Request,
@@ -64,7 +64,7 @@ export async function POST(
     
     if (keyError || !keyData) return NextResponse.json({ error: 'Key not found' }, { status: 404 })
     
-    const decrypted = decryptApiKey(keyData.encrypted_value)
+    const decrypted = encryptApiKey(keyData.encrypted_value)
     
     let testResult = 'unknown'
     if (keyData.service === 'anthropic') {

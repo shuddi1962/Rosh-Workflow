@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { insforgeAdmin } from './client'
+import { insforgeAdmin } from '@/lib/insforge/client'
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET!
 const JWT_EXPIRY = '15m'
