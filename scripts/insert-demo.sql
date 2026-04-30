@@ -1,0 +1,1 @@
+INSERT INTO users (id, email, password_hash, full_name, role, is_active, created_at, last_login) VALUES ('ace5f1ac-3fb0-4830-819a-140ebd716ed2', 'demo@roshanalinfotech.com', '$2b$12$.KNBeumXy79E2SxenaLsPOY2Z.64Xxa5kQzEcjk.OO.FMDPasiFOu', 'Demo User', 'admin', true, NOW(), NOW());

@@ -1,32 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --bg-void: #04060F;
-  --bg-base: #080C1A;
-  --bg-surface: #0E1220;
-  --bg-elevated: #151B2E;
-  --bg-overlay: #1C2438;
-  --border-ghost: rgba(255,255,255,0.03);
-  --border-subtle: rgba(255,255,255,0.07);
-  --border-default: rgba(255,255,255,0.11);
-  --border-hover: rgba(255,255,255,0.18);
-  --accent-primary: #1A56DB;
+  --bg-void: #FFFFFF;
+  --bg-base: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F1F5F9;
+  --bg-overlay: #E2E8F0;
+  --border-ghost: rgba(0,0,0,0.04);
+  --border-subtle: rgba(0,0,0,0.08);
+  --border-default: rgba(0,0,0,0.12);
+  --border-hover: rgba(0,0,0,0.20);
+  --accent-primary: #2563EB;
   --accent-primary-glow: #3B82F6;
-  --accent-gold: #F59E0B;
-  --accent-gold-light: #FCD34D;
-  --accent-emerald: #10B981;
-  --accent-red: #EF4444;
-  --accent-orange: #F97316;
-  --accent-purple: #8B5CF6;
-  --text-primary: #F0F4FF;
-  --text-secondary: #8B9CC8;
-  --text-muted: #4A5475;
+  --accent-primary-soft: #EFF6FF;
+  --accent-gold: #D97706;
+  --accent-gold-light: #F59E0B;
+  --accent-emerald: #059669;
+  --accent-red: #DC2626;
+  --accent-orange: #EA580C;
+  --accent-purple: #7C3AED;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
   --text-on-accent: #FFFFFF;
-  --status-live: #10B981;
-  --status-scheduled: #3B82F6;
-  --status-draft: #F59E0B;
-  --status-failed: #EF4444;
-  --status-published: #10B981;
+  --status-live: #059669;
+  --status-scheduled: #2563EB;
+  --status-draft: #D97706;
+  --status-failed: #DC2626;
+  --status-published: #059669;
 }
 
 * {
@@ -39,6 +40,8 @@ body {
   font-family: 'Cabinet Grotesk', sans-serif;
   background-color: var(--bg-void);
   color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -49,12 +52,12 @@ code, .stats, .metrics, .font-jetbrains {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Tailwind v4 custom utilities */
 .bg-bg-void { background-color: var(--bg-void); }
 .bg-bg-base { background-color: var(--bg-base); }
 .bg-bg-surface { background-color: var(--bg-surface); }
 .bg-bg-elevated { background-color: var(--bg-elevated); }
 .bg-bg-overlay { background-color: var(--bg-overlay); }
+.bg-accent-primary-soft { background-color: var(--accent-primary-soft); }
 .border-border-ghost { border-color: var(--border-ghost); }
 .border-border-subtle { border-color: var(--border-subtle); }
 .border-border-default { border-color: var(--border-default); }
@@ -71,10 +74,10 @@ code, .stats, .metrics, .font-jetbrains {
 .text-accent-gold { color: var(--accent-gold); }
 .text-accent-red { color: var(--accent-red); }
 .text-accent-purple { color: var(--accent-purple); }
-.bg-status-live-20 { background-color: rgba(16, 185, 129, 0.2); }
-.bg-status-draft-20 { background-color: rgba(245, 158, 11, 0.2); }
-.bg-accent-purple-20 { background-color: rgba(139, 92, 246, 0.2); }
-.bg-accent-blue-20 { background-color: rgba(59, 130, 246, 0.2); }
+.bg-status-live-20 { background-color: rgba(5, 150, 105, 0.1); }
+.bg-status-draft-20 { background-color: rgba(217, 119, 6, 0.1); }
+.bg-accent-purple-20 { background-color: rgba(124, 58, 237, 0.1); }
+.bg-accent-blue-20 { background-color: rgba(37, 99, 235, 0.1); }
 .font-clash { font-family: 'Clash Display', sans-serif; }
 .font-cabinet { font-family: 'Cabinet Grotesk', sans-serif; }
 .font-jetbrains { font-family: 'JetBrains Mono', monospace; }
