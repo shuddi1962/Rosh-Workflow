@@ -26,7 +26,8 @@ export async function POST(request: NextRequest) {
         .eq('id', product_id)
         .single()
       if (product) {
-        productContext = `Product: ${product.name} by ${product.brand}\nDescription: ${product.description}\nPrice: ${product.price_display}`
+        const prodObj = product as unknown as Record<string, unknown>
+        productContext = `Product: ${prodObj.name} by ${prodObj.brand}\nDescription: ${prodObj.description}\nPrice: ${prodObj.price_display}`
       }
     }
     
@@ -102,8 +103,9 @@ Make it Nigerian-context relevant, urgent, and drive to WhatsApp/phone call.`
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     
     return NextResponse.json({ ad: data, raw_ai_response: generatedText })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -116,7 +118,8 @@ export async function GET() {
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ads: data || [] })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

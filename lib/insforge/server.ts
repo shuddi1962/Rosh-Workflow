@@ -50,7 +50,7 @@ class QueryBuilder implements PromiseLike<QueryResult> {
   private isSingle = false
   private orderBy: { column: string; ascending: boolean } | null = null
   private operation: OperationType = 'select'
-  private insertData: Record<string, unknown> | null = null
+  private insertData: Record<string, unknown> | Record<string, unknown>[] | null = null
   private updateData: Record<string, unknown> | null = null
 
   constructor(table: string) {
@@ -88,7 +88,7 @@ class QueryBuilder implements PromiseLike<QueryResult> {
     return this
   }
 
-  insert(data: Record<string, unknown>): QueryBuilder {
+  insert(data: Record<string, unknown> | Record<string, unknown>[]): QueryBuilder {
     this.operation = 'insert'
     this.insertData = data
     return this
@@ -146,14 +146,20 @@ class QueryBuilder implements PromiseLike<QueryResult> {
       
       case 'insert': {
         if (!this.insertData) return { data: null, error: { message: 'No data to insert' } }
-        const columns = Object.keys(this.insertData)
-        const values = Object.values(this.insertData)
-        const placeholders = values.map((_, i) => `$${i + 1}`).join(', ')
-        const sql = `INSERT INTO ${this.table} (${columns.join(', ')}) VALUES (${placeholders}) RETURNING *`
+        
+        const records = Array.isArray(this.insertData) ? this.insertData : [this.insertData]
+        if (records.length === 0) return { data: null, error: { message: 'No data to insert' } }
+        
+        const columns = Object.keys(records[0])
+        const placeholders = records.map((_, rowIdx) => 
+          `(${columns.map((_, colIdx) => `$${rowIdx * columns.length + colIdx + 1}`).join(', ')})`
+        ).join(', ')
+        const values = records.flatMap(r => columns.map(c => r[c]))
+        const sql = `INSERT INTO ${this.table} (${columns.join(', ')}) VALUES ${placeholders} RETURNING *`
         
         try {
           const result = await getPool().query(sql, values)
-          return { data: result.rows[0] || null, error: null }
+          return { data: result.rows.length === 1 ? result.rows[0] : result.rows, error: null }
         } catch (error) {
           return { data: null, error: { message: error instanceof Error ? error.message : 'Unknown error' } }
         }

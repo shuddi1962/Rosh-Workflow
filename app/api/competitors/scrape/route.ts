@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Competitor not found' }, { status: 404 })
     }
     
+    const compObj = competitor as unknown as Record<string, unknown>
     const apiKey = await getApiKey('apify', 'Production Key')
     if (!apiKey) {
       return NextResponse.json({ error: 'Apify API key not configured' }, { status: 500 })
@@ -32,14 +33,14 @@ export async function POST(request: NextRequest) {
     let scrapeResult
     if (scrape_type === 'google_maps') {
       const run = await runApifyActor('compass~google-maps-scraper', {
-        searchString: competitor.name,
+        searchString: compObj.name as string,
         location: 'Port Harcourt, Nigeria',
         maxPlacesPerQuery: 10
       })
       scrapeResult = run
     } else if (scrape_type === 'facebook_ads') {
       const run = await runApifyActor('apify~facebook-ad-library-scraper', {
-        query: competitor.name,
+        query: compObj.name as string,
         country: 'NG'
       })
       scrapeResult = run
@@ -55,11 +56,12 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({ 
       message: 'Scraping completed',
-      competitor: competitor.name,
+      competitor: compObj.name,
       result: scrapeResult
     })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -72,7 +74,8 @@ export async function GET() {
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ competitors: data || [] })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

@@ -46,16 +46,16 @@ export async function saveVideoTask(task: {
   status: string
   type: string
 }) {
-  const { insforgeAdmin } = await import('@/lib/insforge/client')
-  await insforgeAdmin
-    .database
+  const { DBClient } = await import('@/lib/insforge/server')
+  const db = new DBClient()
+  await db
     .from('video_tasks')
-    .insert([{
+    .insert({
       kie_task_id: task.task_id,
       model: task.model,
       prompt: task.prompt,
       status: task.status,
       type: task.type,
       created_at: new Date().toISOString(),
-    }])
+    })
 }

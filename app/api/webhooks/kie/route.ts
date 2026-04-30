@@ -20,6 +20,8 @@ export async function POST(request: NextRequest) {
     
     if (!task) return NextResponse.json({ ok: false })
     
+    const taskObj = task as unknown as Record<string, unknown>
+    
     if (status === 'SUCCESS' && videoUrl) {
       // Update the task
       await db
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
         .eq('kie_task_id', taskId)
       
       // Update related video asset if exists
-      if (task.asset_id) {
+      if (taskObj.asset_id) {
         await db
           .from('generated_videos')
           .update({ 
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
             status: 'READY',
             completed_at: new Date().toISOString()
           })
-          .eq('id', task.asset_id)
+          .eq('id', taskObj.asset_id)
       }
     } else if (status === 'FAILED') {
       await db
@@ -52,7 +54,8 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

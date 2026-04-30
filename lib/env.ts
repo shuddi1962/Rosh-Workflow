@@ -34,12 +34,13 @@ export async function getApiKey(service: string, keyName: string): Promise<strin
   
   if (error || !data) return null
   
-  return decryptApiKey((data as Record<string, string>).encrypted_value)
+  const dataObj = data as unknown as Record<string, unknown>
+  return decryptApiKey(dataObj.encrypted_value as string)
 }
 
 export function encryptApiKey(key: string): string {
   const algorithm = 'aes-256-gcm'
-  const secret = process.env.ENCRYPTION_SECRET || Buffer.alloc(32, 'roshanal-encryption-secret-32!!')
+  const secret = process.env.ENCRYPTION_SECRET || 'roshanal-encryption-secret-32!!'
   const iv = crypto.randomBytes(16)
   
   const cipher = crypto.createCipheriv(algorithm, Buffer.from(secret.slice(0, 32), 'utf8'), iv)
@@ -52,7 +53,7 @@ export function encryptApiKey(key: string): string {
 
 export function decryptApiKey(encrypted: string): string {
   const algorithm = 'aes-256-gcm'
-  const secret = process.env.ENCRYPTION_SECRET || Buffer.alloc(32, 'roshanal-encryption-secret-32!!')
+  const secret = process.env.ENCRYPTION_SECRET || 'roshanal-encryption-secret-32!!'
   
   const [ivHex, encryptedData, authTag] = encrypted.split(':')
   

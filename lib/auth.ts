@@ -46,22 +46,23 @@ export async function authenticateUser(email: string, password: string): Promise
   
   if (error || !user) return null
   
-  const valid = await verifyPassword(password, (user as Record<string, string>).password_hash)
+  const userObj = user as unknown as Record<string, unknown>
+  const valid = await verifyPassword(password, userObj.password_hash as string)
   if (!valid) return null
   
   await db
     .from('users')
     .update({ last_login: new Date().toISOString() })
-    .eq('id', (user as Record<string, string>).id)
+    .eq('id', userObj.id as string)
   
   const payload: JWTPayload = {
-    userId: (user as Record<string, string>).id,
-    email: (user as Record<string, string>).email,
-    role: (user as Record<string, string>).role,
-    name: (user as Record<string, string>).full_name
+    userId: userObj.id as string,
+    email: userObj.email as string,
+    role: userObj.role as string,
+    name: userObj.full_name as string
   }
   
   const { accessToken, refreshToken } = generateTokens(payload)
   
-  return { user, accessToken, refreshToken }
+  return { user: userObj, accessToken, refreshToken }
 }

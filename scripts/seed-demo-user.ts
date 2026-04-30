@@ -1,5 +1,7 @@
-import { insforgeAdmin } from '@/lib/insforge/client'
+import { DBClient } from '@/lib/insforge/server'
 import bcrypt from 'bcryptjs'
+
+const db = new DBClient()
 
 async function createDemoUser() {
   const email = 'demo@roshanalinfotech.com'
@@ -8,8 +10,7 @@ async function createDemoUser() {
 
   console.log('Creating demo user...')
 
-  const { data, error } = await insforgeAdmin
-    .database
+  const { data, error } = await db
     .from('users')
     .insert({
       id: 'demo-user-001',
@@ -27,8 +28,7 @@ async function createDemoUser() {
   if (error) {
     if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
       console.log('Demo user already exists. Updating password...')
-      const { error: updateError } = await insforgeAdmin
-        .database
+      const { error: updateError } = await db
         .from('users')
         .update({ password_hash: passwordHash, is_active: true })
         .eq('email', email)

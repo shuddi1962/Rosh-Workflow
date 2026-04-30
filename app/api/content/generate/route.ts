@@ -54,13 +54,14 @@ export async function POST(request: NextRequest) {
         .select('*')
         .eq('id', product_id)
         .single()
-      if (product) {
-        productContext = `
-Product: ${product.name}
-Brand: ${product.brand}
-Description: ${product.description}
-Price: ${product.price_display}
-Features: ${product.features?.join(', ')}
+    if (product) {
+      const prodObj = product as unknown as Record<string, unknown>
+      productContext = `
+Product: ${prodObj.name}
+Brand: ${prodObj.brand}
+Description: ${prodObj.description}
+Price: ${prodObj.price_display}
+Features: ${Array.isArray(prodObj.features) ? prodObj.features.join(', ') : ''}
 `
       }
     }
@@ -73,10 +74,11 @@ Features: ${product.features?.join(', ')}
         .eq('id', trend_id)
         .single()
       if (trend) {
-        trendContext = `
-Trending Topic: ${trend.keyword}
-Description: ${trend.description}
-Source: ${trend.source}
+      const trendObj = trend as unknown as Record<string, unknown>
+      trendContext = `
+Trending Topic: ${trendObj.keyword}
+Description: ${trendObj.description}
+Source: ${trendObj.source}
 `
       }
     }
@@ -186,7 +188,8 @@ CTA: [call to action]`
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     
     return NextResponse.json({ post: data, raw_ai_response: generatedText })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

@@ -23,8 +23,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
     
-    const platformToUse = platform || post.platform
-    let publishResult: any = { status: 'simulated', message: 'Post would be published' }
+    const postObj = post as unknown as Record<string, unknown>
+    const platformToUse = platform || postObj.platform
+    let publishResult = { status: 'simulated', message: 'Post would be published' } as Record<string, unknown>
     
     if (platformToUse === 'facebook' || platformToUse === 'instagram') {
       const metaKey = await getApiKey('meta', 'Production Key')
@@ -55,7 +56,8 @@ export async function POST(request: NextRequest) {
       platform: platformToUse,
       result: publishResult
     })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
