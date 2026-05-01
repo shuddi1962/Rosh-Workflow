@@ -1,5 +1,6 @@
 import { DBClient } from '@/lib/insforge/server'
 import ApiKeysClient from './ApiKeysClient'
+import type { ApiKey } from '@/lib/insforge/schema'
 
 const db = new DBClient()
 
@@ -9,5 +10,5 @@ export default async function AdminApiKeysPage() {
     .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, updated_at')
     .order('service', { ascending: true })
 
-  return <ApiKeysClient initialKeys={(keys as Array<Record<string, unknown>>) || []} />
+  return <ApiKeysClient initialKeys={(keys as unknown as ApiKey[]) || []} />
 }
