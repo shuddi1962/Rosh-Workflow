@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyToken } from '@/lib/auth'
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET!
+export const runtime = 'nodejs'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  
+  if (pathname === '/login' || pathname === '/register' || pathname === '/api/health' || pathname.startsWith('/api/webhooks')) {
+    return NextResponse.next()
+  }
   
   const token = request.cookies.get('access_token')?.value || 
                 request.headers.get('Authorization')?.replace('Bearer ', '')
@@ -18,7 +21,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
     
-    const payload = verifyToken(token)
+    const payload = decodeToken(token)
     if (!payload) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
@@ -36,9 +39,7 @@ export async function middleware(request: NextRequest) {
   
   if (pathname.startsWith('/dashboard') || 
       (pathname.startsWith('/api/') && 
-       !pathname.startsWith('/api/auth') && 
-       !pathname.startsWith('/api/health') &&
-       !pathname.startsWith('/api/webhooks'))) {
+       !pathname.startsWith('/api/auth'))) {
     if (!token) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -46,7 +47,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
     
-    const payload = verifyToken(token)
+    const payload = decodeToken(token)
     if (!payload) {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
@@ -58,6 +59,16 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
+function decodeToken(token: string): { userId: string; email: string; role: string; name: string } | null {
+  try {
+    const jwt = require('jsonwebtoken')
+    const secret = process.env.NEXTAUTH_SECRET
+    return jwt.verify(token, secret) as { userId: string; email: string; role: string; name: string }
+  } catch {
+    return null
+  }
+}
+
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/admin/:path*', '/api/:path*']
+  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/:path*']
 }
