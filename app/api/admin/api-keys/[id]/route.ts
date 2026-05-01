@@ -74,6 +74,16 @@ export async function POST(
         body: JSON.stringify({ model: 'claude-3-haiku-20240307', max_tokens: 10, messages: [{ role: 'user', content: 'Hi' }] })
       })
       testResult = response.ok ? 'success' : 'failed'
+    } else if (keyObj.service === 'openrouter') {
+      const response = await fetch('https://openrouter.ai/api/v1/models', {
+        headers: { 'Authorization': `Bearer ${decrypted}` }
+      })
+      testResult = response.ok ? 'success' : 'failed'
+    } else if (keyObj.service === 'kie_ai') {
+      const response = await fetch('https://api.kie.ai/api/v1/account/info', {
+        headers: { 'Authorization': `Bearer ${decrypted}` }
+      })
+      testResult = response.ok ? 'success' : 'failed'
     }
     
     await db
