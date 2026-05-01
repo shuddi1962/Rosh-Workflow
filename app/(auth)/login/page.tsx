@@ -38,8 +38,8 @@ export default function LoginPage() {
       localStorage.setItem('userRole', data.user.role)
       localStorage.setItem('userName', data.user.full_name)
 
-      router.push(data.user.role === 'admin' ? '/admin' : '/dashboard')
-      router.refresh()
+      const redirectUrl = data.user.role === 'admin' ? '/admin' : '/dashboard'
+      window.location.href = redirectUrl
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
