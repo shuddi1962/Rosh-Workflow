@@ -1,27 +1,56 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { verifyToken } from '@/lib/auth'
 
 const JWT_SECRET = process.env.NEXTAUTH_SECRET!
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Admin routes - check for token presence (verification happens in API routes)
+  const token = request.cookies.get('access_token')?.value || 
+                request.headers.get('Authorization')?.replace('Bearer ', '')
+  
   if (pathname.startsWith('/api/admin') || pathname.startsWith('/admin')) {
-    const token = request.cookies.get('access_token')?.value || request.headers.get('Authorization')?.replace('Bearer ', '')
-    
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+      return NextResponse.redirect(new URL('/login', request.url))
     }
-    // Just check if token exists - verification happens in API routes
-    // Admin routes will verify the JWT in the actual route handler
+    
+    const payload = verifyToken(token)
+    if (!payload) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+      }
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    
+    if (payload.role !== 'admin') {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 })
+      }
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
   }
   
-  // User routes - redirect if not authenticated
-  if (pathname.startsWith('/dashboard') || (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth'))) {
-    const token = request.cookies.get('access_token')?.value || request.headers.get('Authorization')?.replace('Bearer ', '')
-    
+  if (pathname.startsWith('/dashboard') || 
+      (pathname.startsWith('/api/') && 
+       !pathname.startsWith('/api/auth') && 
+       !pathname.startsWith('/api/health') &&
+       !pathname.startsWith('/api/webhooks'))) {
     if (!token) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    
+    const payload = verifyToken(token)
+    if (!payload) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+      }
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
