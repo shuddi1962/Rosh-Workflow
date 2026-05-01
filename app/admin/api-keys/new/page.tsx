@@ -1,11 +1,11 @@
 export default function AdminApiKeyNewPage() {
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl font-clash font-bold text-text-primary mb-6">Add New API Key</h1>
-      <form action="/api/admin/api-keys" method="POST" className="space-y-6 bg-bg-surface p-6 rounded-lg border border-border-subtle">
+      <h1 className="text-3xl font-clash font-bold text-gray-900 mb-6">Add New API Key</h1>
+      <form action="/api/admin/api-keys" method="POST" className="space-y-6 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
         <div>
-          <label className="block text-text-secondary mb-2">Service</label>
-            <select name="service" required className="w-full p-3 bg-bg-base border border-border-default rounded-lg text-text-primary">
+          <label className="block text-gray-700 mb-2 font-medium">Service</label>
+           <select name="service" required className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
              <option value="anthropic">Anthropic (Claude)</option>
              <option value="openai">OpenAI</option>
              <option value="openrouter">OpenRouter (Multi-Model)</option>
@@ -22,14 +22,14 @@ export default function AdminApiKeyNewPage() {
            </select>
         </div>
         <div>
-          <label className="block text-text-secondary mb-2">Key Name</label>
-          <input type="text" name="key_name" placeholder="e.g., Production Key" required className="w-full p-3 bg-bg-base border border-border-default rounded-lg text-text-primary" />
+          <label className="block text-gray-700 mb-2 font-medium">Key Name</label>
+          <input type="text" name="key_name" placeholder="e.g., Production Key" required className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
         </div>
         <div>
-          <label className="block text-text-secondary mb-2">API Key Value</label>
-          <input type="password" name="value" required placeholder="Enter API key (will be encrypted)" className="w-full p-3 bg-bg-base border border-border-default rounded-lg text-text-primary" />
+          <label className="block text-gray-700 mb-2 font-medium">API Key Value</label>
+          <input type="password" name="value" required placeholder="Enter API key (will be encrypted)" className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
         </div>
-        <button type="submit" className="px-6 py-3 bg-gradient-to-r from-accent-primary to-accent-primary-glow text-text-on-accent rounded-lg font-medium">Save Encrypted Key</button>
+        <button type="submit" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Save Encrypted Key</button>
       </form>
     </div>
   )
