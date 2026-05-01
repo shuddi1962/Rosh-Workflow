@@ -33,6 +33,11 @@ export default function LoginPage() {
         return
       }
 
+      localStorage.setItem('accessToken', data.accessToken)
+      localStorage.setItem('refreshToken', data.refreshToken)
+      localStorage.setItem('userRole', data.user.role)
+      localStorage.setItem('userName', data.user.full_name)
+
       router.push(data.user.role === 'admin' ? '/admin' : '/dashboard')
       router.refresh()
     } catch {

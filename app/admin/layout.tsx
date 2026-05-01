@@ -60,6 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userName, setUserName] = useState('Admin')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -74,7 +75,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return
     }
     if (name) setUserName(name)
+    setIsLoading(false)
   }, [router])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center animate-pulse">
+            <Shield className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-clash text-lg font-bold text-gray-900">Loading...</span>
+        </div>
+      </div>
+    )
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken')

@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
         email: result.user.email,
         full_name: result.user.full_name,
         role: result.user.role
-      }
+      },
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
     })
     
     response.cookies.set({
