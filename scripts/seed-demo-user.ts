@@ -1,52 +1,50 @@
-import { DBClient } from '@/lib/insforge/server'
+import { config } from 'dotenv'
+import path from 'path'
+
+config({ path: path.resolve(process.cwd(), '.env.local') })
+
+import { Pool } from 'pg'
 import bcrypt from 'bcryptjs'
 
-const db = new DBClient()
-
 async function createDemoUser() {
+  const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    ssl: { rejectUnauthorized: false }
+  })
+
   const email = 'demo@roshanalinfotech.com'
   const password = 'demo123456'
   const passwordHash = await bcrypt.hash(password, 12)
 
-  console.log('Creating demo user...')
+  console.log('Connecting to database...')
 
-  const { data, error } = await db
-    .from('users')
-    .insert({
-      id: 'demo-user-001',
-      email,
-      password_hash: passwordHash,
-      full_name: 'Demo User',
-      role: 'admin',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      last_login: new Date().toISOString()
-    })
-    .select()
-    .single()
+  try {
+    const { rows } = await pool.query('SELECT id, email, role FROM users WHERE email = $1', [email])
 
-  if (error) {
-    if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
-      console.log('Demo user already exists. Updating password...')
-      const { error: updateError } = await db
-        .from('users')
-        .update({ password_hash: passwordHash, is_active: true })
-        .eq('email', email)
-
-      if (updateError) {
-        console.error('Error updating demo user:', updateError)
-        return
-      }
-      console.log('Demo user password updated successfully!')
+    if (rows.length > 0) {
+      await pool.query(
+        'UPDATE users SET password_hash = $2, is_active = true, role = $3 WHERE email = $1',
+        [email, passwordHash, 'admin']
+      )
+      console.log('Demo user updated successfully!')
     } else {
-      console.error('Error creating demo user:', error)
-      return
+      await pool.query(
+        'INSERT INTO users (id, email, password_hash, full_name, role, is_active, created_at, last_login) VALUES (gen_random_uuid(), $1, $2, $3, $4, true, NOW(), NOW())',
+        [email, passwordHash, 'Demo User', 'admin']
+      )
+      console.log('Demo user created successfully!')
     }
-  } else {
-    console.log('Demo user created successfully!')
     console.log('Email:', email)
-    console.log('Password: demo123456')
+    console.log('Password:', password)
+  } catch (error) {
+    console.error('Error:', error instanceof Error ? error.message : error)
+  } finally {
+    await pool.end()
   }
 }
 
-createDemoUser().catch(console.error)
+createDemoUser()
