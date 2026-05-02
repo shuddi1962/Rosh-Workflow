@@ -32,7 +32,7 @@ export default function BannerStudioPage() {
   const handleGenerate = () => {
     setGenerating(true)
     setTimeout(() => {
-      setGenerating(true)
+      setGenerating(false)
       setGeneratedBanners(prev => [...prev, `banner-${Date.now()}`])
     }, 3000)
   }
@@ -40,58 +40,58 @@ export default function BannerStudioPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-clash text-3xl font-bold text-gray-900">Banner Studio</h1>
-        <p className="text-gray-600 mt-1">Generate marketing banners with AI</p>
+        <h1 className="font-clash text-3xl font-bold text-text-primary">Banner Studio</h1>
+        <p className="text-text-secondary mt-1">Generate marketing banners with AI</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-900 mb-4">Banner Settings</h2>
+          <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
+            <h2 className="font-semibold text-text-primary mb-4">Banner Settings</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm text-gray-600 mb-1">Division</label>
-                <select value={division} onChange={e => setDivision(e.target.value)} className="w-full p-2 border border-gray-200 rounded-lg text-sm">
+                <label className="block text-sm text-text-secondary mb-1">Division</label>
+                <select value={division} onChange={e => setDivision(e.target.value)} className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-bg-surface text-text-primary">
                   <option value="tech">Technology & Surveillance</option>
                   <option value="marine">Marine Equipment</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1">Size</label>
-                <select value={size} onChange={e => setSize(e.target.value)} className="w-full p-2 border border-gray-200 rounded-lg text-sm">
+                <label className="block text-sm text-text-secondary mb-1">Size</label>
+                <select value={size} onChange={e => setSize(e.target.value)} className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-bg-surface text-text-primary">
                   {SIZES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
                 </select>
               </div>
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Product (optional)</label>
-              <input type="text" value={product} onChange={e => setProduct(e.target.value)} placeholder="e.g. Hikvision CCTV 4CH Kit" className="w-full p-2 border border-gray-200 rounded-lg text-sm" />
+              <label className="block text-sm text-text-secondary mb-1">Product (optional)</label>
+              <input type="text" value={product} onChange={e => setProduct(e.target.value)} placeholder="e.g. Hikvision CCTV 4CH Kit" className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-bg-surface text-text-primary placeholder:text-text-muted" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-900 mb-4">Style</h2>
+          <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
+            <h2 className="font-semibold text-text-primary mb-4">Style</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {BANNER_STYLES.map(s => (
-                <button key={s.id} onClick={() => setStyle(s.id)} className={`p-3 rounded-lg border text-left transition-all ${style === s.id ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200 hover:border-gray-300'}`}>
-                  <p className="text-sm font-medium text-gray-900">{s.label}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{s.description}</p>
+                <button key={s.id} onClick={() => setStyle(s.id)} className={`p-3 rounded-lg border text-left transition-all ${style === s.id ? 'border-accent-primary bg-accent-primary/10 ring-1 ring-accent-primary' : 'border-border-subtle hover:border-border-hover'}`}>
+                  <p className="text-sm font-medium text-text-primary">{s.label}</p>
+                  <p className="text-xs text-text-secondary mt-0.5">{s.description}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          <button onClick={handleGenerate} disabled={generating} className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center justify-center gap-2 disabled:opacity-50">
+          <button onClick={handleGenerate} disabled={generating} className="w-full px-4 py-3 bg-accent-purple text-white rounded-lg hover:bg-accent-purple/90 flex items-center justify-center gap-2 disabled:opacity-50">
             {generating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
             Generate Banner
           </button>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Preview</h3>
-            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="text-center text-gray-400">
+          <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
+            <h3 className="font-semibold text-text-primary mb-4">Preview</h3>
+            <div className="aspect-square bg-bg-elevated rounded-lg flex items-center justify-center">
+              <div className="text-center text-text-muted">
                 <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Banner preview</p>
                 <p className="text-xs mt-1">{size}</p>
@@ -100,13 +100,13 @@ export default function BannerStudioPage() {
           </div>
 
           {generatedBanners.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Generated ({generatedBanners.length})</h3>
+            <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
+              <h3 className="font-semibold text-text-primary mb-4">Generated ({generatedBanners.length})</h3>
               <div className="space-y-2">
                 {generatedBanners.map((b, i) => (
-                  <div key={b} className="flex items-center justify-between p-2 rounded border border-gray-200">
-                    <span className="text-sm text-gray-600">Banner {i + 1}</span>
-                    <button className="p-1.5 hover:bg-gray-100 rounded"><Download className="w-4 h-4 text-gray-400" /></button>
+                  <div key={b} className="flex items-center justify-between p-2 rounded border border-border-subtle">
+                    <span className="text-sm text-text-secondary">Banner {i + 1}</span>
+                    <button className="p-1.5 hover:bg-bg-elevated rounded"><Download className="w-4 h-4 text-text-muted" /></button>
                   </div>
                 ))}
               </div>

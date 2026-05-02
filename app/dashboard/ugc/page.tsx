@@ -109,7 +109,7 @@ export default function UGCPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary-glow" />
       </div>
     )
   }
@@ -123,12 +123,13 @@ export default function UGCPage() {
       >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">UGC Ad Creator</h1>
-            <p className="text-gray-600">Generate ad scripts and creative content for all platforms</p>
+            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">UGC Ad Creator</h1>
+            <p className="text-text-secondary">Generate ad scripts and creative content for all platforms</p>
           </div>
           <Button
             onClick={fetchAds}
             variant="outline"
+            className="border-border-subtle text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
@@ -137,7 +138,7 @@ export default function UGCPage() {
       </motion.div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/30 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
@@ -148,7 +149,7 @@ export default function UGCPage() {
             key={f}
             variant={filter === f ? 'default' : 'outline'}
             onClick={() => setFilter(f)}
-            className={filter === f ? 'bg-purple-600 hover:bg-purple-700' : ''}
+            className={filter === f ? 'bg-accent-primary hover:bg-accent-primary/90 text-white' : 'border-border-subtle text-text-secondary hover:bg-bg-elevated hover:text-text-primary'}
           >
             {f === 'used' ? 'Used in Campaigns' : f.charAt(0).toUpperCase() + f.slice(1)}
           </Button>
@@ -175,6 +176,7 @@ export default function UGCPage() {
                 <Button
                   variant="outline"
                   onClick={() => setSelectedAd(null)}
+                  className="border-border-subtle text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
                 >
                   Back to List
                 </Button>
@@ -188,22 +190,22 @@ export default function UGCPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 flex items-center justify-center min-h-[400px]">
+            <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 flex items-center justify-center min-h-[400px]">
               <div className="text-center">
-                <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Select an ad to preview</p>
+                <Sparkles className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                <p className="text-text-secondary">Select an ad to preview</p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4">Generated Ads</h3>
+      <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
+        <h3 className="font-clash text-lg font-semibold text-text-primary mb-4">Generated Ads</h3>
         <div className="space-y-3">
           <AnimatePresence>
             {filteredAds.length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-8">
+              <p className="text-text-secondary text-sm text-center py-8">
                 No ads generated yet. Use the creator above to generate UGC ads.
               </p>
             ) : (
@@ -214,29 +216,29 @@ export default function UGCPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setSelectedAd(ad)}
-                  className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-purple-300 cursor-pointer transition"
+                  className="p-4 bg-bg-elevated rounded-lg border border-border-subtle hover:border-accent-primary/50 cursor-pointer transition-all"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-purple-600" />
-                        <span className="text-sm font-medium text-gray-900">
+                        <Sparkles className="w-4 h-4 text-accent-purple" />
+                        <span className="text-sm font-medium text-text-primary">
                           {ad.headline || adTypeLabels[ad.ad_type] || ad.ad_type}
                         </span>
                       </div>
-                      <p className="text-gray-600 text-xs line-clamp-2">
+                      <p className="text-text-secondary text-xs line-clamp-2">
                         {ad.primary_text || ad.description}
                       </p>
                     </div>
                     <Badge variant={ad.used_in_campaign ? 'default' : 'info'}
-                      className={ad.used_in_campaign ? 'bg-green-100 text-green-800' : ''}>
+                      className={ad.used_in_campaign ? 'bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30' : ''}>
                       {ad.used_in_campaign ? 'Used' : 'New'}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="info">{ad.division}</Badge>
-                    <Badge variant="info">{ad.platform}</Badge>
-                    <span className="text-xs text-gray-500">
+                    <Badge variant="info" className="bg-bg-surface text-text-secondary border-border-subtle">{ad.division}</Badge>
+                    <Badge variant="info" className="bg-bg-surface text-text-secondary border-border-subtle">{ad.platform}</Badge>
+                    <span className="text-xs text-text-muted">
                       {adTypeLabels[ad.ad_type] || ad.ad_type}
                     </span>
                   </div>

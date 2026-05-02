@@ -69,15 +69,15 @@ export function PipelineKanban({ leads, onLeadClick, onStageChange }: PipelineKa
         return (
           <div
             key={stage.id}
-            className="bg-gray-50 rounded-xl p-3 min-h-[400px]"
+            className="bg-bg-elevated rounded-xl p-3 min-h-[400px]"
             onDragOver={handleDragOver}
             onDrop={() => handleDrop(stage.id)}
           >
             <div className="flex items-center gap-2 mb-3">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-              <Icon className="w-4 h-4 text-gray-600" />
-              <h3 className="font-semibold text-gray-900 text-sm">{stage.label}</h3>
-              <span className="text-xs text-gray-500 bg-white px-2 py-0.5 rounded-full">{stage.leads.length}</span>
+              <Icon className="w-4 h-4 text-text-secondary" />
+              <h3 className="font-semibold text-text-primary text-sm">{stage.label}</h3>
+              <span className="text-xs text-text-muted bg-bg-surface px-2 py-0.5 rounded-full">{stage.leads.length}</span>
             </div>
 
             <div className="space-y-2">
@@ -87,45 +87,45 @@ export function PipelineKanban({ leads, onLeadClick, onStageChange }: PipelineKa
                   draggable
                   onDragStart={() => handleDragStart(lead.id)}
                   onClick={() => onLeadClick?.(lead)}
-                  className="bg-white rounded-lg p-3 border border-gray-200 hover:shadow-md hover:border-blue-300 cursor-pointer transition-all"
+                  className="bg-bg-surface rounded-lg p-3 border border-border-subtle hover:border-accent-primary/50 hover:shadow-md cursor-pointer transition-all"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium text-gray-900 text-sm truncate flex-1">{lead.full_name}</h4>
-                    <span className={`text-xs font-bold ${GRADE_COLORS[lead.qualification_grade] || 'text-gray-500'}`}>
+                    <h4 className="font-medium text-text-primary text-sm truncate flex-1">{lead.full_name}</h4>
+                    <span className={`text-xs font-bold ${GRADE_COLORS[lead.qualification_grade] || 'text-text-muted'}`}>
                       {lead.qualification_grade}
                     </span>
                   </div>
 
                   {lead.company && (
-                    <p className="text-gray-500 text-xs truncate mb-2">{lead.company}</p>
+                    <p className="text-text-secondary text-xs truncate mb-2">{lead.company}</p>
                   )}
 
                   <div className="flex items-center gap-1.5 mb-2">
-                    <span className={`w-2 h-2 rounded-full ${TIER_COLORS[lead.tier] || 'bg-gray-400'}`} />
-                    <span className="text-xs text-gray-600">
+                    <span className={`w-2 h-2 rounded-full ${TIER_COLORS[lead.tier] || 'bg-text-muted'}`} />
+                    <span className="text-xs text-text-secondary">
                       {TIER_EMOJIS[lead.tier] || ''} {lead.tier}
                     </span>
-                    <span className="text-xs text-gray-400 ml-auto">Score: {lead.score}</span>
+                    <span className="text-xs text-text-muted ml-auto">Score: {lead.score}</span>
                   </div>
 
                   {lead.product_interests?.length > 0 && (
-                    <p className="text-gray-500 text-xs truncate mb-2">
+                    <p className="text-text-secondary text-xs truncate mb-2">
                       {lead.product_interests.slice(0, 2).join(', ')}
                     </p>
                   )}
 
-                  <div className="flex items-center gap-1 mt-2 pt-2 border-t border-gray-100">
+                  <div className="flex items-center gap-1 mt-2 pt-2 border-t border-border-ghost">
                     {(lead.best_channel === 'whatsapp' || lead.phone) && (
-                      <button className="p-1.5 hover:bg-green-50 rounded text-green-600 transition">
+                      <button className="p-1.5 hover:bg-accent-emerald/10 rounded text-accent-emerald transition">
                         <MessageSquare className="w-3.5 h-3.5" />
                       </button>
                     )}
                     {lead.email && (
-                      <button className="p-1.5 hover:bg-blue-50 rounded text-blue-600 transition">
+                      <button className="p-1.5 hover:bg-accent-primary/10 rounded text-accent-primary-glow transition">
                         <Mail className="w-3.5 h-3.5" />
                       </button>
                     )}
-                    <button className="p-1.5 hover:bg-purple-50 rounded text-purple-600 transition">
+                    <button className="p-1.5 hover:bg-accent-purple/10 rounded text-accent-purple transition">
                       <Phone className="w-3.5 h-3.5" />
                     </button>
                   </div>

@@ -95,15 +95,15 @@ export default function QualificationQueuePage() {
     D: disqualifiedLeads.filter(l => l.qualification_grade === 'D').length,
   }
 
-  if (loading) return <div className="p-6 text-gray-600">Loading qualification queue...</div>
+  if (loading) return <div className="p-6 text-text-muted">Loading qualification queue...</div>
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="font-clash text-3xl font-bold text-gray-900">AI Qualification Queue</h1>
-          <p className="text-gray-600 mt-1">
-            ⏳ {pendingLeads.length} leads pending qualification
+          <h1 className="font-clash text-3xl font-bold text-text-primary">AI Qualification Queue</h1>
+          <p className="text-text-secondary mt-1">
+            {pendingLeads.length} leads pending qualification
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -111,72 +111,72 @@ export default function QualificationQueuePage() {
             <button
               onClick={handleQualifyAll}
               disabled={qualifying}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 bg-accent-purple/20 text-accent-purple rounded-lg hover:bg-accent-purple/30 text-sm flex items-center gap-2 disabled:opacity-50"
             >
               {qualifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-              Qualify All Pending — Est. {pendingLeads.length}s
+              Qualify All Pending
             </button>
           )}
         </div>
       </div>
 
       {progress && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-6 text-sm text-purple-700">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-accent-purple/10 border border-accent-purple/30 rounded-lg p-3 mb-6 text-sm text-accent-purple">
           {progress}
         </motion.div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-bg-surface border border-border-subtle rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">🔴</span>
-            <h3 className="font-semibold text-gray-900">A Grade</h3>
+            <span className="text-2xl">A</span>
+            <h3 className="font-semibold text-text-primary">A Grade</h3>
           </div>
-          <p className="text-3xl font-bold text-red-600 font-mono">{gradeCounts.A}</p>
-          <p className="text-sm text-gray-500">Hot leads — immediate outreach</p>
+          <p className="text-3xl font-bold text-accent-red font-mono">{gradeCounts.A}</p>
+          <p className="text-sm text-text-muted">Hot leads immediate outreach</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-bg-surface border border-border-subtle rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">🟡</span>
-            <h3 className="font-semibold text-gray-900">B Grade</h3>
+            <span className="text-2xl">B</span>
+            <h3 className="font-semibold text-text-primary">B Grade</h3>
           </div>
-          <p className="text-3xl font-bold text-amber-600 font-mono">{gradeCounts.B}</p>
-          <p className="text-sm text-gray-500">Qualified — warm outreach</p>
+          <p className="text-3xl font-bold text-accent-gold font-mono">{gradeCounts.B}</p>
+          <p className="text-sm text-text-muted">Qualified warm outreach</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-bg-surface border border-border-subtle rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">🔵</span>
-            <h3 className="font-semibold text-gray-900">C Grade</h3>
+            <span className="text-2xl">C</span>
+            <h3 className="font-semibold text-text-primary">C Grade</h3>
           </div>
-          <p className="text-3xl font-bold text-blue-600 font-mono">{gradeCounts.C}</p>
-          <p className="text-sm text-gray-500">Lower priority — nurture</p>
+          <p className="text-3xl font-bold text-accent-primary font-mono">{gradeCounts.C}</p>
+          <p className="text-sm text-text-muted">Lower priority nurture</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-bg-surface border border-border-subtle rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <XCircle className="w-6 h-6 text-red-500" />
-            <h3 className="font-semibold text-gray-900">D Grade</h3>
+            <XCircle className="w-6 h-6 text-accent-red" />
+            <h3 className="font-semibold text-text-primary">D Grade</h3>
           </div>
-          <p className="text-3xl font-bold text-gray-500 font-mono">{gradeCounts.D}</p>
-          <p className="text-sm text-gray-500">Disqualified — do not contact</p>
+          <p className="text-3xl font-bold text-text-muted font-mono">{gradeCounts.D}</p>
+          <p className="text-sm text-text-muted">Disqualified do not contact</p>
         </div>
       </div>
 
       {pendingLeads.length > 0 && (
         <div className="mb-8">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+          <h2 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin text-accent-purple" />
             Pending Qualification ({pendingLeads.length})
           </h2>
           <div className="space-y-2">
             {pendingLeads.map(lead => (
-              <div key={lead.id} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+              <div key={lead.id} className="bg-bg-surface border border-border-subtle rounded-lg p-4 flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium text-gray-900">{lead.full_name}</h4>
-                  <p className="text-sm text-gray-500">{lead.company || 'No company'} · {lead.source}</p>
+                  <h4 className="font-medium text-text-primary">{lead.full_name}</h4>
+                  <p className="text-sm text-text-secondary">{lead.company || 'No company'} {lead.source}</p>
                 </div>
                 <button
                   onClick={() => handleQualifySingle(lead.id)}
-                  className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700"
+                  className="px-3 py-1.5 bg-accent-purple/20 text-accent-purple rounded-lg text-sm hover:bg-accent-purple/30"
                 >
                   Qualify
                 </button>
@@ -188,23 +188,23 @@ export default function QualificationQueuePage() {
 
       {qualifiedLeads.length > 0 && (
         <div className="mb-8">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-green-600" />
+          <h2 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-accent-emerald" />
             Qualified Leads ({qualifiedLeads.length})
           </h2>
           <div className="space-y-2">
             {qualifiedLeads.slice(0, 20).map(lead => (
-              <div key={lead.id} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+              <div key={lead.id} className="bg-bg-surface border border-border-subtle rounded-lg p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className={`text-lg font-bold ${GRADE_COLORS[lead.qualification_grade]}`}>{lead.qualification_grade}</span>
                   <div>
-                    <h4 className="font-medium text-gray-900">{lead.full_name}</h4>
-                    <p className="text-sm text-gray-500">{lead.company || 'No company'} · {lead.tier} · Score: {lead.score}</p>
+                    <h4 className="font-medium text-text-primary">{lead.full_name}</h4>
+                    <p className="text-sm text-text-secondary">{lead.company || 'No company'} {lead.tier} Score: {lead.score}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {lead.qualification_reasons?.slice(0, 1).map((r, i) => (
-                    <span key={i} className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">{r}</span>
+                    <span key={i} className="text-xs text-text-secondary bg-bg-elevated px-2 py-1 rounded">{r}</span>
                   ))}
                 </div>
               </div>
@@ -215,20 +215,20 @@ export default function QualificationQueuePage() {
 
       {disqualifiedLeads.length > 0 && (
         <div>
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <XCircle className="w-5 h-5 text-red-500" />
+          <h2 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <XCircle className="w-5 h-5 text-accent-red" />
             Disqualified ({disqualifiedLeads.length})
           </h2>
           <div className="space-y-2">
             {disqualifiedLeads.slice(0, 10).map(lead => (
-              <div key={lead.id} className="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between opacity-75">
+              <div key={lead.id} className="bg-bg-surface border border-border-ghost rounded-lg p-4 flex items-center justify-between opacity-75">
                 <div>
-                  <h4 className="font-medium text-gray-900">{lead.full_name}</h4>
-                  <p className="text-sm text-gray-500">{lead.company || 'No company'} · Score: {lead.score}</p>
+                  <h4 className="font-medium text-text-primary">{lead.full_name}</h4>
+                  <p className="text-sm text-text-secondary">{lead.company || 'No company'} Score: {lead.score}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {lead.disqualifiers?.slice(0, 1).map((d, i) => (
-                    <span key={i} className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">{d}</span>
+                    <span key={i} className="text-xs text-accent-red bg-accent-red/10 px-2 py-1 rounded">{d}</span>
                   ))}
                 </div>
               </div>

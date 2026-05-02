@@ -193,7 +193,7 @@ export default function AutomationRulesPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold text-text-primary">{rule.name}</h3>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      rule.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'
+                      rule.is_active ? 'bg-accent-emerald/20 text-accent-emerald' : 'bg-text-muted/20 text-text-muted'
                     }`}>
                       {rule.is_active ? 'Active' : 'Paused'}
                     </span>

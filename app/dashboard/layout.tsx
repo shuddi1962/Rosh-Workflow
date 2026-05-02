@@ -98,12 +98,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center animate-pulse">
-            <Sparkles className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-gradient-to-br from-accent-primary to-accent-purple rounded-xl flex items-center justify-center animate-pulse">
+            <Sparkles className="w-5 h-5 text-text-on-accent" />
           </div>
-          <span className="font-clash text-lg font-bold text-gray-900">Loading...</span>
+          <span className="font-clash text-lg font-bold text-text-primary">Loading...</span>
         </div>
       </div>
     )
@@ -118,7 +118,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-bg-base flex">
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -127,19 +127,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-bg-surface border-r border-border-subtle flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-border-ghost">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 bg-gradient-to-br from-accent-primary to-accent-purple rounded-lg flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-text-on-accent" />
               </div>
-              <span className="font-clash text-lg font-bold text-gray-900">Roshanal AI</span>
+              <span className="font-clash text-lg font-bold text-text-primary">Roshanal AI</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-gray-400 hover:text-gray-600"
+              className="lg:hidden text-text-muted hover:text-text-secondary"
             >
               <X className="w-5 h-5" />
             </button>
@@ -149,7 +149,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <nav className="flex-1 p-4 space-y-4 overflow-y-auto">
           {sidebarGroups.map((group) => (
             <div key={group.label}>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">{group.label}</p>
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wider px-3 mb-1">{group.label}</p>
               <div className="space-y-0.5">
                 {group.items.map((item) => {
                   const isActive = pathname === item.href
@@ -160,7 +160,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         router.push(item.href)
                         setSidebarOpen(false)
                       }}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-accent-primary/20 text-accent-primary-glow' : 'text-text-secondary hover:bg-bg-elevated hover:text-text-primary'}`}
                     >
                       <item.icon className="w-4 h-4 flex-shrink-0" />
                       {item.label}
@@ -172,19 +172,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-border-ghost">
           <div className="flex items-center gap-3 px-3 py-2 mb-2">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">
+            <div className="w-8 h-8 bg-accent-primary/20 rounded-full flex items-center justify-center text-accent-primary-glow font-semibold text-sm">
               {userName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
-              <p className="text-xs text-gray-500">Operator</p>
+              <p className="text-sm font-medium text-text-primary truncate">{userName}</p>
+              <p className="text-xs text-text-muted">Operator</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:bg-accent-red/10 hover:text-accent-red transition-all"
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
             Sign Out
@@ -193,14 +193,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       <div className="flex-1 flex flex-col min-h-screen">
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
+        <header className="bg-bg-surface border-b border-border-subtle px-6 py-4 flex items-center gap-4">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-gray-400 hover:text-gray-600"
+            className="lg:hidden text-text-muted hover:text-text-secondary"
           >
             <Menu className="w-6 h-6" />
           </button>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-text-muted">
             <Shield className="w-4 h-4" />
             <span>Dashboard</span>
           </div>
