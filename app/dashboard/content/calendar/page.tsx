@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2, Sparkles } from 'lucide-react'
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2, Sparkles, Send, Image as ImageIcon, Video } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/dashboard/status-badge'
 
 interface Post {
   id: string
@@ -11,12 +14,18 @@ interface Post {
   status: string
   scheduled_at: string
   division: string
+  post_type: string
+  auto_generated: boolean
+  image_url?: string
 }
 
 export default function ContentCalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
+  const [showPostDetail, setShowPostDetail] = useState(false)
+  const [view, setView] = useState<'month' | 'upcoming'>('month')
 
   useEffect(() => {
     fetchCalendar()
@@ -40,6 +49,20 @@ export default function ContentCalendarPage() {
     }
   }
 
+  const handlePublish = async (id: string) => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      await fetch(`/api/social/posts/${id}/publish`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      fetchCalendar()
+      setShowPostDetail(false)
+    } catch (err) {
+      console.error('Error publishing:', err)
+    }
+  }
+
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay()
   const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })
@@ -59,6 +82,7 @@ export default function ContentCalendarPage() {
     draft: 'bg-yellow-100 text-yellow-700',
     scheduled: 'bg-blue-100 text-blue-700',
     published: 'bg-green-100 text-green-700',
+    approved: 'bg-purple-100 text-purple-700',
   }
 
   if (loading) {
@@ -74,115 +98,194 @@ export default function ContentCalendarPage() {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Content Calendar</h2>
-          <p className="text-sm text-gray-500 mt-1">View scheduled and published content</p>
+          <p className="text-sm text-gray-500 mt-1">Schedule, manage, and publish your content</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setView(view === 'month' ? 'upcoming' : 'month')}
+            variant="outline"
+          >
+            {view === 'month' ? 'Show Upcoming' : 'Show Month'}
+          </Button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-gray-900">{monthName}</h3>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg">
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <button
-              onClick={() => setCurrentDate(new Date())}
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
-            >
-              Today
-            </button>
-            <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg">
-              <ChevronRight className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden border border-gray-200">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center text-xs font-semibold text-gray-500 bg-gray-50 py-2">
-              {day}
+      {view === 'month' ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="w-5 h-5 text-blue-600" />
+              <h3 className="font-semibold text-gray-900">{monthName}</h3>
             </div>
-          ))}
-
-          {blanks.map((i) => (
-            <div key={`blank-${i}`} className="h-28 bg-white" />
-          ))}
-
-          {days.map((day) => {
-            const dayPosts = getPostsForDay(day)
-            const isToday =
-              day === new Date().getDate() &&
-              currentDate.getMonth() === new Date().getMonth() &&
-              currentDate.getFullYear() === new Date().getFullYear()
-
-            return (
-              <div
-                key={day}
-                className={`h-28 bg-white p-1 border border-gray-100 ${
-                  isToday ? 'bg-blue-50' : ''
-                }`}
+            <div className="flex items-center gap-2">
+              <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg">
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <button
+                onClick={() => setCurrentDate(new Date())}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
               >
-                <span className={`text-xs font-medium ${isToday ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
-                  {day}
-                </span>
-                <div className="mt-1 space-y-0.5">
-                  {dayPosts.slice(0, 3).map((post) => (
-                    <div
-                      key={post.id}
-                      className={`text-xs truncate px-1 py-0.5 rounded ${
-                        statusColors[post.status] || 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {post.platform}
-                    </div>
-                  ))}
-                  {dayPosts.length > 3 && (
-                    <div className="text-xs text-gray-400 px-1">+{dayPosts.length - 3} more</div>
-                  )}
-                </div>
+                Today
+              </button>
+              <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg">
+                <ChevronRight className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden border border-gray-200">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div key={day} className="text-center text-xs font-semibold text-gray-500 bg-gray-50 py-2">
+                {day}
               </div>
-            )
-          })}
-        </div>
-      </div>
-
-      <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Upcoming Posts</h3>
-        <div className="space-y-3">
-          {posts
-            .filter((p) => p.status === 'scheduled' && new Date(p.scheduled_at) > new Date())
-            .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())
-            .slice(0, 10)
-            .map((post) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-              >
-                <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 truncate">{post.caption?.substring(0, 80)}...</p>
-                  <p className="text-xs text-gray-500">
-                    {post.platform} • {post.division === 'marine' ? 'Marine' : 'Technology'}
-                  </p>
-                </div>
-                <span className="text-xs text-gray-500 flex-shrink-0">
-                  {new Date(post.scheduled_at).toLocaleDateString()}
-                </span>
-              </motion.div>
             ))}
-          {posts.filter((p) => p.status === 'scheduled' && new Date(p.scheduled_at) > new Date()).length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              <CalendarIcon className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-              <p>No upcoming scheduled posts</p>
-            </div>
-          )}
+
+            {blanks.map((i) => (
+              <div key={`blank-${i}`} className="h-28 bg-white" />
+            ))}
+
+            {days.map((day) => {
+              const dayPosts = getPostsForDay(day)
+              const isToday =
+                day === new Date().getDate() &&
+                currentDate.getMonth() === new Date().getMonth() &&
+                currentDate.getFullYear() === new Date().getFullYear()
+
+              return (
+                <div
+                  key={day}
+                  className={`h-28 bg-white p-1 border border-gray-100 ${
+                    isToday ? 'bg-blue-50' : ''
+                  }`}
+                >
+                  <span className={`text-xs font-medium ${isToday ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
+                    {day}
+                  </span>
+                  <div className="mt-1 space-y-0.5">
+                    {dayPosts.slice(0, 3).map((post) => (
+                      <button
+                        key={post.id}
+                        onClick={() => { setSelectedPost(post); setShowPostDetail(true) }}
+                        className={`w-full text-left text-xs truncate px-1 py-0.5 rounded ${
+                          statusColors[post.status] || 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {post.platform}
+                      </button>
+                    ))}
+                    {dayPosts.length > 3 && (
+                      <div className="text-xs text-gray-400 px-1">+{dayPosts.length - 3} more</div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="font-semibold text-gray-900 mb-4">Upcoming Posts</h3>
+          <div className="space-y-3">
+            {posts
+              .filter((p) => p.status === 'scheduled' && new Date(p.scheduled_at) > new Date())
+              .sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime())
+              .map((post) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  {post.auto_generated && <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0" />}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900 truncate">{post.caption?.substring(0, 80)}...</p>
+                    <p className="text-xs text-gray-500">
+                      {post.platform} • {post.division === 'marine' ? 'Marine' : 'Technology'} • {post.post_type?.replace(/_/g, ' ')}
+                    </p>
+                  </div>
+                  <StatusBadge status={post.status} size="sm" />
+                  <span className="text-xs text-gray-500 flex-shrink-0">
+                    {new Date(post.scheduled_at).toLocaleDateString()}
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => { setSelectedPost(post); setShowPostDetail(true) }}
+                      className="p-1.5 hover:bg-white rounded text-gray-500 hover:text-gray-700"
+                    >
+                      <CalendarIcon className="w-4 h-4" />
+                    </button>
+                    {post.status === 'draft' && (
+                      <button
+                        onClick={() => handlePublish(post.id)}
+                        className="p-1.5 hover:bg-green-50 rounded text-gray-500 hover:text-green-600"
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            {posts.filter((p) => p.status === 'scheduled' && new Date(p.scheduled_at) > new Date()).length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <CalendarIcon className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                <p>No upcoming scheduled posts</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showPostDetail && selectedPost && (
+        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="font-semibold text-gray-900">Post Details</h3>
+              <div className="flex items-center gap-2 mt-1">
+                <StatusBadge status={selectedPost.status} size="sm" />
+                {selectedPost.auto_generated && (
+                  <Badge variant="info" className="text-xs">AI Generated</Badge>
+                )}
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowPostDetail(false)}
+              className="p-1 hover:bg-gray-100 rounded text-gray-500"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="text-sm text-gray-700 mb-4">{selectedPost.caption}</p>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p className="text-xs text-gray-500">Platform</p>
+              <p className="text-sm font-medium text-gray-900">{selectedPost.platform}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Division</p>
+              <p className="text-sm font-medium text-gray-900">{selectedPost.division === 'marine' ? 'Marine' : 'Technology'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Scheduled</p>
+              <p className="text-sm font-medium text-gray-900">{new Date(selectedPost.scheduled_at).toLocaleString()}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500">Post Type</p>
+              <p className="text-sm font-medium text-gray-900">{selectedPost.post_type?.replace(/_/g, ' ')}</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {selectedPost.status === 'draft' && (
+              <Button
+                onClick={() => handlePublish(selectedPost.id)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Publish Now
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
