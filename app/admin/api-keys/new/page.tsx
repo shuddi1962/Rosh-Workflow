@@ -14,13 +14,6 @@ const SERVICE_CONFIG: Record<string, {
       { name: 'API Key', placeholder: 'sk-ant-api03-...', key_name: 'API Key' }
     ]
   },
-  openai: {
-    label: 'OpenAI',
-    url: 'https://platform.openai.com/api-keys',
-    fields: [
-      { name: 'API Key', placeholder: 'sk-...', key_name: 'API Key' }
-    ]
-  },
   openrouter: {
     label: 'OpenRouter (Multi-Model)',
     url: 'https://openrouter.ai/keys',
@@ -49,9 +42,9 @@ const SERVICE_CONFIG: Record<string, {
       { name: 'API Key', placeholder: 'Enter your News API key', key_name: 'API Key' }
     ]
   },
-  google_trends: {
-    label: 'Google Trends',
-    url: 'https://developers.google.com/custom-search/v1/overview',
+  google_maps: {
+    label: 'Google Maps',
+    url: 'https://console.cloud.google.com/apis/credentials',
     fields: [
       { name: 'API Key', placeholder: 'AIzaSy...', key_name: 'API Key' }
     ]
@@ -65,24 +58,6 @@ const SERVICE_CONFIG: Record<string, {
       { name: 'WhatsApp Phone Number ID', placeholder: 'e.g., 123456789', key_name: 'WhatsApp Phone Number ID' },
       { name: 'WhatsApp Access Token', placeholder: 'EAAB... (temporary or permanent)', key_name: 'WhatsApp Access Token' },
       { name: 'WhatsApp Business Account ID', placeholder: 'e.g., 987654321', key_name: 'WhatsApp Business Account ID' },
-    ]
-  },
-  twitter: {
-    label: 'Twitter/X',
-    url: 'https://developer.twitter.com/en/portal/dashboard',
-    fields: [
-      { name: 'API Key', placeholder: 'e.g., abc123def456...', key_name: 'API Key' },
-      { name: 'API Secret', placeholder: 'e.g., xyz789uvw012...', key_name: 'API Secret' },
-      { name: 'Access Token', placeholder: 'e.g., 123456789-abc...', key_name: 'Access Token' },
-      { name: 'Access Token Secret', placeholder: 'e.g., lmn345opq678...', key_name: 'Access Token Secret' },
-    ]
-  },
-  linkedin: {
-    label: 'LinkedIn',
-    url: 'https://www.linkedin.com/developers/apps',
-    fields: [
-      { name: 'Client ID', placeholder: 'e.g., 86a...', key_name: 'Client ID' },
-      { name: 'Client Secret', placeholder: 'e.g., Rb0...', key_name: 'Client Secret' },
     ]
   },
   sendgrid: {
@@ -100,19 +75,16 @@ const SERVICE_CONFIG: Record<string, {
       { name: 'Auth Token', placeholder: 'e.g., 1234567890abcdef...', key_name: 'Auth Token' },
     ]
   },
-  google_maps: {
-    label: 'Google Maps',
-    url: 'https://console.cloud.google.com/apis/credentials',
-    fields: [
-      { name: 'API Key', placeholder: 'AIzaSy...', key_name: 'API Key' }
-    ]
-  },
 }
 
 export default function AdminApiKeyNewPage() {
   const [selectedService, setSelectedService] = useState('')
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [savedCount, setSavedCount] = useState(0)
+  const [totalFields, setTotalFields] = useState(0)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const config = selectedService ? SERVICE_CONFIG[selectedService] : null
 
@@ -126,19 +98,29 @@ export default function AdminApiKeyNewPage() {
 
     const missingFields = config.fields.filter(f => !fieldValues[f.key_name])
     if (missingFields.length > 0) {
-      alert(`Please fill in: ${missingFields.map(f => f.name).join(', ')}`)
+      setError(`Please fill in: ${missingFields.map(f => f.name).join(', ')}`)
       return
     }
 
     setIsSubmitting(true)
+    setError('')
+    setSuccess(false)
+    setSavedCount(0)
+    setTotalFields(config.fields.length)
+
     try {
+      const token = localStorage.getItem('accessToken')
+
       for (const field of config.fields) {
         const value = fieldValues[field.key_name]
         if (!value) continue
 
         const res = await fetch('/api/admin/api-keys', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
             service: selectedService,
             key_name: field.key_name,
@@ -147,16 +129,20 @@ export default function AdminApiKeyNewPage() {
         })
         const data = await res.json()
         if (data.error) {
-          alert(`Error saving ${field.name}: ${data.error}`)
+          setError(`Error saving ${field.name}: ${data.error}`)
           setIsSubmitting(false)
           return
         }
+        setSavedCount(prev => prev + 1)
       }
-      alert('All API keys saved successfully!')
-      window.location.href = '/admin/api-keys'
+
+      setSuccess(true)
+      setTimeout(() => {
+        window.location.href = '/admin/api-keys'
+      }, 1500)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error'
-      alert(`Error: ${message}`)
+      setError(`Error: ${message}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -164,7 +150,13 @@ export default function AdminApiKeyNewPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-3xl font-clash font-bold text-gray-900 mb-6">Add New API Key</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <a href="/admin/api-keys" className="text-gray-500 hover:text-gray-700">
+          ← Back
+        </a>
+        <h1 className="text-3xl font-clash font-bold text-gray-900">Add New API Key</h1>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
         <div>
           <label className="block text-gray-700 mb-2 font-medium">Service</label>
@@ -173,6 +165,8 @@ export default function AdminApiKeyNewPage() {
             onChange={(e) => {
               setSelectedService(e.target.value)
               setFieldValues({})
+              setError('')
+              setSuccess(false)
             }}
             required
             className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -209,6 +203,24 @@ export default function AdminApiKeyNewPage() {
           )}
         </div>
 
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+            ✓ All {savedCount} API keys saved successfully! Redirecting...
+          </div>
+        )}
+
+        {isSubmitting && savedCount > 0 && (
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+            Saving {savedCount}/{totalFields} keys...
+          </div>
+        )}
+
         {config && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900">API Credentials</h3>
@@ -233,7 +245,7 @@ export default function AdminApiKeyNewPage() {
           disabled={isSubmitting || !selectedService}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Saving...' : 'Save Encrypted Keys'}
+          {isSubmitting ? `Saving... (${savedCount}/${totalFields})` : 'Save Encrypted Keys'}
         </button>
       </form>
     </div>
