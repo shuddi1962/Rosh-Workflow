@@ -11,9 +11,10 @@ import { Save, Loader2 } from "lucide-react"
 interface CampaignEditorProps {
   campaign?: Record<string, unknown>
   onSave?: (campaign: Record<string, unknown>) => void
+  onCancel?: () => void
 }
 
-export function CampaignEditor({ campaign, onSave }: CampaignEditorProps) {
+export function CampaignEditor({ campaign, onSave, onCancel }: CampaignEditorProps) {
   const [name, setName] = useState((campaign?.name as string) || "")
   const [type, setType] = useState((campaign?.type as string) || "whatsapp")
   const [division, setDivision] = useState((campaign?.division as string) || "marine")
@@ -109,14 +110,21 @@ export function CampaignEditor({ campaign, onSave }: CampaignEditorProps) {
         <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
       </div>
 
-      <Button
-        onClick={handleSave}
-        disabled={loading}
-        className="bg-gradient-to-r from-accent-primary to-accent-primary-glow text-text-on-accent"
-      >
-        {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-        {campaign ? "Update" : "Create"} Campaign
-      </Button>
+      <div className="flex gap-3">
+        <Button
+          onClick={handleSave}
+          disabled={loading}
+          className="bg-gradient-to-r from-accent-primary to-accent-primary-glow text-text-on-accent"
+        >
+          {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+          {campaign ? "Update" : "Create"} Campaign
+        </Button>
+        {onCancel && (
+          <Button variant="ghost" onClick={onCancel} className="text-text-secondary">
+            Cancel
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

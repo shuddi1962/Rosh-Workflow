@@ -1,27 +1,240 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Loader2, Save, User, Mail, Phone, CheckCircle2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+interface UserProfile {
+  id: string
+  email: string
+  full_name: string
+  role: string
+  avatar_url: string | null
+  is_active: boolean
+  last_login: string
+  created_at: string
+}
+
 export default function DashboardSettingsPage() {
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+  })
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('accessToken')
+      const res = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) throw new Error('Failed to fetch profile')
+      const data = await res.json()
+      const user = data.user || data
+      setProfile(user)
+      setFormData({
+        full_name: user.full_name || '',
+        email: user.email || '',
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProfile()
+  }, [])
+
+  const handleSave = async () => {
+    try {
+      setSaving(true)
+      setError('')
+      setSuccess('')
+      const token = localStorage.getItem('accessToken')
+
+      const res = await fetch('/api/auth/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      })
+
+      if (!res.ok) throw new Error('Failed to update profile')
+
+      setSuccess('Profile updated successfully!')
+      await fetchProfile()
+
+      // Update local storage if name changed
+      if (formData.full_name) {
+        localStorage.setItem('userName', formData.full_name)
+      }
+
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    // This would typically open a modal or navigate to a password change page
+    alert('Password change functionality would be implemented here')
+  }
+
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    )
+  }
+
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-3xl font-clash font-bold text-gray-900 mb-8">Settings</h1>
-      
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-6">
+    <div className="max-w-2xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8"
+      >
+        <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+        <p className="text-gray-600">Manage your profile and account settings</p>
+      </motion.div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+          Error: {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 mb-6 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4" />
+          {success}
+        </div>
+      )}
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white rounded-xl border border-gray-200 p-6 space-y-6"
+      >
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Settings</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-gray-400" />
+            Profile Information
+          </h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-700 mb-2 font-medium">Full Name</label>
-              <input type="text" className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900" />
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                value={formData.full_name}
+                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                className="mt-1"
+              />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2 font-medium">Email</label>
-              <input type="email" className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900" />
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="mt-1"
+              />
             </div>
+            {profile && (
+              <div className="pt-2">
+                <Label>Role</Label>
+                <p className="mt-1 text-sm text-gray-600 capitalize">{profile.role}</p>
+              </div>
+            )}
           </div>
         </div>
-        
-        <button className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
-          Save Changes
-        </button>
-      </div>
+
+        <div className="pt-4 border-t border-gray-200">
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {saving ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4 mr-2" />
+            )}
+            Save Changes
+          </Button>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white rounded-xl border border-gray-200 p-6 mt-6 space-y-6"
+      >
+        <div>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
+          <div className="space-y-3">
+            {profile && (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">User ID</span>
+                  <span className="text-gray-900 font-mono text-xs">{profile.id}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Account Status</span>
+                  <span className={`font-medium ${profile.is_active ? 'text-green-600' : 'text-red-600'}`}>
+                    {profile.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Last Login</span>
+                  <span className="text-gray-900">
+                    {profile.last_login ? new Date(profile.last_login).toLocaleString() : 'Never'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Account Created</span>
+                  <span className="text-gray-900">
+                    {new Date(profile.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="bg-white rounded-xl border border-gray-200 p-6 mt-6"
+      >
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Security</h3>
+        <Button
+          onClick={handleChangePassword}
+          variant="outline"
+        >
+          Change Password
+        </Button>
+      </motion.div>
     </div>
   )
 }

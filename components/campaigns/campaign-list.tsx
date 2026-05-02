@@ -4,29 +4,37 @@ import { useState, useEffect } from "react"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Megaphone, Plus, Trash2, Edit } from "lucide-react"
+import { Megaphone, Plus, Trash2, Edit, Send } from "lucide-react"
 
 interface CampaignListProps {
+  campaigns?: Array<Record<string, unknown>>
+  onEdit?: (campaign: Record<string, unknown>) => void
+  onDelete?: (id: string) => void
   onSelectCampaign?: (campaign: Record<string, unknown>) => void
   onCreateCampaign?: () => void
+  onSend?: (id: string) => void
 }
 
-export function CampaignList({ onSelectCampaign, onCreateCampaign }: CampaignListProps) {
-  const [campaigns, setCampaigns] = useState<Array<Record<string, unknown>>>([])
-  const [loading, setLoading] = useState(true)
+export function CampaignList({ campaigns: externalCampaigns, onEdit, onDelete, onSelectCampaign, onCreateCampaign, onSend }: CampaignListProps) {
+  const [internalCampaigns, setInternalCampaigns] = useState<Array<Record<string, unknown>>>([])
+  const [loading, setLoading] = useState(!externalCampaigns)
+
+  const campaigns = externalCampaigns || internalCampaigns
 
   useEffect(() => {
-    const fetchCampaigns = async () => {
-      const token = localStorage.getItem("accessToken")
-      const res = await fetch("/api/campaigns", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const data = await res.json()
-      setCampaigns(data.campaigns || [])
-      setLoading(false)
+    if (!externalCampaigns) {
+      const fetchCampaigns = async () => {
+        const token = localStorage.getItem("accessToken")
+        const res = await fetch("/api/campaigns", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const data = await res.json()
+        setInternalCampaigns(data.campaigns || [])
+        setLoading(false)
+      }
+      fetchCampaigns()
     }
-    fetchCampaigns()
-  }, [])
+  }, [externalCampaigns])
 
   const handleDelete = async (id: string) => {
     try {
@@ -35,7 +43,11 @@ export function CampaignList({ onSelectCampaign, onCreateCampaign }: CampaignLis
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       })
-      setCampaigns((prev) => prev.filter((c) => c.id !== id))
+      if (onDelete) {
+        onDelete(id)
+      } else {
+        setInternalCampaigns((prev) => prev.filter((c) => c.id !== id))
+      }
     } catch (error) {
       console.error("Error deleting campaign:", error)
     }
@@ -50,10 +62,12 @@ export function CampaignList({ onSelectCampaign, onCreateCampaign }: CampaignLis
           <Megaphone className="w-5 h-5 text-accent-primary-glow" />
           Campaigns
         </h3>
-        <Button onClick={onCreateCampaign} className="bg-gradient-to-r from-accent-primary to-accent-primary-glow text-text-on-accent">
-          <Plus className="w-4 h-4 mr-2" />
-          New Campaign
-        </Button>
+        {onCreateCampaign && (
+          <Button onClick={onCreateCampaign} className="bg-gradient-to-r from-accent-primary to-accent-primary-glow text-text-on-accent">
+            <Plus className="w-4 h-4 mr-2" />
+            New Campaign
+          </Button>
+        )}
       </div>
 
       {campaigns.length === 0 ? (
@@ -74,7 +88,7 @@ export function CampaignList({ onSelectCampaign, onCreateCampaign }: CampaignLis
                   <StatusBadge status={campaign.status as string} size="sm" />
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge status={campaign.division === "marine" ? "scheduled" : "live"}>
+                  <Badge status={(campaign.division as string) === "marine" ? "scheduled" : "live"}>
                     {campaign.division as string}
                   </Badge>
                   <span className="text-xs text-text-muted capitalize">{campaign.type as string}</span>
@@ -87,12 +101,21 @@ export function CampaignList({ onSelectCampaign, onCreateCampaign }: CampaignLis
               </div>
 
               <div className="flex items-center gap-2 ml-4">
-                <Button variant="ghost" size="icon" onClick={() => onSelectCampaign?.(campaign)}>
-                  <Edit className="w-4 h-4 text-text-muted" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(campaign.id as string)}>
-                  <Trash2 className="w-4 h-4 text-accent-red" />
-                </Button>
+                {onSend && campaign.status === "draft" && (
+                  <Button variant="ghost" size="icon" onClick={() => onSend(campaign.id as string)}>
+                    <Send className="w-4 h-4 text-accent-emerald" />
+                  </Button>
+                )}
+                {onEdit && (
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(campaign)}>
+                    <Edit className="w-4 h-4 text-text-muted" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button variant="ghost" size="icon" onClick={() => handleDelete(campaign.id as string)}>
+                    <Trash2 className="w-4 h-4 text-accent-red" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
