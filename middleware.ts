@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
   
-  if (pathname === '/api/health' || pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/insforge-test')) {
+  if (pathname === '/api/health' || pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/insforge-test') || pathname.startsWith('/api/auth')) {
     return NextResponse.next()
   }
   
