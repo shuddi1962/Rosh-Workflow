@@ -18,22 +18,65 @@ import {
   Menu,
   X,
   LogOut,
-  Sparkles
+  Sparkles,
+  Phone,
+  Palette,
+  UserPlus,
+  FolderOpen,
+  Image as ImageIcon,
 } from 'lucide-react'
 
-const sidebarItems = [
-  { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
-  { icon: Brain, label: 'Content Brain', href: '/dashboard/content' },
-  { icon: TrendingUp, label: 'Trends', href: '/dashboard/trends' },
-  { icon: Search, label: 'Competitors', href: '/dashboard/competitors' },
-  { icon: Share2, label: 'Social Media', href: '/dashboard/social' },
-  { icon: Video, label: 'UGC Creator', href: '/dashboard/ugc' },
-  { icon: Megaphone, label: 'Campaigns', href: '/dashboard/campaigns' },
-  { icon: Users, label: 'Leads', href: '/dashboard/leads' },
-  { icon: Package, label: 'Products', href: '/dashboard/products' },
-  { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
-  { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+const sidebarGroups = [
+  {
+    label: 'Main',
+    items: [
+      { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
+      { icon: Brain, label: 'Content Brain', href: '/dashboard/content' },
+      { icon: TrendingUp, label: 'Trends', href: '/dashboard/trends' },
+      { icon: Search, label: 'Competitors', href: '/dashboard/competitors' },
+    ]
+  },
+  {
+    label: 'CRM',
+    items: [
+      { icon: UserPlus, label: 'Pipeline', href: '/dashboard/crm' },
+      { icon: Users, label: 'Leads', href: '/dashboard/crm/leads' },
+      { icon: FolderOpen, label: 'Qualification', href: '/dashboard/crm/qualification' },
+    ]
+  },
+  {
+    label: 'Marketing',
+    items: [
+      { icon: Share2, label: 'Social Media', href: '/dashboard/social' },
+      { icon: Video, label: 'UGC Creator', href: '/dashboard/ugc' },
+      { icon: Megaphone, label: 'Campaigns', href: '/dashboard/campaigns' },
+    ]
+  },
+  {
+    label: 'Creative Studio',
+    items: [
+      { icon: Palette, label: 'Video Studio', href: '/dashboard/creative/video' },
+      { icon: ImageIcon, label: 'Banners', href: '/dashboard/creative/banners' },
+      { icon: Search, label: 'URL Scraper', href: '/dashboard/creative/scraper' },
+    ]
+  },
+  {
+    label: 'Voice',
+    items: [
+      { icon: Phone, label: 'Agents', href: '/dashboard/voice/agents' },
+      { icon: Phone, label: 'Calls', href: '/dashboard/voice/calls' },
+    ]
+  },
+  {
+    label: 'Products',
+    items: [
+      { icon: Package, label: 'Catalog', href: '/dashboard/products' },
+      { icon: Package, label: 'Add Product', href: '/dashboard/products/add' },
+    ]
+  },
 ]
+
+const sidebarItems = sidebarGroups.flatMap(g => g.items)
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -103,23 +146,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {sidebarItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <button
-                key={item.href}
-                onClick={() => {
-                  router.push(item.href)
-                  setSidebarOpen(false)
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-              >
-                <item.icon className="w-5 h-5 flex-shrink-0" />
-                {item.label}
-              </button>
-            )
-          })}
+        <nav className="flex-1 p-4 space-y-4 overflow-y-auto">
+          {sidebarGroups.map((group) => (
+            <div key={group.label}>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">{group.label}</p>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const isActive = pathname === item.href
+                  return (
+                    <button
+                      key={item.href}
+                      onClick={() => {
+                        router.push(item.href)
+                        setSidebarOpen(false)
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                    >
+                      <item.icon className="w-4 h-4 flex-shrink-0" />
+                      {item.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-gray-100">

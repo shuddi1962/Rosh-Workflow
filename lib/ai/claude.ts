@@ -186,3 +186,49 @@ Local context first: Always ask — does this trend have a Port Harcourt / Niger
 
   return generateWithClaude(prompt)
 }
+
+export async function callClaude(
+  prompt: string,
+  options: { max_tokens?: number; system?: string } = {}
+): Promise<string> {
+  const messages = options.system
+    ? [
+        { role: 'system' as const, content: options.system },
+        { role: 'user' as const, content: prompt },
+      ]
+    : [{ role: 'user' as const, content: prompt }]
+
+  if (ANTHROPIC_API_KEY && anthropic) {
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: options.max_tokens || 4000,
+      temperature: 0.7,
+      system: options.system,
+      messages: messages.filter(m => m.role !== 'system'),
+    })
+    const content = message.content[0].type === 'text' ? message.content[0].text : ''
+    return content
+  }
+
+  if (OPENROUTER_API_KEY) {
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'anthropic/claude-sonnet-4-20250514',
+        messages,
+        max_tokens: options.max_tokens || 4000,
+        temperature: 0.7,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    const content = response.data.choices[0].message.content
+    return content
+  }
+
+  throw new Error('No AI provider configured')
+}
