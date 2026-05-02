@@ -417,7 +417,7 @@ export default function AdminApiKeyNewPage() {
         }
         setSavedCount(1)
         setSuccess(true)
-        setTimeout(() => { window.location.href = '/admin/api-keys' }, 1500)
+        setTimeout(() => { window.location.href = '/admin/api-keys?_t=' + Date.now() }, 1500)
         return
       }
 
@@ -448,7 +448,7 @@ export default function AdminApiKeyNewPage() {
 
       setSuccess(true)
       setTimeout(() => {
-        window.location.href = '/admin/api-keys'
+        window.location.href = '/admin/api-keys?_t=' + Date.now()
       }, 1500)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error'

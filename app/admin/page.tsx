@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, Key, Package, TrendingUp, Activity, AlertTriangle } from 'lucide-react'
+import { Users, Key, Package, TrendingUp, Activity, AlertTriangle, Zap, RefreshCw } from 'lucide-react'
 
 interface KPI {
   title: string
@@ -28,6 +28,14 @@ interface AuditLog {
   created_at: string
 }
 
+interface ApiKeySummary {
+  total: number
+  active: number
+  inactive: number
+  tested_today: number
+  services: { service: string; status: string }[]
+}
+
 export default function AdminPage() {
   const [kpis, setKpis] = useState<KPI[]>([
     { title: 'Total Users', value: '0', change: 'Loading...', trend: 'up', icon: Users, color: 'bg-blue-50 text-blue-600' },
@@ -41,7 +49,9 @@ export default function AdminPage() {
     { name: 'API Key Vault', status: 'checking', latency: '...' },
   ])
   const [recentActions, setRecentActions] = useState<AuditLog[]>([])
+  const [apiKeySummary, setApiKeySummary] = useState<ApiKeySummary>({ total: 0, active: 0, inactive: 0, tested_today: 0, services: [] })
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -52,13 +62,14 @@ export default function AdminPage() {
     const headers = { Authorization: `Bearer ${token}` }
 
     try {
-      const [overviewRes, healthRes, logsRes, usersRes, productsRes, leadsRes] = await Promise.all([
+      const [overviewRes, healthRes, logsRes, usersRes, productsRes, leadsRes, apiKeysRes] = await Promise.all([
         fetch('/api/admin/analytics/overview', { headers }),
         fetch('/api/admin/system/health', { headers }),
         fetch('/api/admin/audit-logs?limit=5', { headers }),
         fetch('/api/admin/users', { headers }),
         fetch('/api/products', { headers }),
         fetch('/api/leads/stats', { headers }),
+        fetch('/api/admin/api-keys', { headers }),
       ])
 
       const overview = overviewRes.ok ? await overviewRes.json() : null
@@ -66,10 +77,29 @@ export default function AdminPage() {
       const productsData = productsRes.ok ? await productsRes.json() : { products: [] }
       const leadsData = leadsRes.ok ? await leadsRes.json() : { total: 0 }
       const logsData = logsRes.ok ? await logsRes.json() : []
+      const apiKeysData = apiKeysRes.ok ? await apiKeysRes.json() : { keys: [] }
+
+      const keys = apiKeysData.keys || []
+      const today = new Date().toDateString()
+      const activeKeys = keys.filter((k: Record<string, unknown>) => k.is_active === true)
+      const testedToday = keys.filter((k: Record<string, unknown>) => k.last_tested && new Date(k.last_tested as string).toDateString() === today)
+
+      const serviceStatuses = keys.map((k: Record<string, unknown>) => ({
+        service: k.service as string,
+        status: k.last_test_result as string || 'untested'
+      }))
+
+      setApiKeySummary({
+        total: keys.length,
+        active: activeKeys.length,
+        inactive: keys.length - activeKeys.length,
+        tested_today: testedToday.length,
+        services: serviceStatuses
+      })
 
       setKpis([
         { title: 'Total Users', value: String(usersData.users?.length || 0), change: 'Active accounts', trend: 'up', icon: Users, color: 'bg-blue-50 text-blue-600' },
-        { title: 'Active API Keys', value: String(overview?.active_api_keys || 0), change: overview?.api_keys_healthy ? 'All healthy' : 'Some issues', trend: overview?.api_keys_healthy ? 'up' : 'down', icon: Key, color: overview?.api_keys_healthy ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' },
+        { title: 'Active API Keys', value: String(activeKeys.length), change: `${keys.length} total • ${testedToday.length} tested today`, trend: activeKeys.length > 0 ? 'up' : 'down', icon: Key, color: activeKeys.length > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' },
         { title: 'Products', value: String(productsData.products?.length || 0), change: 'In catalog', trend: 'up', icon: Package, color: 'bg-purple-50 text-purple-600' },
         { title: 'Monthly Leads', value: String(leadsData.total || 0), change: 'This month', trend: 'up', icon: TrendingUp, color: 'bg-amber-50 text-amber-600' },
       ])
@@ -84,13 +114,29 @@ export default function AdminPage() {
     }
   }
 
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    await fetchData()
+    setRefreshing(false)
+  }
+
   if (loading) return <div className="p-6 text-gray-600">Loading dashboard...</div>
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Admin Overview</h1>
-        <p className="text-gray-600">System health, user activity, and platform metrics.</p>
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Admin Overview</h1>
+          <p className="text-gray-600">System health, user activity, and platform metrics.</p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm text-gray-700 disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -109,6 +155,52 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
+
+      {apiKeySummary.total > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-clash text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <Zap className="w-5 h-5 text-blue-600" />
+              API Key Status
+            </h2>
+            <a href="/admin/api-keys" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              Manage Keys →
+            </a>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{apiKeySummary.total}</p>
+              <p className="text-xs text-gray-500 mt-1">Total Keys</p>
+            </div>
+            <div className="bg-green-50 rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-green-700">{apiKeySummary.active}</p>
+              <p className="text-xs text-green-600 mt-1">Active</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-gray-500">{apiKeySummary.inactive}</p>
+              <p className="text-xs text-gray-500 mt-1">Inactive</p>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-blue-700">{apiKeySummary.tested_today}</p>
+              <p className="text-xs text-blue-600 mt-1">Tested Today</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {apiKeySummary.services.map((svc, i) => (
+              <div key={i} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                <div className={`w-2 h-2 rounded-full ${
+                  svc.status?.startsWith('success') ? 'bg-green-500' :
+                  svc.status === 'untested' ? 'bg-gray-400' : 'bg-red-500'
+                }`} />
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-gray-900 truncate">{svc.service}</p>
+                  <p className="text-xs text-gray-500 truncate">{svc.status || 'untested'}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-gray-200 p-6">

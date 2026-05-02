@@ -22,11 +22,15 @@ export async function GET(request: Request) {
     const { data, error } = await db
       .from('api_keys')
       .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, updated_at, created_at')
-      .order('service', { ascending: true })
+      .order('updated_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    return NextResponse.json({ keys: data || [] })
+    const response = NextResponse.json({ keys: data || [] })
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    return response
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
@@ -82,7 +86,9 @@ export async function POST(request: Request) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    return NextResponse.json({ key: data, created: true }, { status: 201 })
+    const response = NextResponse.json({ key: data, created: true }, { status: 201 })
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    return response
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
