@@ -15,22 +15,56 @@ interface ApiKey {
 }
 
 const SERVICE_LABELS: Record<string, string> = {
-  anthropic: 'Anthropic (Claude)',
+  anthropic: 'Anthropic (Claude AI)',
   openrouter: 'OpenRouter (Multi-Model)',
-  kie_ai: 'Kie.ai (Video/Image Gen)',
-  apify: 'Apify',
+  openai: 'OpenAI (GPT)',
+  pollinations: 'Pollinations.ai (Free Images)',
+  kie_ai: 'Kie.ai (Video/Image)',
+  apify: 'Apify (Web Scraping)',
   news_api: 'News API',
+  google_trends: 'Google Trends',
   google_maps: 'Google Maps',
   meta: 'Meta (FB/IG/WhatsApp)',
-  sendgrid: 'SendGrid',
-  twilio: 'Twilio',
+  twitter: 'Twitter / X',
+  linkedin: 'LinkedIn',
+  sendgrid: 'SendGrid (Email)',
+  twilio: 'Twilio (SMS/Voice)',
+  elevenlabs: 'ElevenLabs (Voice AI)',
+  vercel_blob: 'Vercel Blob Storage',
 }
 
 export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
+  const userRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null
+  const userName = typeof window !== 'undefined' ? localStorage.getItem('userName') : null
+
   const [keys, setKeys] = useState<ApiKey[]>(initialKeys)
   const [testing, setTesting] = useState<Record<string, boolean>>({})
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+
+  if (userRole !== 'admin') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-red-900 mb-2">Admin Access Required</h2>
+          <p className="text-red-700 mb-4">Only administrators can view and manage API keys.</p>
+          <div className="bg-white rounded-lg p-4 text-sm text-gray-700 max-w-md mx-auto">
+            <p className="font-medium mb-2">Current login:</p>
+            <p><span className="text-gray-500">Name:</span> {userName || 'Unknown'}</p>
+            <p><span className="text-gray-500">Role:</span> <span className="text-red-600 font-medium">{userRole || 'Not logged in'}</span></p>
+          </div>
+          <div className="mt-6 flex gap-3 justify-center">
+            <a href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Switch to Admin Account</a>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
     setToast({ message, type })
