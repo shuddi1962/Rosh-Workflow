@@ -38,8 +38,8 @@ export function PlatformSelector({ selected, onChange, single }: PlatformSelecto
             className={clsx(
               "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all",
               isSelected
-                ? "bg-accent-primary/10 border-accent-primary text-accent-primary-glow"
-                : "bg-bg-surface border-border-subtle text-text-secondary hover:border-border-hover"
+                ? "bg-blue-50 border-blue-500 text-blue-700"
+                : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
             )}
           >
             <platform.icon className={clsx("w-4 h-4", platform.color)} />

@@ -38,7 +38,7 @@ export default function ContentBrainPage() {
       })
       if (!res.ok) throw new Error('Failed to fetch content')
       const data = await res.json()
-      setPosts(data.posts || data || [])
+      setPosts(data.ideas || data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -119,8 +119,8 @@ export default function ContentBrainPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Content Brain Box</h1>
-        <p className="text-gray-600">Generate AI-powered content for your marine and tech divisions</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Content Brain Box</h2>
+        <p className="text-sm text-gray-500">Generate AI-powered content for your marine and tech divisions</p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -130,7 +130,7 @@ export default function ContentBrainPage() {
 
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div className="space-y-2">
               <Button
                 onClick={fetchPosts}
@@ -144,7 +144,7 @@ export default function ContentBrainPage() {
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4">Content Stats</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">Content Stats</h3>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Total Posts</span>
@@ -152,7 +152,7 @@ export default function ContentBrainPage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Drafts</span>
-                <span className="font-medium text-yellow-600">
+                <span className="font-medium text-amber-600">
                   {posts.filter(p => p.status === 'draft').length}
                 </span>
               </div>
@@ -181,7 +181,7 @@ export default function ContentBrainPage() {
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-clash text-xl font-semibold text-gray-900">Generated Content</h2>
+          <h2 className="font-semibold text-gray-900">Generated Content</h2>
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />

@@ -48,32 +48,32 @@ export function CalendarView() {
   const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
 
   return (
-    <div className="bg-bg-surface rounded-lg border border-border-subtle p-6">
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-clash text-lg font-semibold text-text-primary flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-accent-primary-glow" />
+        <h3 className="font-clash text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <CalendarIcon className="w-5 h-5 text-blue-600" />
           Content Calendar
         </h3>
         <div className="flex items-center gap-2">
-          <button onClick={prevMonth} className="p-1 hover:bg-bg-elevated rounded">
-            <ChevronLeft className="w-5 h-5 text-text-secondary" />
+          <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded">
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
           </button>
-          <span className="text-sm font-medium text-text-primary">{monthName}</span>
-          <button onClick={nextMonth} className="p-1 hover:bg-bg-elevated rounded">
-            <ChevronRight className="w-5 h-5 text-text-secondary" />
+          <span className="text-sm font-medium text-gray-900">{monthName}</span>
+          <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded">
+            <ChevronRight className="w-5 h-5 text-gray-600" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden border border-gray-200">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="text-center text-xs font-medium text-text-muted py-2">
+          <div key={day} className="bg-gray-50 text-center text-xs font-semibold text-gray-500 py-2">
             {day}
           </div>
         ))}
 
         {blanks.map((i) => (
-          <div key={`blank-${i}`} className="h-24 bg-bg-base/50 rounded" />
+          <div key={`blank-${i}`} className="h-24 bg-white" />
         ))}
 
         {days.map((day) => {
@@ -87,21 +87,21 @@ export function CalendarView() {
             <div
               key={day}
               className={clsx(
-                "h-24 bg-bg-base rounded p-1 border",
-                isToday ? "border-accent-primary bg-accent-primary/5" : "border-border-subtle"
+                "h-24 bg-white p-1",
+                isToday ? "bg-blue-50" : ""
               )}
             >
-              <span className={clsx("text-xs", isToday ? "text-accent-primary-glow font-bold" : "text-text-muted")}>
+              <span className={clsx("text-xs", isToday ? "text-blue-600 font-bold" : "text-gray-500")}>
                 {day}
               </span>
               <div className="mt-1 space-y-0.5">
                 {dayPosts.slice(0, 2).map((post) => (
-                  <div key={post.id} className="text-xs truncate text-text-secondary bg-bg-surface px-1 py-0.5 rounded">
+                  <div key={post.id} className="text-xs truncate text-blue-700 bg-blue-100 px-1 py-0.5 rounded">
                     {post.platform}
                   </div>
                 ))}
                 {dayPosts.length > 2 && (
-                  <div className="text-xs text-text-muted">+{dayPosts.length - 2} more</div>
+                  <div className="text-xs text-gray-400">+{dayPosts.length - 2} more</div>
                 )}
               </div>
             </div>
