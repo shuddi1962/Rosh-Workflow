@@ -18,18 +18,16 @@ export async function POST(
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const body = await request.json()
+    const body = await request.json().catch(() => ({}))
     const { account_name, account_id, access_token } = body
 
-    if (!account_name) {
-      return NextResponse.json({ error: 'account_name is required' }, { status: 400 })
-    }
+    const name = account_name || `${params.platform}-account-${Date.now()}`
 
     const { data, error } = await db
       .from('social_accounts')
       .insert({
         platform: params.platform,
-        account_name,
+        account_name: name,
         account_id: account_id || '',
         access_token: access_token || '',
         token_expiry: null,
@@ -41,7 +39,11 @@ export async function POST(
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ account: data, message: `${params.platform} account connected` })
+
+    const response = access_token
+      ? { account: data, message: `${params.platform} account connected` }
+      : { account: data, message: `${params.platform} account registered. OAuth setup required for full access.`, oauth_required: true }
+    return NextResponse.json(response)
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })

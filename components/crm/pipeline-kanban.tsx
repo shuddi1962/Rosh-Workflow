@@ -116,16 +116,25 @@ export function PipelineKanban({ leads, onLeadClick, onStageChange }: PipelineKa
 
                   <div className="flex items-center gap-1 mt-2 pt-2 border-t border-border-ghost">
                     {(lead.best_channel === 'whatsapp' || lead.phone) && (
-                      <button className="p-1.5 hover:bg-accent-emerald/10 rounded text-accent-emerald transition">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${lead.phone?.replace(/^0/, '234')}`, '_blank') }}
+                        className="p-1.5 hover:bg-accent-emerald/10 rounded text-accent-emerald transition"
+                      >
                         <MessageSquare className="w-3.5 h-3.5" />
                       </button>
                     )}
                     {lead.email && (
-                      <button className="p-1.5 hover:bg-accent-primary/10 rounded text-accent-primary-glow transition">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); window.open(`mailto:${lead.email}`, '_blank') }}
+                        className="p-1.5 hover:bg-accent-primary/10 rounded text-accent-primary-glow transition"
+                      >
                         <Mail className="w-3.5 h-3.5" />
                       </button>
                     )}
-                    <button className="p-1.5 hover:bg-accent-purple/10 rounded text-accent-purple transition">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); window.open(`tel:${lead.phone}`, '_self') }}
+                      className="p-1.5 hover:bg-accent-purple/10 rounded text-accent-purple transition"
+                    >
                       <Phone className="w-3.5 h-3.5" />
                     </button>
                   </div>

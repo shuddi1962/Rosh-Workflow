@@ -1,13 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { KPICard } from "@/components/dashboard/kpi-card"
-import { Users, Search, Phone, Mail, Filter, Trash2, Edit, Download, Upload } from "lucide-react"
+import AddLeadModal from "@/components/leads/add-lead-modal"
+import { Users, Search, Phone, Mail, Filter, Trash2, Edit, Download, Upload, Plus } from "lucide-react"
 
 interface Lead {
   id: string
@@ -30,6 +32,8 @@ export default function AdminLeadsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
+  const [showAddLead, setShowAddLead] = useState(false)
+  const [editingLead, setEditingLead] = useState<Lead | null>(null)
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -73,6 +77,23 @@ export default function AdminLeadsPage() {
     }
   }
 
+  const handleExport = () => {
+    const headers = ["Name", "Phone", "Email", "Company", "Location", "Division", "Source", "Status", "Tier", "Score", "Notes", "Created"]
+    const rows = filtered.map(l => [
+      l.name, l.phone, l.email || "", l.company || "", l.location,
+      l.division_interest, l.source, l.status, l.tier, l.score,
+      l.notes, l.created_at
+    ])
+    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n")
+    const blob = new Blob([csv], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `roshanal-leads-${new Date().toISOString().split("T")[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   if (loading) return <div className="text-text-muted text-sm">Loading leads...</div>
 
   return (
@@ -83,13 +104,17 @@ export default function AdminLeadsPage() {
           <p className="text-text-muted text-sm">Admin view — manage all leads across the organization</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => {}}>
             <Upload className="w-4 h-4 mr-2" />
             Import CSV
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             Export
+          </Button>
+          <Button onClick={() => setShowAddLead(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Lead
           </Button>
         </div>
       </div>
@@ -167,7 +192,7 @@ export default function AdminLeadsPage() {
                 <TableCell><span className="font-mono text-sm text-text-primary">{lead.score}</span></TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => setEditingLead(lead)}>
                       <Edit className="w-4 h-4 text-text-muted" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleDelete(lead.id)}>
@@ -184,6 +209,38 @@ export default function AdminLeadsPage() {
           <div className="text-center py-8 text-text-muted text-sm">No leads found</div>
         )}
       </div>
+
+      <AnimatePresence>
+        {showAddLead && (
+          <AddLeadModal
+            open={showAddLead}
+            onClose={() => setShowAddLead(false)}
+            onSuccess={async () => {
+              const token = localStorage.getItem("accessToken")
+              const res = await fetch("/api/leads", {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+              const data = await res.json()
+              setLeads(data.leads || [])
+            }}
+          />
+        )}
+        {editingLead && (
+          <AddLeadModal
+            open={!!editingLead}
+            onClose={() => setEditingLead(null)}
+            lead={editingLead}
+            onSuccess={async () => {
+              const token = localStorage.getItem("accessToken")
+              const res = await fetch("/api/leads", {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+              const data = await res.json()
+              setLeads(data.leads || [])
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Users, Filter, UserPlus, Download, Loader2, RefreshCw } from 'lucide-react'
 import { PipelineKanban } from '@/components/crm/pipeline-kanban'
+import AddLeadModal from '@/components/leads/add-lead-modal'
 import { ROSHANAL_CRM_STAGES, TIER_EMOJIS } from '@/lib/crm/stages'
 
 interface Lead {
@@ -34,6 +35,7 @@ export default function CRMPipelinePage() {
   const [filterGrade, setFilterGrade] = useState<string>('all')
   const [filterDivision, setFilterDivision] = useState<string>('all')
   const [qualifying, setQualifying] = useState(false)
+  const [showAddLead, setShowAddLead] = useState(false)
 
   useEffect(() => {
     fetchLeads()
@@ -131,7 +133,10 @@ export default function CRMPipelinePage() {
               Qualify {pendingCount} Pending
             </button>
           )}
-          <button className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm flex items-center gap-2">
+          <button
+            onClick={() => setShowAddLead(true)}
+            className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm flex items-center gap-2"
+          >
             <UserPlus className="w-4 h-4" /> Add Lead
           </button>
           <button className="px-4 py-2 border border-border-subtle text-text-secondary rounded-lg hover:bg-bg-elevated text-sm flex items-center gap-2">
@@ -237,9 +242,20 @@ export default function CRMPipelinePage() {
                   <td className="p-3 text-sm capitalize text-text-primary">{lead.division_interest}</td>
                   <td className="p-3">
                     <div className="flex items-center gap-1">
-                      <button className="p-1.5 hover:bg-accent-emerald/10 rounded" title="WhatsApp">💬</button>
-                      <button className="p-1.5 hover:bg-accent-primary/10 rounded" title="Email">📧</button>
-                      <button className="p-1.5 hover:bg-accent-purple/10 rounded" title="Call">📞</button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${lead.phone?.replace(/^0/, '234')}`, '_blank') }}
+                        className="p-1.5 hover:bg-accent-emerald/10 rounded" title="WhatsApp"
+                      >💬</button>
+                      {lead.email && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); window.open(`mailto:${lead.email}`, '_blank') }}
+                          className="p-1.5 hover:bg-accent-primary/10 rounded" title="Email"
+                        >📧</button>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); window.open(`tel:${lead.phone}`, '_self') }}
+                        className="p-1.5 hover:bg-accent-purple/10 rounded" title="Call"
+                      >📞</button>
                     </div>
                   </td>
                 </tr>
@@ -256,6 +272,16 @@ export default function CRMPipelinePage() {
           <p className="text-text-secondary text-sm">Start by adding leads manually, importing a CSV, or running a scraper.</p>
         </div>
       )}
+
+      <AnimatePresence>
+        {showAddLead && (
+          <AddLeadModal
+            open={showAddLead}
+            onClose={() => setShowAddLead(false)}
+            onSuccess={fetchLeads}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

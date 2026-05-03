@@ -1,7 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
-import { getApiKey } from '@/lib/env'
 
 const db = new DBClient()
 
@@ -14,8 +13,9 @@ export async function GET() {
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ accounts: data || [] })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -44,29 +44,8 @@ export async function POST(request: NextRequest) {
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ account: data })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const updates = await request.json()
-    updates.updated_at = new Date().toISOString()
-    
-    const { data, error } = await db
-      .from('social_accounts')
-      .update(updates)
-      .eq('id', params.id)
-      .select()
-      .single()
-    
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ account: data })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
