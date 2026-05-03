@@ -25,12 +25,14 @@ const STAGE_OPTIONS = [
 
 interface ManualLeadFormProps {
   onSave: (data: Record<string, unknown>) => void
+  onSaveAddAnother?: (data: Record<string, unknown>) => void
+  onSaveView?: (data: Record<string, unknown>) => void
   onCancel: () => void
   initialData?: Record<string, unknown>
   mode?: 'save' | 'save_add_another' | 'save_view'
 }
 
-export default function ManualLeadForm({ onSave, onCancel, initialData }: ManualLeadFormProps) {
+export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, onCancel, initialData, mode = 'save' }: ManualLeadFormProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({
     first_name: '',
     last_name: '',
@@ -70,13 +72,14 @@ export default function ManualLeadForm({ onSave, onCancel, initialData }: Manual
     set('products', current.includes(product) ? current.filter((p: string) => p !== product) : [...current, product])
   }
 
+  const gatherFormData = () => ({
+    ...formData,
+    full_name: `${formData.first_name} ${formData.last_name}`.trim(),
+    whatsapp: (formData.whatsapp_same_as_phone as boolean) ? formData.phone : formData.whatsapp,
+  })
+
   const handleSave = () => {
-    const data = {
-      ...formData,
-      full_name: `${formData.first_name} ${formData.last_name}`.trim(),
-      whatsapp: (formData.whatsapp_same_as_phone as boolean) ? formData.phone : formData.whatsapp,
-    }
-    onSave(data)
+    onSave(gatherFormData())
   }
 
   const inputClass = 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
@@ -238,6 +241,16 @@ export default function ManualLeadForm({ onSave, onCancel, initialData }: Manual
       <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
         <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
         <button type="button" onClick={handleSave} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Lead</button>
+        {onSaveAddAnother && (
+          <button type="button" onClick={() => { const data = gatherFormData(); onSaveAddAnother(data) }} className="px-4 py-2 text-sm bg-white text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50">
+            Save & Add Another
+          </button>
+        )}
+        {onSaveView && (
+          <button type="button" onClick={() => { const data = gatherFormData(); onSaveView(data) }} className="px-4 py-2 text-sm bg-white text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50">
+            Save & View Lead →
+          </button>
+        )}
       </div>
     </div>
   )

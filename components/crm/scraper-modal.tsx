@@ -135,6 +135,7 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                     { id: 'specific_areas', label: 'Specific Areas', icon: '📍' },
                     { id: 'city_wide', label: 'City-Wide', icon: '🗺' },
                     { id: 'radius', label: 'Radius', icon: '📐' },
+                    { id: 'custom', label: 'Custom', icon: '📦' },
                   ].map(mode => (
                     <button key={mode.id} type="button" onClick={() => setGeoMode(mode.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
                       geoMode === mode.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -213,6 +214,42 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                         </div>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {geoMode === 'city_wide' && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-600">Scrape all businesses in the entire city.</p>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                      <option>Port Harcourt</option>
+                      <option>Yenegoa</option>
+                      <option>Warri</option>
+                      <option>Calabar</option>
+                    </select>
+                  </div>
+                )}
+
+                {geoMode === 'radius' && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-600">Scrape within a radius from a center point.</p>
+                    <input type="text" placeholder="Center address (e.g. GRA Phase 2, Port Harcourt)" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                    <div className="flex items-center gap-3">
+                      <label className="text-sm text-gray-700">Radius:</label>
+                      <input type="number" defaultValue={5} min={1} max={50} className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                      <span className="text-sm text-gray-500">km</span>
+                    </div>
+                  </div>
+                )}
+
+                {geoMode === 'custom' && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-600">Define custom locations by entering specific addresses, landmarks, or coordinates.</p>
+                    <textarea
+                      placeholder={"Enter locations (one per line):\n18A Rumuola Road, Port Harcourt\n41 Eastern Bypass, PH\nTrans Amadi Industrial Layout\n..."}
+                      rows={5}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none"
+                    />
+                    <p className="text-xs text-gray-500">Each line will be used as a separate search location.</p>
                   </div>
                 )}
               </div>

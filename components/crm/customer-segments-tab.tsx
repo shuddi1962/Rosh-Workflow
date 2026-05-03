@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, RefreshCw, AlertTriangle, UserPlus, Building2, Wrench, ChevronRight } from 'lucide-react';
+import { Crown, RefreshCw, AlertTriangle, UserPlus, Building2, Wrench, ChevronRight, Sparkles } from 'lucide-react';
 
 interface Segment {
   id: string;
@@ -28,6 +28,50 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
   Building2,
   Wrench,
 };
+
+function generateAIInsight(segments: Segment[]): { text: string; segmentId: string; potential: string } | null {
+  const atRisk = segments.find(s => s.id === 'at_risk')
+  const newCustomers = segments.find(s => s.id === 'new_customers')
+  const highValue = segments.find(s => s.id === 'high_value')
+  const repeatBuyers = segments.find(s => s.id === 'repeat_buyers')
+
+  if (atRisk && atRisk.count > 0) {
+    const potential = atRisk.avgOrder * atRisk.count * 0.18
+    return {
+      text: `${atRisk.count} customers haven't ordered in 90+ days.`,
+      segmentId: 'at_risk',
+      potential: potential.toLocaleString(),
+    }
+  }
+
+  if (newCustomers && newCustomers.count > 0) {
+    const potential = newCustomers.avgOrder * newCustomers.count * 0.35
+    return {
+      text: `${newCustomers.count} new customers joined in the last 30 days.`,
+      segmentId: 'new_customers',
+      potential: potential.toLocaleString(),
+    }
+  }
+
+  if (highValue && highValue.count > 0) {
+    const potential = highValue.avgOrder * highValue.count * 0.12
+    return {
+      text: `${highValue.count} high-value customers could be targeted for premium upsells.`,
+      segmentId: 'high_value',
+      potential: potential.toLocaleString(),
+    }
+  }
+
+  if (repeatBuyers && repeatBuyers.count > 0) {
+    return {
+      text: `${repeatBuyers.count} repeat buyers are perfect candidates for a referral program.`,
+      segmentId: 'repeat_buyers',
+      potential: 'N/A',
+    }
+  }
+
+  return null
+}
 
 const colorMap: Record<string, { bg: string; text: string; border: string; button: string }> = {
   blue: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', button: 'bg-blue-600 hover:bg-blue-700' },
@@ -94,21 +138,33 @@ const CustomerSegmentsTab: React.FC<CustomerSegmentsTabProps> = ({ segments, onL
       >
         <div className="flex items-start gap-3">
           <div className="p-2 bg-white/20 rounded-lg">
-            <RefreshCw className="w-5 h-5" />
+            <Sparkles className="w-5 h-5" />
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold mb-2">AI Segment Insights</h3>
-            <p className="text-sm text-blue-100 mb-4">
-              Your "At Risk" segment has 23 customers who haven't ordered in 90+ days. The average re-engagement
-              rate for this segment is 18% when using personalized WhatsApp campaigns with special discount offers.
-              Consider launching a targeted re-engagement campaign with a 10% discount incentive to win them back.
-            </p>
-            <button
-              onClick={() => onLaunchCampaign('at-risk')}
-              className="px-5 py-2.5 bg-white text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2"
-            >
-              Launch Re-engagement Campaign <ChevronRight className="w-4 h-4" />
-            </button>
+            {(() => {
+              const insight = generateAIInsight(segments)
+              if (!insight) {
+                return <p className="text-sm text-blue-100 mb-4">No segments have data yet. Start adding leads to see AI-powered insights.</p>
+              }
+              return (
+                <>
+                  <p className="text-sm text-blue-100 mb-4">
+                    🤖 AI noticed {insight.text}{' '}
+                    {insight.potential !== 'N/A' && (
+                      <>A targeted campaign could recover ~₦{insight.potential} in pipeline.</>
+                    )}{' '}
+                    {segments.find(s => s.id === insight.segmentId)?.action}.
+                  </p>
+                  <button
+                    onClick={() => onLaunchCampaign(insight.segmentId)}
+                    className="px-5 py-2.5 bg-white text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2"
+                  >
+                    Launch Campaign <ChevronRight className="w-4 h-4" />
+                  </button>
+                </>
+              )
+            })()}
           </div>
         </div>
       </motion.div>

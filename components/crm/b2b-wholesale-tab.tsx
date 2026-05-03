@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, DollarSign, TrendingUp, Users, Send, Calendar, FileText, ChevronRight } from 'lucide-react';
+import { Building2, DollarSign, TrendingUp, Users, Send, Calendar, FileText, ChevronRight, Plus, Pencil, Trash2 } from 'lucide-react';
 
 interface B2BAccount {
   id: string;
@@ -37,12 +37,15 @@ const defaultAccounts: B2BAccount[] = [
   { id: '6', company: 'Lagos Deep Sea Port', contact: 'Mr. Tunde Adeleke', division: 'Marine', value: 11200000, lastOrder: '2026-04-05' },
 ];
 
-const B2BWholesaleTab: React.FC<B2BWholesaleTabProps> = ({
+const B2BWholesaleTab: React.FC<B2BWholesaleTabProps & { onAddAccount?: () => void; onEditAccount?: (id: string) => void; onDeleteAccount?: (id: string) => void }> = ({
   accounts,
   b2bKPIs,
   onSendQuote,
   onScheduleDemo,
   onSendCatalog,
+  onAddAccount,
+  onEditAccount,
+  onDeleteAccount,
 }) => {
   const displayAccounts = accounts.length > 0 ? accounts : defaultAccounts;
 
@@ -99,8 +102,13 @@ const B2BWholesaleTab: React.FC<B2BWholesaleTabProps> = ({
         transition={{ delay: 0.2 }}
         className="bg-white border border-gray-200 rounded-xl overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">B2B Accounts</h3>
+          {onAddAccount && (
+            <button onClick={onAddAccount} className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+              <Plus className="w-4 h-4" /> Add B2B Account
+            </button>
+          )}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -111,6 +119,7 @@ const B2BWholesaleTab: React.FC<B2BWholesaleTabProps> = ({
                 <th className="text-left py-3 px-6 font-medium text-gray-600">Division</th>
                 <th className="text-right py-3 px-6 font-medium text-gray-600">Value</th>
                 <th className="text-left py-3 px-6 font-medium text-gray-600">Last Order</th>
+                <th className="text-right py-3 px-6 font-medium text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -133,6 +142,20 @@ const B2BWholesaleTab: React.FC<B2BWholesaleTabProps> = ({
                     ₦{(account.value / 1000000).toFixed(1)}M
                   </td>
                   <td className="py-3 px-6 text-gray-600">{new Date(account.lastOrder).toLocaleDateString('en-GB')}</td>
+                  <td className="py-3 px-6 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      {onEditAccount && (
+                        <button onClick={() => onEditAccount(account.id)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Edit">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {onDeleteAccount && (
+                        <button onClick={() => onDeleteAccount(account.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Delete">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

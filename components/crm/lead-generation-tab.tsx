@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Globe, Target, Phone, History, MapPin, ChevronRight, Play } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface LeadGenerationTabProps {
 }
 
 const LeadGenerationTab: React.FC<LeadGenerationTabProps> = ({ onScrape, history }) => {
+  const router = useRouter();
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
   const [source, setSource] = useState('Google Maps');
@@ -87,6 +89,8 @@ const LeadGenerationTab: React.FC<LeadGenerationTabProps> = ({ onScrape, history
                 <option>LinkedIn</option>
                 <option>Instagram</option>
                 <option>Facebook</option>
+                <option>Twitter/X</option>
+                <option>Website</option>
               </select>
             </div>
 
@@ -213,13 +217,13 @@ const LeadGenerationTab: React.FC<LeadGenerationTabProps> = ({ onScrape, history
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+          <button onClick={() => router.push('/dashboard/campaigns/create?type=sms')} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
             <span className="text-lg">+</span> SMS Campaign
           </button>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+          <button onClick={() => router.push('/dashboard/voice/calls')} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
             <span className="text-lg">+</span> Voice Broadcast
           </button>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+          <button onClick={() => router.push('/dashboard/social/auto-reply')} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
             <span className="text-lg">+</span> Social DM Automation
           </button>
         </div>

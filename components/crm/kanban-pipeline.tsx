@@ -105,8 +105,15 @@ export default function KanbanPipeline({ leads, onStageChange, onLeadClick, onLe
                 onDrop={() => handleDrop(stage.id)}
               >
                 {stageLeads.length === 0 && (
-                  <div className="text-center py-8 text-gray-400 text-sm">
+                  <div className="text-center py-8 text-gray-400 text-sm space-y-3">
                     <p>No leads</p>
+                    <button
+                      onClick={() => setShowDualEntry(true)}
+                      className="mx-auto inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/50 transition-colors"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                      Add Lead
+                    </button>
                   </div>
                 )}
 

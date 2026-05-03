@@ -55,6 +55,18 @@ export default function SocialAutoReplyPage() {
     notifyOrderIntent: true,
     masterEnabled: true,
   })
+  const [handoffRules, setHandoffRules] = useState({
+    complaint: true,
+    multipleMessages: true,
+    orderIntent: true,
+    lowConfidence: true,
+    afterHours: true,
+  })
+  const [notifyChannels, setNotifyChannels] = useState({
+    push: true,
+    sms: true,
+    email: true,
+  })
 
   useEffect(() => {
     const init = async () => {
@@ -92,12 +104,33 @@ export default function SocialAutoReplyPage() {
 
         if (logsRes.ok) {
           const data = await logsRes.json()
-          setLogs(data.logs || [])
+          const history = data.history || []
+          const mappedLogs = history.map((item: Record<string, unknown>): AutoReplyLog => ({
+            id: (item.id as string) || `log-${Math.random()}`,
+            platform: (item.platform as string) || 'unknown',
+            trigger: (item.trigger_type as string) || 'message',
+            incoming: (item.incoming_text as string) || '',
+            reply: (item.reply_text as string) || '',
+            intent: (item.intent as string) || 'general',
+            sentiment: (item.sentiment as string) || 'neutral',
+            method: (item.used_ai as boolean) ? 'ai_generated' : 'keyword_trigger',
+            timestamp: (item.created_at as string) || new Date().toISOString(),
+            leadCreated: false,
+          }))
+          setLogs(mappedLogs)
         }
 
         if (settingsRes.ok) {
           const data = await settingsRes.json()
-          setGlobalSettings(prev => ({ ...prev, ...data.settings }))
+          if (data.settings) {
+            setGlobalSettings(prev => ({ ...prev, ...data.settings }))
+            if (data.settings.human_handoff_rules) {
+              setHandoffRules(prev => ({ ...prev, ...data.settings.human_handoff_rules }))
+            }
+            if (data.settings.notify_channels) {
+              setNotifyChannels(prev => ({ ...prev, ...data.settings.notify_channels }))
+            }
+          }
         }
       } catch (e) {
         setKeywords(DEFAULT_KEYWORD_TRIGGERS)
@@ -356,28 +389,42 @@ export default function SocialAutoReplyPage() {
               Human Handoff Rules
             </h3>
             <p className="text-sm text-gray-500 mb-4">Auto-reply stops and team is notified when:</p>
-            <div className="space-y-3">
-              {[
-                'Customer mentions a complaint or bad experience',
-                'Customer sends 3+ messages in conversation (ongoing dialogue)',
-                'ORDER_INTENT detected (someone ready to buy)',
-                'AI confidence below 70% (not sure how to reply)',
-                'Any message after 10PM or before 7AM (queue for morning)',
-              ].map((rule, i) => (
-                <label key={i} className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-                  <span className="text-sm text-gray-700">{rule}</span>
-                </label>
-              ))}
+          <div className="space-y-3">
+            {[
+              { key: 'complaint' as const, label: 'Customer mentions a complaint or bad experience' },
+              { key: 'multipleMessages' as const, label: 'Customer sends 3+ messages in conversation (ongoing dialogue)' },
+              { key: 'orderIntent' as const, label: 'ORDER_INTENT detected (someone ready to buy)' },
+              { key: 'lowConfidence' as const, label: 'AI confidence below 70% (not sure how to reply)' },
+              { key: 'afterHours' as const, label: 'Any message after 10PM or before 7AM (queue for morning)' },
+            ].map(({ key, label }) => (
+              <label key={key} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={handoffRules[key]}
+                  onChange={() => setHandoffRules(prev => ({ ...prev, [key]: !prev[key] }))}
+                  className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{label}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-sm font-medium text-gray-700 mb-2">Notify via:</p>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={notifyChannels.push} onChange={() => setNotifyChannels(prev => ({ ...prev, push: !prev.push }))} className="h-4 w-4 text-blue-600 rounded" />
+                <span className="text-sm text-gray-700">Push notification</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={notifyChannels.sms} onChange={() => setNotifyChannels(prev => ({ ...prev, sms: !prev.sms }))} className="h-4 w-4 text-blue-600 rounded" />
+                <span className="text-sm text-gray-700">SMS to 08109522432</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={notifyChannels.email} onChange={() => setNotifyChannels(prev => ({ ...prev, email: !prev.email }))} className="h-4 w-4 text-blue-600 rounded" />
+                <span className="text-sm text-gray-700">Email</span>
+              </label>
             </div>
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-2">Notify via:</p>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded" /><span className="text-sm text-gray-700">Push notification</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded" /><span className="text-sm text-gray-700">SMS to 08109522432</span></label>
-                <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600 rounded" /><span className="text-sm text-gray-700">Email</span></label>
-              </div>
-            </div>
+          </div>
           </div>
         </div>
       )}
