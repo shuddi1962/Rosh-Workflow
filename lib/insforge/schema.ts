@@ -499,3 +499,52 @@ export interface AnalyticsDaily {
   platform_breakdown: any
   top_posts: any[]
 }
+
+export interface SocialAutoReply {
+  id: string
+  platform: string
+  trigger_type: string
+  incoming_text: string
+  customer_name: string
+  customer_handle?: string
+  customer_phone?: string
+  reply_text: string
+  matched_trigger_id?: string
+  used_ai: boolean
+  intent: string
+  sentiment: 'positive' | 'neutral' | 'negative'
+  priority: 'high' | 'medium' | 'low'
+  cost_usd: number
+  latency_ms: number
+  created_at: string
+}
+
+export interface SocialInteraction {
+  id: string
+  platform: string
+  interaction_type: 'message' | 'comment' | 'mention' | 'review' | 'dm' | 'reaction'
+  external_id: string
+  customer_name: string
+  customer_handle?: string
+  customer_phone?: string
+  content: string
+  sentiment: 'positive' | 'neutral' | 'negative'
+  auto_replied: boolean
+  reply_id?: string
+  lead_id?: string
+  created_at: string
+}
+
+export interface KeywordTrigger {
+  id: string
+  keywords: string[]
+  platform: string
+  reply_template: Record<string, string>
+  action: string
+  tag_product: string
+  is_active: boolean
+  fire_count: number
+  created_by: string
+  created_at: string
+  updated_at: string
+}
