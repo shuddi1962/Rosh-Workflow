@@ -130,7 +130,7 @@ const integrations = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#04060F] text-[#F0F4FF] overflow-hidden">
+    <div className="min-h-screen bg-bg-void text-text-primary overflow-hidden">
       {/* Ambient glow effects */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px]" />
@@ -138,7 +138,7 @@ export default function HomePage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#04060F]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-void/80 backdrop-blur-xl border-b border-border-ghost">
         <div className="w-full px-6 lg:px-12 py-4 flex justify-between items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -148,7 +148,7 @@ export default function HomePage() {
             <div className="w-10 h-10 bg-gradient-to-br from-[#1A56DB] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-clash text-xl font-bold text-[#F0F4FF]">Roshanal AI</span>
+            <span className="font-clash text-xl font-bold text-text-primary">Roshanal AI</span>
           </motion.div>
           
           <motion.div
@@ -156,7 +156,7 @@ export default function HomePage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-6"
           >
-            <Link href="/login" className="text-[#8B9CC8] hover:text-[#F0F4FF] transition font-medium">
+            <Link href="/login" className="text-text-secondary hover:text-text-primary transition font-medium">
               Login
             </Link>
             <Link
@@ -188,7 +188,7 @@ export default function HomePage() {
               
               <motion.h1
                 variants={fadeInUp}
-                className="font-clash text-5xl md:text-6xl lg:text-7xl font-bold text-[#F0F4FF] leading-[1.1] mb-8"
+                className="font-clash text-5xl md:text-6xl lg:text-7xl font-bold text-text-primary leading-[1.1] mb-8"
               >
                 Your 24/7{' '}
                 <span className="bg-gradient-to-r from-[#1A56DB] via-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">
@@ -198,7 +198,7 @@ export default function HomePage() {
               
               <motion.p
                 variants={fadeInUp}
-                className="text-xl text-[#8B9CC8] mb-12 max-w-3xl mx-auto leading-relaxed"
+                className="text-xl text-text-secondary mb-12 max-w-3xl mx-auto leading-relaxed"
               >
                 Generate Nigerian-focused content, spy on competitors, automate social media, and capture leads — all powered by AI built for Port Harcourt businesses.
               </motion.p>
@@ -213,7 +213,7 @@ export default function HomePage() {
                 </Link>
                 <Link
                   href="#features"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-[#F0F4FF] rounded-xl font-medium text-lg hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-bg-surface/50 border border-border-subtle text-text-primary rounded-xl font-medium text-lg hover:bg-bg-elevated hover:border-border-hover transition-all duration-300"
                 >
                   See How It Works
                 </Link>
@@ -228,11 +228,11 @@ export default function HomePage() {
               className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
             >
               {stats.map((stat, i) => (
-                <div key={i} className="text-center p-6 rounded-2xl bg-white/3 border border-white/5">
+                <div key={i} className="text-center p-6 rounded-2xl bg-bg-surface/30 border border-border-ghost">
                   <div className="font-clash text-4xl font-bold bg-gradient-to-r from-[#1A56DB] to-[#3B82F6] bg-clip-text text-transparent mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-[#8B9CC8] text-sm font-medium">{stat.label}</div>
+                  <div className="text-text-secondary text-sm font-medium">{stat.label}</div>
                 </div>
               ))}
             </motion.div>
@@ -251,13 +251,13 @@ export default function HomePage() {
             >
               <motion.h2
                 variants={fadeInUp}
-                className="font-clash text-4xl font-bold text-[#F0F4FF] mb-4"
+                className="font-clash text-4xl font-bold text-text-primary mb-4"
               >
                 Everything You Need to Dominate Your Market
               </motion.h2>
               <motion.p
                 variants={fadeInUp}
-                className="text-xl text-[#8B9CC8] max-w-2xl mx-auto"
+                className="text-xl text-text-secondary max-w-2xl mx-auto"
               >
                 From content creation to competitor analysis, lead generation to social automation — all in one platform.
               </motion.p>
@@ -274,15 +274,15 @@ export default function HomePage() {
                 <motion.div
                   key={i}
                   variants={fadeInUp}
-                  className="group bg-[#0E1220] rounded-2xl p-8 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1"
+                  className="group bg-bg-surface rounded-2xl p-8 border border-border-ghost hover:border-border-subtle transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className={`w-14 h-14 bg-gradient-to-br ${feature.glow} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border ${feature.border}`}>
-                    <feature.icon className="w-7 h-7 text-[#F0F4FF]" />
+                    <feature.icon className="w-7 h-7 text-text-primary" />
                   </div>
-                  <h3 className="font-clash text-xl font-semibold text-[#F0F4FF] mb-3">
+                  <h3 className="font-clash text-xl font-semibold text-text-primary mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-[#8B9CC8] leading-relaxed">
+                  <p className="text-text-secondary leading-relaxed">
                     {feature.description}
                   </p>
                 </motion.div>
@@ -292,7 +292,7 @@ export default function HomePage() {
         </section>
 
         {/* How It Works */}
-        <section className="py-24 px-6 lg:px-12 bg-[#080C1A]">
+        <section className="py-24 px-6 lg:px-12 bg-bg-base">
           <div className="w-full">
             <motion.div
               initial="initial"
@@ -301,10 +301,10 @@ export default function HomePage() {
               variants={staggerContainer}
               className="text-center mb-16"
             >
-              <motion.h2 variants={fadeInUp} className="font-clash text-4xl font-bold text-[#F0F4FF] mb-4">
+              <motion.h2 variants={fadeInUp} className="font-clash text-4xl font-bold text-text-primary mb-4">
                 How It Works
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-xl text-[#8B9CC8] max-w-2xl mx-auto">
+              <motion.p variants={fadeInUp} className="text-xl text-text-secondary max-w-2xl mx-auto">
                 Four simple steps to transform your marketing from manual to AI-powered.
               </motion.p>
             </motion.div>
@@ -325,10 +325,10 @@ export default function HomePage() {
                     <div className="w-14 h-14 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center mb-6">
                       <item.icon className="w-7 h-7 text-blue-400" />
                     </div>
-                    <h3 className="font-clash text-xl font-semibold text-[#F0F4FF] mb-3">
+                    <h3 className="font-clash text-xl font-semibold text-text-primary mb-3">
                       {item.title}
                     </h3>
-                    <p className="text-[#8B9CC8] leading-relaxed">
+                    <p className="text-text-secondary leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -348,10 +348,10 @@ export default function HomePage() {
               variants={staggerContainer}
               className="text-center mb-16"
             >
-              <motion.h2 variants={fadeInUp} className="font-clash text-4xl font-bold text-[#F0F4FF] mb-4">
+              <motion.h2 variants={fadeInUp} className="font-clash text-4xl font-bold text-text-primary mb-4">
                 Connected to Every Platform
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-xl text-[#8B9CC8] max-w-2xl mx-auto">
+              <motion.p variants={fadeInUp} className="text-xl text-text-secondary max-w-2xl mx-auto">
                 Seamless integration with all major social media and AI platforms.
               </motion.p>
             </motion.div>
@@ -367,10 +367,10 @@ export default function HomePage() {
                 <motion.div
                   key={i}
                   variants={fadeInUp}
-                  className="flex items-center gap-3 p-4 bg-[#0E1220] rounded-xl border border-white/5 hover:border-white/10 transition-all"
+                  className="flex items-center gap-3 p-4 bg-bg-surface rounded-xl border border-border-ghost hover:border-border-subtle transition-all"
                 >
-                  <integration.icon className="w-5 h-5 text-[#8B9CC8]" />
-                  <span className="text-[#F0F4FF] font-medium">{integration.name}</span>
+                  <integration.icon className="w-5 h-5 text-text-secondary" />
+                  <span className="text-text-primary font-medium">{integration.name}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -413,21 +413,21 @@ export default function HomePage() {
         </section>
 
         {/* Contact Info */}
-        <section className="py-16 px-6 lg:px-12 border-t border-white/5">
+        <section className="py-16 px-6 lg:px-12 border-t border-border-ghost">
           <div className="w-full">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="flex items-start gap-4 p-6 bg-[#0E1220] rounded-2xl border border-white/5"
+                className="flex items-start gap-4 p-6 bg-bg-surface rounded-2xl border border-border-ghost"
               >
                 <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-6 h-6 text-blue-400" />
+                  <MapPin className="w-6 h-6 text-accent-primary" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#F0F4FF] mb-2">Visit Us</div>
-                  <div className="text-[#8B9CC8] text-sm leading-relaxed">
+                  <div className="font-semibold text-text-primary mb-2">Visit Us</div>
+                  <div className="text-text-secondary text-sm leading-relaxed">
                     No 18A Rumuola/Rumuadaolu Road, Port Harcourt<br />
                     41 Eastern Bypass, Opp NDDC Building<br />
                     223 Chief Melfold Okilo Way, Yenegoa
@@ -440,14 +440,14 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="flex items-start gap-4 p-6 bg-[#0E1220] rounded-2xl border border-white/5"
+                className="flex items-start gap-4 p-6 bg-bg-surface rounded-2xl border border-border-ghost"
               >
                 <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-6 h-6 text-emerald-400" />
+                  <Phone className="w-6 h-6 text-accent-emerald" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#F0F4FF] mb-2">Call Us</div>
-                  <div className="text-[#8B9CC8] text-sm leading-relaxed">
+                  <div className="font-semibold text-text-primary mb-2">Call Us</div>
+                  <div className="text-text-secondary text-sm leading-relaxed">
                     08109522432<br />
                     08033170802<br />
                     08180388018
@@ -460,14 +460,14 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="flex items-start gap-4 p-6 bg-[#0E1220] rounded-2xl border border-white/5"
+                className="flex items-start gap-4 p-6 bg-bg-surface rounded-2xl border border-border-ghost"
               >
                 <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-6 h-6 text-purple-400" />
+                  <Mail className="w-6 h-6 text-accent-purple" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#F0F4FF] mb-2">Email Us</div>
-                  <div className="text-[#8B9CC8] text-sm leading-relaxed">
+                  <div className="font-semibold text-text-primary mb-2">Email Us</div>
+                  <div className="text-text-secondary text-sm leading-relaxed">
                     info@roshanalinfotech.com<br />
                     roshanalinfotech.com
                   </div>
@@ -478,18 +478,18 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="py-8 px-6 lg:px-12 border-t border-white/5">
+        <footer className="py-8 px-6 lg:px-12 border-t border-border-ghost">
           <div className="w-full flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-[#1A56DB] to-[#3B82F6] rounded-lg flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span className="font-clash font-bold text-[#F0F4FF]">Roshanal AI</span>
+              <span className="font-clash font-bold text-text-primary">Roshanal AI</span>
             </div>
-            <p className="text-[#4A5475] text-sm">
+            <p className="text-text-muted text-sm">
               © 2026 Roshanal Infotech Limited. All rights reserved.
             </p>
-            <div className="flex items-center gap-2 text-[#8B9CC8] text-sm">
+            <div className="flex items-center gap-2 text-text-secondary text-sm">
               <MessageCircle className="w-4 h-4" />
               <span>WhatsApp-first marketing for Nigeria</span>
             </div>

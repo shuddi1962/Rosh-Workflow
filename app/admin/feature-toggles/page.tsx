@@ -83,36 +83,36 @@ export default function FeatureTogglesPage() {
     }
   }
 
-  if (loading) return <div className="p-6 text-gray-600">Loading toggles...</div>
+  if (loading) return <div className="p-6 text-text-secondary">Loading toggles...</div>
 
   const categories = [...new Set(Object.values(TOGGLE_LABELS).map(t => t.category))]
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-clash font-bold text-gray-900 mb-2">Feature Toggles</h1>
-      <p className="text-gray-600 mb-8">Enable or disable platform features in real-time.</p>
+      <h1 className="text-3xl font-clash font-bold text-text-primary mb-2">Feature Toggles</h1>
+      <p className="text-text-secondary mb-8">Enable or disable platform features in real-time.</p>
 
       {categories.map(category => (
         <div key={category} className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{category}</h3>
-          <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+          <h3 className="text-lg font-semibold text-text-primary mb-4">{category}</h3>
+          <div className="bg-white rounded-lg border border-border-subtle divide-y divide-border-ghost">
             {toggles.filter(t => TOGGLE_LABELS[t.feature_key]?.category === category).map(toggle => {
               const config = TOGGLE_LABELS[toggle.feature_key]
               const isSaving = saving === toggle.feature_key
               const isSaved = savedKey === toggle.feature_key
 
               return (
-                <div key={toggle.feature_key} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                <div key={toggle.feature_key} className="flex items-center justify-between p-4 hover:bg-bg-surface transition-colors">
                   <div className="flex-1">
-                    <p className="text-gray-900 font-medium">{config?.label || toggle.feature_key}</p>
-                    <p className="text-gray-500 text-sm">{config?.description || ''}</p>
+                    <p className="text-text-primary font-medium">{config?.label || toggle.feature_key}</p>
+                    <p className="text-text-muted text-sm">{config?.description || ''}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isSaved && <span className="text-emerald-600 text-xs font-medium">Saved!</span>}
+                    {isSaved && <span className="text-accent-emerald text-xs font-medium">Saved!</span>}
                     <button
                       onClick={() => handleToggle(toggle.feature_key, !toggle.is_enabled)}
                       disabled={isSaving}
-                      className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${toggle.is_enabled ? 'bg-blue-600' : 'bg-gray-300'} ${isSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${toggle.is_enabled ? 'bg-accent-primary' : 'bg-text-muted/30'} ${isSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                     >
                       <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${toggle.is_enabled ? 'translate-x-6' : 'translate-x-0'}`} />
                     </button>

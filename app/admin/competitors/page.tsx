@@ -91,32 +91,32 @@ export default function AdminCompetitorsPage() {
     }
   }
 
-  if (loading) return <div className="p-6 text-gray-600">Loading competitors...</div>
+  if (loading) return <div className="p-6 text-text-secondary">Loading competitors...</div>
 
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-clash font-bold text-gray-900">Competitor Intelligence</h1>
-        <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">+ Add Competitor</button>
+        <h1 className="text-3xl font-clash font-bold text-text-primary">Competitor Intelligence</h1>
+        <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-blue-700 transition">+ Add Competitor</button>
       </div>
 
       {showForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Add Competitor</h2>
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Add Competitor</h2>
             <div className="space-y-4">
-              <input type="text" value={newComp.name} onChange={(e) => setNewComp({...newComp, name: e.target.value})} placeholder="Competitor name" className="w-full p-3 border border-gray-200 rounded-lg text-gray-900" />
-              <select value={newComp.division} onChange={(e) => setNewComp({...newComp, division: e.target.value as 'marine' | 'tech' | 'both'})} className="w-full p-3 border border-gray-200 rounded-lg text-gray-900">
+              <input type="text" value={newComp.name} onChange={(e) => setNewComp({...newComp, name: e.target.value})} placeholder="Competitor name" className="w-full p-3 border border-border-subtle rounded-lg text-text-primary" />
+              <select value={newComp.division} onChange={(e) => setNewComp({...newComp, division: e.target.value as 'marine' | 'tech' | 'both'})} className="w-full p-3 border border-border-subtle rounded-lg text-text-primary">
                 <option value="marine">Marine</option>
                 <option value="tech">Technology</option>
                 <option value="both">Both</option>
               </select>
-              <input type="url" value={newComp.website} onChange={(e) => setNewComp({...newComp, website: e.target.value})} placeholder="Website URL" className="w-full p-3 border border-gray-200 rounded-lg text-gray-900" />
-              <input type="url" value={newComp.facebook_url} onChange={(e) => setNewComp({...newComp, facebook_url: e.target.value})} placeholder="Facebook page URL" className="w-full p-3 border border-gray-200 rounded-lg text-gray-900" />
-              <input type="url" value={newComp.instagram_url} onChange={(e) => setNewComp({...newComp, instagram_url: e.target.value})} placeholder="Instagram profile URL" className="w-full p-3 border border-gray-200 rounded-lg text-gray-900" />
+              <input type="url" value={newComp.website} onChange={(e) => setNewComp({...newComp, website: e.target.value})} placeholder="Website URL" className="w-full p-3 border border-border-subtle rounded-lg text-text-primary" />
+              <input type="url" value={newComp.facebook_url} onChange={(e) => setNewComp({...newComp, facebook_url: e.target.value})} placeholder="Facebook page URL" className="w-full p-3 border border-border-subtle rounded-lg text-text-primary" />
+              <input type="url" value={newComp.instagram_url} onChange={(e) => setNewComp({...newComp, instagram_url: e.target.value})} placeholder="Instagram profile URL" className="w-full p-3 border border-border-subtle rounded-lg text-text-primary" />
               <div className="flex gap-3 justify-end">
-                <button onClick={() => setShowForm(false)} className="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">Cancel</button>
-                <button onClick={addCompetitor} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add</button>
+                <button onClick={() => setShowForm(false)} className="px-4 py-2 border border-border-subtle rounded-lg text-text-secondary hover:bg-bg-surface">Cancel</button>
+                <button onClick={addCompetitor} className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-blue-700">Add</button>
               </div>
             </div>
           </div>
@@ -125,17 +125,17 @@ export default function AdminCompetitorsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {competitors.map((comp) => (
-          <div key={comp.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div key={comp.id} className="bg-white rounded-lg border border-border-subtle p-6 hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-semibold text-gray-900">{comp.name}</h3>
-                <p className="text-gray-500 text-sm">{comp.website || 'No website'}</p>
+                <h3 className="font-semibold text-text-primary">{comp.name}</h3>
+                <p className="text-text-muted text-sm">{comp.website || 'No website'}</p>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs ${comp.division === 'marine' ? 'bg-blue-50 text-blue-600' : comp.division === 'tech' ? 'bg-purple-50 text-purple-600' : 'bg-amber-50 text-amber-600'}`}>
+              <span className={`px-2 py-1 rounded-full text-xs ${comp.division === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : comp.division === 'tech' ? 'bg-accent-purple/10 text-accent-purple' : 'bg-accent-gold/10 text-accent-gold'}`}>
                 {comp.division}
               </span>
             </div>
-            <div className="text-gray-500 text-xs mb-4">Last scanned: {comp.last_scanned ? new Date(comp.last_scanned).toLocaleDateString() : 'Never'}</div>
+            <div className="text-text-muted text-xs mb-4">Last scanned: {comp.last_scanned ? new Date(comp.last_scanned).toLocaleDateString() : 'Never'}</div>
             <div className="flex gap-2">
               <button
                 onClick={() => scrapeCompetitor(comp.id, comp.name)}
@@ -156,9 +156,9 @@ export default function AdminCompetitorsPage() {
       </div>
 
       {competitors.length === 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-          <p className="text-gray-500 text-lg mb-2">No competitors added yet</p>
-          <p className="text-gray-400 text-sm">Add competitors to monitor their strategies and find gaps to exploit.</p>
+        <div className="bg-white rounded-lg border border-border-subtle p-12 text-center">
+          <p className="text-text-muted text-lg mb-2">No competitors added yet</p>
+          <p className="text-text-muted text-sm">Add competitors to monitor their strategies and find gaps to exploit.</p>
         </div>
       )}
     </div>

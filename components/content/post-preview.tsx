@@ -21,9 +21,9 @@ export function PostPreview({ caption, hashtags, cta, platform, division }: Post
   return (
     <div
       className={clsx(
-        'bg-white rounded-lg border border-gray-200 overflow-hidden',
-        division === 'marine' && 'border-l-4 border-l-blue-600',
-        division === 'tech' && 'border-l-4 border-l-purple-600'
+        'bg-white rounded-lg border border-border-subtle overflow-hidden',
+        division === 'marine' && 'border-l-4 border-l-accent-primary',
+        division === 'tech' && 'border-l-4 border-l-accent-purple'
       )}
     >
       <div className={clsx('px-4 py-2 bg-gradient-to-r text-white', platformColors[platform] || 'from-gray-600 to-gray-700')}>
@@ -34,14 +34,14 @@ export function PostPreview({ caption, hashtags, cta, platform, division }: Post
       </div>
 
       <div className="p-5">
-        <div className="text-gray-900 text-sm leading-relaxed whitespace-pre-wrap mb-4">
+        <div className="text-text-primary text-sm leading-relaxed whitespace-pre-wrap mb-4">
           {caption}
         </div>
 
         {hashtags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {hashtags.slice(0, 10).map((tag, i) => (
-              <span key={i} className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+              <span key={i} className="inline-flex items-center gap-1 text-xs text-accent-primary bg-accent-primary/10 px-2 py-0.5 rounded">
                 <Hash className="w-3 h-3" />
                 {tag}
               </span>
@@ -49,9 +49,9 @@ export function PostPreview({ caption, hashtags, cta, platform, division }: Post
           </div>
         )}
 
-        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
-          <Phone className="w-4 h-4 text-green-600" />
-          <span className="text-sm text-green-600 font-medium">{cta}</span>
+        <div className="flex items-center gap-2 pt-4 border-t border-border-ghost">
+          <Phone className="w-4 h-4 text-accent-emerald" />
+          <span className="text-sm text-accent-emerald font-medium">{cta}</span>
         </div>
       </div>
     </div>

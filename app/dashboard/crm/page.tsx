@@ -133,18 +133,18 @@ export default function CRMPipelinePage() {
     activeAccounts: b2bAccounts.filter(l => l.stage !== 'closed_won').length,
   }
 
-  if (loading) return <div className="p-6 text-gray-500 flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" />Loading CRM...</div>
+  if (loading) return <div className="p-6 text-text-muted flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" />Loading CRM...</div>
 
   return (
-    <div className="bg-[#F9FAFB] min-h-screen">
+    <div className="bg-bg-void min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Customers & CRM</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage leads, pipeline, and customer relationships</p>
+          <h1 className="text-2xl font-bold text-text-primary">Customers & CRM</h1>
+          <p className="text-sm text-text-muted mt-1">Manage leads, pipeline, and customer relationships</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={handleExport} className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm flex items-center gap-2">
+          <button onClick={handleExport} className="px-4 py-2 border border-border-subtle text-text-secondary rounded-lg hover:bg-bg-surface text-sm flex items-center gap-2">
             <Download className="w-4 h-4" /> Export
           </button>
           <button onClick={() => setShowDualEntry(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-2">
@@ -162,7 +162,7 @@ export default function CRMPipelinePage() {
       />
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-border-subtle mb-6">
         <div className="flex gap-1 overflow-x-auto">
           {TABS.map(tab => (
             <button
@@ -171,7 +171,7 @@ export default function CRMPipelinePage() {
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-text-muted hover:text-text-secondary hover:border-border-hover'
               }`}
             >
               {tab.label}

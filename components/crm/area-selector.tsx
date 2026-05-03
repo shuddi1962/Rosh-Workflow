@@ -39,7 +39,7 @@ export default function AreaSelector({ value, onChange, className }: AreaSelecto
     ), [searchTerm])
 
   return (
-    <div className={`rounded-lg border border-gray-200 p-4 bg-white ${className || ''}`}>
+    <div className={`rounded-lg border border-border-subtle p-4 bg-white ${className || ''}`}>
       {value && (
         <div className="mb-3 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm font-medium">
           Selected: {value}
@@ -47,18 +47,18 @@ export default function AreaSelector({ value, onChange, className }: AreaSelecto
       )}
 
       <div className="relative mb-3">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
         <input
           type="text"
           placeholder="Search areas..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          className="w-full pl-9 pr-3 py-2 border border-border-subtle rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         />
       </div>
 
       <div className="max-h-48 overflow-y-auto mb-4">
-        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Port Harcourt</h4>
+        <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Port Harcourt</h4>
         <div className="grid grid-cols-2 gap-1.5">
           {filteredPH.map(area => (
             <button
@@ -68,7 +68,7 @@ export default function AreaSelector({ value, onChange, className }: AreaSelecto
               className={`px-3 py-1.5 border rounded-lg text-xs text-left transition-all ${
                 value === area
                   ? 'bg-blue-600 border-blue-600 text-white'
-                  : 'border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                  : 'border-border-subtle text-text-secondary hover:bg-bg-surface hover:border-border-hover'
               }`}
             >
               {area}
@@ -77,8 +77,8 @@ export default function AreaSelector({ value, onChange, className }: AreaSelecto
         </div>
       </div>
 
-      <div className="border-t border-gray-200 pt-3 mt-3">
-        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Other States</h4>
+      <div className="border-t border-border-subtle pt-3 mt-3">
+        <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Other States</h4>
         <div className="grid grid-cols-2 gap-1.5">
           {filteredOther.map(area => (
             <button
@@ -88,7 +88,7 @@ export default function AreaSelector({ value, onChange, className }: AreaSelecto
               className={`px-3 py-1.5 border rounded-lg text-xs text-left transition-all ${
                 value === area.name
                   ? 'bg-blue-600 border-blue-600 text-white'
-                  : 'border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                  : 'border-border-subtle text-text-secondary hover:bg-bg-surface hover:border-border-hover'
               }`}
             >
               {area.name}

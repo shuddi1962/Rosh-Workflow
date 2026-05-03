@@ -6,16 +6,16 @@
   --font-cabinet: 'Cabinet Grotesk', sans-serif;
   --font-jetbrains: 'JetBrains Mono', monospace;
 
-  /* Dark theme color palette */
-  --color-bg-void: #04060F;
-  --color-bg-base: #080C1A;
-  --color-bg-surface: #0E1220;
-  --color-bg-elevated: #151B2E;
-  --color-bg-overlay: #1C2438;
-  --color-border-ghost: rgba(255, 255, 255, 0.03);
-  --color-border-subtle: rgba(255, 255, 255, 0.07);
-  --color-border-default: rgba(255, 255, 255, 0.11);
-  --color-border-hover: rgba(255, 255, 255, 0.18);
+  /* Light theme color palette */
+  --color-bg-void: #F8FAFC;
+  --color-bg-base: #FFFFFF;
+  --color-bg-surface: #F1F5F9;
+  --color-bg-elevated: #E2E8F0;
+  --color-bg-overlay: #CBD5E1;
+  --color-border-ghost: rgba(0, 0, 0, 0.05);
+  --color-border-subtle: rgba(0, 0, 0, 0.10);
+  --color-border-default: rgba(0, 0, 0, 0.15);
+  --color-border-hover: rgba(0, 0, 0, 0.25);
   --color-accent-primary: #1A56DB;
   --color-accent-primary-glow: #3B82F6;
   --color-accent-primary-soft: rgba(26, 86, 219, 0.1);
@@ -25,9 +25,9 @@
   --color-accent-red: #EF4444;
   --color-accent-orange: #F97316;
   --color-accent-purple: #8B5CF6;
-  --color-text-primary: #F0F4FF;
-  --color-text-secondary: #8B9CC8;
-  --color-text-muted: #4A5475;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
   --color-text-on-accent: #FFFFFF;
   --color-status-live: #10B981;
   --color-status-scheduled: #3B82F6;
@@ -55,6 +55,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   min-height: 100vh;
+  overflow-x: auto;
 }
 
 h1, h2, h3, h4, h5, h6 {

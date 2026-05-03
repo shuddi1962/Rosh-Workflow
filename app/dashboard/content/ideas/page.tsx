@@ -202,17 +202,17 @@ export default function ContentIdeasPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+      <div className="max-w-full">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Content Ideas</h2>
-          <p className="text-sm text-gray-500 mt-1">AI-generated ideas with one-click post creation</p>
+          <h2 className="text-xl font-semibold text-text-primary">Content Ideas</h2>
+          <p className="text-sm text-text-muted mt-1">AI-generated ideas with one-click post creation</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -242,7 +242,7 @@ export default function ContentIdeasPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
@@ -251,7 +251,7 @@ export default function ContentIdeasPage() {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+          className="px-3 py-2 border border-border-default rounded-lg text-sm text-text-secondary bg-white"
         >
           <option value="all">All Status</option>
           <option value="draft">Drafts</option>
@@ -261,7 +261,7 @@ export default function ContentIdeasPage() {
         <select
           value={divisionFilter}
           onChange={(e) => setDivisionFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+          className="px-3 py-2 border border-border-default rounded-lg text-sm text-text-secondary bg-white"
         >
           <option value="all">All Divisions</option>
           <option value="marine">Marine</option>
@@ -270,7 +270,7 @@ export default function ContentIdeasPage() {
         <select
           value=""
           onChange={(e) => {}}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+          className="px-3 py-2 border border-border-default rounded-lg text-sm text-text-secondary bg-white"
         >
           <option value="">All Urgency</option>
           <option value="high">High</option>
@@ -281,19 +281,19 @@ export default function ContentIdeasPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 space-y-4">
-          <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4">
+          <div className="flex items-center justify-between bg-white rounded-xl border border-border-subtle p-4">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSelectedIdeas(selectedIdeas.length === filteredIdeas.length ? [] : filteredIdeas.map(i => i.id))}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-1 hover:bg-bg-surface rounded"
               >
                 {selectedIdeas.length === filteredIdeas.length ? (
-                  <CheckSquare className="w-5 h-5 text-blue-600" />
-                ) : (
-                  <Square className="w-5 h-5 text-gray-400" />
-                )}
+                   <CheckSquare className="w-5 h-5 text-accent-primary" />
+                 ) : (
+                   <Square className="w-5 h-5 text-text-muted" />
+                 )}
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-text-secondary">
                 {selectedIdeas.length} selected
               </span>
               {selectedIdeas.length > 0 && (
@@ -321,10 +321,10 @@ export default function ContentIdeasPage() {
 
           <AnimatePresence>
             {filteredIdeas.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-                <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 font-medium">No content ideas yet</p>
-                <p className="text-gray-400 text-sm mt-1">Click "Generate Daily Ideas" to create AI-powered content</p>
+              <div className="text-center py-12 bg-white rounded-xl border border-border-subtle">
+                <Sparkles className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                <p className="text-text-muted font-medium">No content ideas yet</p>
+                <p className="text-text-secondary text-sm mt-1">Click "Generate Daily Ideas" to create AI-powered content</p>
               </div>
             ) : (
               filteredIdeas.map((idea) => (
@@ -333,39 +333,39 @@ export default function ContentIdeasPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl border border-border-subtle p-5 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start gap-3">
                     <button
                       onClick={() => toggleSelect(idea.id)}
-                      className="mt-1 p-1 hover:bg-gray-100 rounded"
+                      className="mt-1 p-1 hover:bg-bg-surface rounded"
                     >
                       {selectedIdeas.includes(idea.id) ? (
-                        <CheckSquare className="w-5 h-5 text-blue-600" />
+                   <CheckSquare className="w-5 h-5 text-accent-primary" />
                       ) : (
-                        <Square className="w-5 h-5 text-gray-400" />
+                         <Square className="w-5 h-5 text-text-muted" />
                       )}
                     </button>
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          {idea.auto_generated && <Sparkles className="w-4 h-4 text-purple-600" />}
-                          <span className="text-xs font-medium text-purple-600">
+                          {idea.auto_generated && <Sparkles className="w-4 h-4 text-accent-purple" />}
+                          <span className="text-xs font-medium text-accent-purple">
                             {idea.division === 'marine' ? 'Marine' : 'Technology'} • {idea.post_type?.replace(/_/g, ' ')}
                           </span>
                           {idea.urgency === 'high' && (
-                            <Badge className="bg-red-100 text-red-700 text-xs">High Priority</Badge>
+                            <Badge className="bg-accent-red/10 text-accent-red text-xs">High Priority</Badge>
                           )}
                         </div>
                         <StatusBadge status={idea.status} size="sm" />
                       </div>
 
-                      <p className="text-gray-700 text-sm mb-3 line-clamp-3">{idea.caption}</p>
+                      <p className="text-text-secondary text-sm mb-3 line-clamp-3">{idea.caption}</p>
 
                       <div className="flex items-center gap-2 flex-wrap mb-3">
                         <Badge variant="info" className="text-xs">{idea.platform}</Badge>
                         {idea.hashtags?.slice(0, 3).map((tag, i) => (
-                          <span key={i} className="text-xs text-gray-500 flex items-center gap-1">
+                          <span key={i} className="text-xs text-text-muted flex items-center gap-1">
                             <Hash className="w-3 h-3" />#{tag}
                           </span>
                         ))}
@@ -381,26 +381,26 @@ export default function ContentIdeasPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                        <span className="text-xs text-gray-400">
+                      <div className="flex items-center justify-between pt-3 border-t border-border-ghost">
+                        <span className="text-xs text-text-muted">
                           {new Date(idea.created_at).toLocaleDateString()}
                         </span>
                         <div className="flex gap-1">
                           <button
                             onClick={() => { setSelectedIdea(idea); setShowDetail(true) }}
-                            className="p-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-700"
+                            className="p-1.5 hover:bg-bg-surface rounded text-text-muted hover:text-text-secondary"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => { setImagePrompt(idea.image_prompt || ''); setShowImageModal(true) }}
-                            className="p-1.5 hover:bg-blue-50 rounded text-gray-500 hover:text-blue-600"
+                                className="p-1.5 hover:bg-accent-primary/10 rounded text-text-muted hover:text-accent-primary"
                           >
                             <ImageIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => console.log('Generate video script for', idea.id)}
-                            className="p-1.5 hover:bg-purple-50 rounded text-gray-500 hover:text-purple-600"
+                            className="p-1.5 hover:bg-accent-purple/10 rounded text-text-muted hover:text-accent-purple"
                           >
                             <Video className="w-4 h-4" />
                           </button>
@@ -408,19 +408,19 @@ export default function ContentIdeasPage() {
                             <>
                               <button
                                 onClick={() => handleApprove(idea.id)}
-                                className="p-1.5 hover:bg-green-50 rounded text-gray-500 hover:text-green-600"
+                                className="p-1.5 hover:bg-accent-emerald/10 rounded text-text-muted hover:text-accent-emerald"
                               >
                                 <Sparkles className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => { setSelectedIdea(idea); setShowDetail(true); setScheduleDate('') }}
-                                className="p-1.5 hover:bg-blue-50 rounded text-gray-500 hover:text-blue-600"
+                            className="p-1.5 hover:bg-accent-primary/10 rounded text-text-muted hover:text-accent-primary"
                               >
                                 <Calendar className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handlePublish(idea.id)}
-                                className="p-1.5 hover:bg-green-50 rounded text-gray-500 hover:text-green-600"
+                                className="p-1.5 hover:bg-accent-emerald/10 rounded text-text-muted hover:text-accent-emerald"
                               >
                                 <Send className="w-4 h-4" />
                               </button>
@@ -428,7 +428,7 @@ export default function ContentIdeasPage() {
                           )}
                           <button
                             onClick={() => handleDelete(idea.id)}
-                            className="p-1.5 hover:bg-red-50 rounded text-gray-500 hover:text-red-600"
+                            className="p-1.5 hover:bg-accent-red/10 rounded text-text-muted hover:text-accent-red"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -443,40 +443,40 @@ export default function ContentIdeasPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Stats</h3>
+              <div className="bg-white rounded-xl border border-border-subtle p-6">
+                <h3 className="font-semibold text-text-primary mb-4">Stats</h3>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Total Ideas</span>
-                <span className="font-medium text-gray-900">{ideas.length}</span>
+                <span className="text-text-secondary">Total Ideas</span>
+                 <span className="font-medium text-text-primary">{ideas.length}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Drafts</span>
-                <span className="font-medium text-amber-600">
+                <span className="text-text-secondary">Drafts</span>
+                 <span className="font-medium text-accent-gold">
                   {ideas.filter(p => p.status === 'draft').length}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Scheduled</span>
-                <span className="font-medium text-blue-600">
+                <span className="text-text-secondary">Scheduled</span>
+                 <span className="font-medium text-accent-primary">
                   {ideas.filter(p => p.status === 'scheduled').length}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Published</span>
-                <span className="font-medium text-green-600">
+                <span className="text-text-secondary">Published</span>
+                 <span className="font-medium text-accent-emerald">
                   {ideas.filter(p => p.status === 'published').length}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Auto-Generated</span>
-                <span className="font-medium text-purple-600">
+                <span className="text-text-secondary">Auto-Generated</span>
+                <span className="font-medium text-accent-purple">
                   {ideas.filter(p => p.auto_generated).length}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">High Priority</span>
-                <span className="font-medium text-red-600">
+                <span className="text-text-secondary">High Priority</span>
+                <span className="font-medium text-accent-red">
                   {ideas.filter(p => p.urgency === 'high').length}
                 </span>
               </div>
@@ -484,23 +484,23 @@ export default function ContentIdeasPage() {
           </div>
 
           {showDetail && selectedIdea && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Schedule Post</h3>
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{selectedIdea.caption}</p>
+            <div className="bg-white rounded-xl border border-border-subtle p-6">
+              <h3 className="font-semibold text-text-primary mb-3">Schedule Post</h3>
+              <p className="text-sm text-text-secondary mb-3 line-clamp-2">{selectedIdea.caption}</p>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Schedule Date & Time</label>
+                  <label className="block text-xs text-text-muted mb-1">Schedule Date & Time</label>
                   <input
                     type="datetime-local"
                     value={scheduleDate}
                     onChange={(e) => setScheduleDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900"
+                    className="w-full px-3 py-2 border border-border-default rounded-lg text-sm text-text-primary"
                   />
                 </div>
                 <Button
                   onClick={() => handleSchedule(selectedIdea.id)}
                   disabled={scheduling || !scheduleDate}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full bg-accent-primary hover:bg-accent-primary/90 text-white"
                 >
                   {scheduling ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Calendar className="w-4 h-4 mr-2" />}
                   Schedule
@@ -509,22 +509,22 @@ export default function ContentIdeasPage() {
             </div>
           )}
 
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border border-purple-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Daily Automation</h3>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-gradient-to-br from-accent-purple/10 to-accent-primary/10 rounded-xl border border-accent-purple/20 p-6">
+            <h3 className="font-semibold text-text-primary mb-2">Daily Automation</h3>
+            <p className="text-sm text-text-secondary mb-4">
               Ideas are auto-generated daily at 6am WAT. Toggle auto-refresh to see new ideas.
             </p>
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <TrendingUp className="w-4 h-4 text-green-600" />
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <TrendingUp className="w-4 h-4 text-accent-emerald" />
                 <span>Live trend monitoring</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Sparkles className="w-4 h-4 text-purple-600" />
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <Sparkles className="w-4 h-4 text-accent-purple" />
                 <span>AI-powered content</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Clock className="w-4 h-4 text-blue-600" />
+              <div className="flex items-center gap-2 text-sm text-text-secondary">
+                <Clock className="w-4 h-4 text-accent-primary" />
                 <span>Nigeria-optimal scheduling</span>
               </div>
             </div>
@@ -536,21 +536,21 @@ export default function ContentIdeasPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-gray-900">Generate AI Image</h3>
+              <h3 className="font-semibold text-text-primary">Generate AI Image</h3>
               <button 
                 onClick={() => setShowImageModal(false)}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-1 hover:bg-bg-surface rounded"
               >
                 ✕
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-700 mb-2">Image Prompt</label>
+                <label className="block text-sm text-text-secondary mb-2">Image Prompt</label>
                 <textarea
                   value={imagePrompt}
                   onChange={(e) => setImagePrompt(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900"
+                  className="w-full px-3 py-2 border border-border-default rounded-lg text-sm text-text-primary"
                   rows={3}
                   placeholder="Describe the image you want to generate..."
                 />
@@ -558,20 +558,20 @@ export default function ContentIdeasPage() {
               <Button
                 onClick={handleGenerateImage}
                 disabled={generatingImage || !imagePrompt}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full bg-accent-primary hover:bg-accent-primary/90 text-white"
               >
                 {generatingImage ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ImageIcon className="w-4 h-4 mr-2" />}
                 Generate Image
               </Button>
               {generatedImage && (
                 <div>
-                  <p className="text-sm text-gray-700 mb-2">Generated Image:</p>
+                  <p className="text-sm text-text-secondary mb-2">Generated Image:</p>
                   <img 
                     src={generatedImage} 
                     alt="Generated" 
-                    className="w-full rounded-lg border border-gray-200"
+                    className="w-full rounded-lg border border-border-subtle"
                   />
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-text-muted mt-2">
                     Right-click to save or copy URL
                   </p>
                 </div>

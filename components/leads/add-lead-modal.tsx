@@ -131,23 +131,23 @@ export default function AddLeadModal({ open, onClose, onSuccess, lead }: AddLead
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="bg-white rounded-xl border border-gray-200 p-6 max-w-xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-xl border border-border-subtle p-6 max-w-xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              {isEdit ? <Edit3 className="w-4 h-4 text-blue-600" /> : <Plus className="w-4 h-4 text-blue-600" />}
+            <div className="w-8 h-8 bg-accent-primary/10 rounded-lg flex items-center justify-center">
+              {isEdit ? <Edit3 className="w-4 h-4 text-accent-primary" /> : <Plus className="w-4 h-4 text-accent-primary" />}
             </div>
-            <h3 className="font-semibold text-gray-900">{isEdit ? 'Edit Lead' : 'Add New Lead'}</h3>
+            <h3 className="font-semibold text-text-primary">{isEdit ? 'Edit Lead' : 'Add New Lead'}</h3>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
-            <X className="w-4 h-4 text-gray-500" />
+          <button onClick={onClose} className="p-1 hover:bg-bg-surface rounded">
+            <X className="w-4 h-4 text-text-muted" />
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="mb-4 p-3 bg-accent-red/5 border border-accent-red/20 rounded-lg text-accent-red text-sm">
             {error}
           </div>
         )}
@@ -260,7 +260,7 @@ export default function AddLeadModal({ open, onClose, onSuccess, lead }: AddLead
             <Button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+              className="bg-accent-primary hover:bg-accent-primary/90 text-white flex-1"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : isEdit ? <Edit3 className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
               {isEdit ? 'Save Changes' : 'Add Lead'}

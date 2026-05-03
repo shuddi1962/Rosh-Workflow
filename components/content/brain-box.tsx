@@ -50,15 +50,15 @@ export function BrainBox() {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h2 className="font-semibold text-gray-900 mb-6 flex items-center gap-2">
-        <Sparkles className="w-5 h-5 text-purple-600" />
+    <div className="bg-white rounded-xl border border-border-subtle p-6">
+      <h2 className="font-semibold text-text-primary mb-6 flex items-center gap-2">
+        <Sparkles className="w-5 h-5 text-accent-purple" />
         Generate Content
       </h2>
 
       <div className="space-y-4">
         <div>
-          <Label className="text-gray-700">Division</Label>
+          <Label className="text-text-secondary">Division</Label>
           <Select value={division} onValueChange={setDivision}>
             <SelectTrigger>
               <SelectValue />
@@ -71,7 +71,7 @@ export function BrainBox() {
         </div>
 
         <div>
-          <Label className="text-gray-700">Post Type</Label>
+          <Label className="text-text-secondary">Post Type</Label>
           <Select value={postType} onValueChange={setPostType}>
             <SelectTrigger>
               <SelectValue />
@@ -93,7 +93,7 @@ export function BrainBox() {
         </div>
 
         <div>
-          <Label className="text-gray-700">Platform</Label>
+          <Label className="text-text-secondary">Platform</Label>
           <Select value={platform} onValueChange={setPlatform}>
             <SelectTrigger>
               <SelectValue />
@@ -109,7 +109,7 @@ export function BrainBox() {
         </div>
 
         <div>
-          <Label className="text-gray-700">Product ID (optional)</Label>
+          <Label className="text-text-secondary">Product ID (optional)</Label>
           <Input
             placeholder="Enter product ID or leave empty"
             value={productId}
@@ -118,7 +118,7 @@ export function BrainBox() {
         </div>
 
         <div>
-          <Label className="text-gray-700">Trend ID (optional)</Label>
+          <Label className="text-text-secondary">Trend ID (optional)</Label>
           <Input
             placeholder="Enter trend ID or leave empty"
             value={trendId}
@@ -127,7 +127,7 @@ export function BrainBox() {
         </div>
 
         <div>
-          <Label className="text-gray-700">Custom Instructions (optional)</Label>
+          <Label className="text-text-secondary">Custom Instructions (optional)</Label>
           <Textarea
             placeholder="Add any specific instructions for the AI..."
             value={customPrompt}
@@ -139,7 +139,7 @@ export function BrainBox() {
         <Button
           onClick={handleGenerate}
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full bg-accent-primary hover:bg-accent-primary/90 text-white"
         >
           {loading ? (
             <>
@@ -156,7 +156,7 @@ export function BrainBox() {
       </div>
 
       {generatedPost && (
-        <div className="mt-6 pt-6 border-t border-gray-100">
+        <div className="mt-6 pt-6 border-t border-border-ghost">
           <PostPreview
             caption={(generatedPost.caption as string) || ''}
             hashtags={(generatedPost.hashtags as string[]) || []}

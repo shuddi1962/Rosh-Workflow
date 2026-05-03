@@ -92,31 +92,31 @@ export default function TrendsPage() {
     : trends.filter(t => t.is_breaking)
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-red-600 bg-red-50'
-    if (score >= 60) return 'text-orange-600 bg-orange-50'
-    if (score >= 40) return 'text-yellow-600 bg-yellow-50'
-    return 'text-gray-600 bg-gray-50'
+    if (score >= 80) return 'text-accent-red bg-accent-red/10'
+    if (score >= 60) return 'text-accent-orange bg-accent-orange/10'
+    if (score >= 40) return 'text-accent-gold bg-accent-gold/10'
+    return 'text-text-secondary bg-bg-surface'
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-full mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Live Trend Monitor</h1>
-          <p className="text-gray-600">Real-time trending topics for marine and tech divisions</p>
+          <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Live Trend Monitor</h1>
+          <p className="text-text-secondary">Real-time trending topics for marine and tech divisions</p>
         </div>
         <Button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-accent-primary hover:bg-accent-primary/90 text-white"
         >
           {refreshing ? (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -128,7 +128,7 @@ export default function TrendsPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
@@ -140,7 +140,7 @@ export default function TrendsPage() {
             variant={filter === f ? 'default' : 'outline'}
             onClick={() => setFilter(f)}
             size="sm"
-            className={filter === f ? 'bg-blue-600 hover:bg-blue-700' : ''}
+            className={filter === f ? 'bg-accent-primary hover:bg-accent-primary/90' : ''}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
             {f === 'breaking' && <Flame className="w-3 h-3 ml-1" />}
@@ -149,14 +149,14 @@ export default function TrendsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
+        <div className="bg-white rounded-xl border border-border-subtle p-6">
+          <h3 className="font-clash text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-accent-primary" />
             Marine Trends
           </h3>
           <div className="space-y-3">
             {filteredTrends.filter(t => t.division_relevance === 'marine').length === 0 ? (
-              <p className="text-gray-500 text-sm">No marine trends found</p>
+              <p className="text-text-muted text-sm">No marine trends found</p>
             ) : (
               filteredTrends
                 .filter(t => t.division_relevance === 'marine')
@@ -166,29 +166,29 @@ export default function TrendsPage() {
                     key={trend.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="p-3 bg-gray-50 rounded-lg border-l-4 border-blue-600"
+                    className="p-3 bg-bg-surface rounded-lg border-l-4 border-accent-primary"
                   >
                     <div className="flex items-start justify-between mb-1">
-                      <p className="text-gray-900 text-sm font-medium">{trend.keyword}</p>
+                      <p className="text-text-primary text-sm font-medium">{trend.keyword}</p>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${getScoreColor(trend.momentum_score)}`}>
                         {trend.momentum_score}
                       </span>
                     </div>
-                    <p className="text-gray-500 text-xs">{trend.source} • Marine Division</p>
+                    <p className="text-text-muted text-xs">{trend.source} • Marine Division</p>
                   </motion.div>
                 ))
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-purple-600" />
+        <div className="bg-white rounded-xl border border-border-subtle p-6">
+          <h3 className="font-clash text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-accent-purple" />
             Tech Trends
           </h3>
           <div className="space-y-3">
             {filteredTrends.filter(t => t.division_relevance === 'tech').length === 0 ? (
-              <p className="text-gray-500 text-sm">No tech trends found</p>
+              <p className="text-text-muted text-sm">No tech trends found</p>
             ) : (
               filteredTrends
                 .filter(t => t.division_relevance === 'tech')
@@ -198,15 +198,15 @@ export default function TrendsPage() {
                     key={trend.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="p-3 bg-gray-50 rounded-lg border-l-4 border-purple-600"
+                    className="p-3 bg-bg-surface rounded-lg border-l-4 border-accent-purple"
                   >
                     <div className="flex items-start justify-between mb-1">
-                      <p className="text-gray-900 text-sm font-medium">{trend.keyword}</p>
+                      <p className="text-text-primary text-sm font-medium">{trend.keyword}</p>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${getScoreColor(trend.momentum_score)}`}>
                         {trend.momentum_score}
                       </span>
                     </div>
-                    <p className="text-gray-500 text-xs">{trend.source} • Tech Division</p>
+                    <p className="text-text-muted text-xs">{trend.source} • Tech Division</p>
                   </motion.div>
                 ))
             )}
@@ -214,8 +214,8 @@ export default function TrendsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4">All Trends</h3>
+      <div className="bg-white rounded-xl border border-border-subtle p-6">
+        <h3 className="font-clash text-lg font-semibold text-text-primary mb-4">All Trends</h3>
         <div className="space-y-3">
           <AnimatePresence>
             {filteredTrends.map((trend) => (
@@ -224,28 +224,28 @@ export default function TrendsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition"
+                className="p-4 bg-bg-surface rounded-lg border border-border-ghost hover:border-border-subtle transition"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       {trend.is_breaking && (
-                        <Badge className="bg-red-100 text-red-700">
+                        <Badge className="bg-accent-red/10 text-accent-red">
                           <Flame className="w-3 h-3 mr-1" />
                           Breaking
                         </Badge>
                       )}
-                      <span className="text-gray-900 text-sm font-medium">{trend.keyword}</span>
+                      <span className="text-text-primary text-sm font-medium">{trend.keyword}</span>
                     </div>
-                    <p className="text-gray-600 text-xs mb-2">{trend.description}</p>
+                    <p className="text-text-secondary text-xs mb-2">{trend.description}</p>
                     <div className="flex items-center gap-3 flex-wrap">
                       <Badge
                         variant={trend.division_relevance === 'marine' ? 'default' : 'info'}
-                        className={trend.division_relevance === 'marine' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}
+                        className={trend.division_relevance === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-purple/10 text-accent-purple'}
                       >
                         {trend.division_relevance}
                       </Badge>
-                      <span className="text-xs text-gray-500">{trend.source}</span>
+                      <span className="text-xs text-text-muted">{trend.source}</span>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${getScoreColor(trend.momentum_score)}`}>
                         Score: {trend.momentum_score}
                       </span>
@@ -264,8 +264,8 @@ export default function TrendsPage() {
           </AnimatePresence>
 
           {filteredTrends.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              <Info className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+            <div className="text-center py-8 text-text-muted">
+              <Info className="w-8 h-8 mx-auto mb-2 text-text-secondary" />
               No trends found. Click "Refresh Trends" to fetch the latest trends.
             </div>
           )}

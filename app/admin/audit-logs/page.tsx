@@ -42,11 +42,11 @@ export default function AdminAuditLogsPage() {
     }
   }
 
-  if (loading) return <div className="p-6 text-gray-600">Loading audit logs...</div>
+  if (loading) return <div className="p-6 text-text-secondary">Loading audit logs...</div>
 
   return (
     <div>
-      <h1 className="text-3xl font-clash font-bold text-gray-900 mb-8">Audit Logs</h1>
+      <h1 className="text-3xl font-clash font-bold text-text-primary mb-8">Audit Logs</h1>
 
       <div className="flex gap-4 mb-6">
         <input
@@ -54,43 +54,43 @@ export default function AdminAuditLogsPage() {
           value={filterAction}
           onChange={(e) => setFilterAction(e.target.value)}
           placeholder="Filter by action..."
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+          className="px-4 py-2 border border-border-subtle rounded-lg text-sm text-text-primary"
         />
         <input
           type="text"
           value={filterEntity}
           onChange={(e) => setFilterEntity(e.target.value)}
           placeholder="Filter by entity..."
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+          className="px-4 py-2 border border-border-subtle rounded-lg text-sm text-text-primary"
         />
-        <button onClick={fetchLogs} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Apply</button>
+        <button onClick={fetchLogs} className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90">Apply</button>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-border-subtle overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-bg-surface">
             <tr>
-              <th className="text-left p-4 text-gray-600 text-sm">Timestamp</th>
-              <th className="text-left p-4 text-gray-600 text-sm">User</th>
-              <th className="text-left p-4 text-gray-600 text-sm">Action</th>
-              <th className="text-left p-4 text-gray-600 text-sm">Entity</th>
-              <th className="text-left p-4 text-gray-600 text-sm">IP</th>
+              <th className="text-left p-4 text-text-secondary text-sm">Timestamp</th>
+              <th className="text-left p-4 text-text-secondary text-sm">User</th>
+              <th className="text-left p-4 text-text-secondary text-sm">Action</th>
+              <th className="text-left p-4 text-text-secondary text-sm">Entity</th>
+              <th className="text-left p-4 text-text-secondary text-sm">IP</th>
             </tr>
           </thead>
           <tbody>
             {logs.map((log) => (
-              <tr key={log.id} className="border-t border-gray-200 hover:bg-gray-50">
-                <td className="p-4 text-gray-600 text-sm">{new Date(log.created_at).toLocaleString()}</td>
-                <td className="p-4 text-gray-900 text-sm">{log.user_id}</td>
-                <td className="p-4 text-gray-900 text-sm font-medium">{log.action}</td>
-                <td className="p-4 text-gray-600 text-sm">{log.entity_type}</td>
-                <td className="p-4 text-gray-500 text-sm font-mono">{log.ip_address}</td>
+              <tr key={log.id} className="border-t border-border-subtle hover:bg-bg-surface">
+                <td className="p-4 text-text-secondary text-sm">{new Date(log.created_at).toLocaleString()}</td>
+                <td className="p-4 text-text-primary text-sm">{log.user_id}</td>
+                <td className="p-4 text-text-primary text-sm font-medium">{log.action}</td>
+                <td className="p-4 text-text-secondary text-sm">{log.entity_type}</td>
+                <td className="p-4 text-text-muted text-sm font-mono">{log.ip_address}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {logs.length === 0 && (
-          <p className="p-8 text-gray-500 text-center">No audit logs found</p>
+          <p className="p-8 text-text-muted text-center">No audit logs found</p>
         )}
       </div>
     </div>

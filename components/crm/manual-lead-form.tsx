@@ -82,10 +82,10 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
     onSave(gatherFormData())
   }
 
-  const inputClass = 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
-  const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5'
+  const inputClass = 'w-full px-3 py-2 border border-border-subtle rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+  const labelClass = 'block text-sm font-medium text-text-secondary mb-1.5'
   const sectionClass = 'mb-6'
-  const sectionTitle = 'text-base font-semibold text-gray-900 mb-4 flex items-center gap-2'
+  const sectionTitle = 'text-base font-semibold text-text-primary mb-4 flex items-center gap-2'
 
   return (
     <div className="max-h-[80vh] overflow-y-auto pr-2">
@@ -105,8 +105,8 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
             <input type="tel" value={formData.phone as string} onChange={e => set('phone', e.target.value)} className={inputClass} placeholder="e.g., 08123456789" />
           </div>
           <div className="flex items-center gap-2 pt-6">
-            <input type="checkbox" id="wa-same" checked={formData.whatsapp_same_as_phone as boolean} onChange={e => set('whatsapp_same_as_phone', e.target.checked)} className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-            <label htmlFor="wa-same" className="text-sm text-gray-700">WhatsApp same as phone</label>
+            <input type="checkbox" id="wa-same" checked={formData.whatsapp_same_as_phone as boolean} onChange={e => set('whatsapp_same_as_phone', e.target.checked)} className="h-4 w-4 text-blue-600 rounded border-border-subtle focus:ring-blue-500" />
+            <label htmlFor="wa-same" className="text-sm text-text-secondary">WhatsApp same as phone</label>
           </div>
           <div>
             <label className={labelClass}>Email</label>
@@ -132,15 +132,15 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           <div>
             <label className={labelClass}>Country</label>
-            <input type="text" value="Nigeria" disabled className={`${inputClass} bg-gray-50`} />
+            <input type="text" value="Nigeria" disabled className={`${inputClass} bg-bg-surface`} />
           </div>
           <div>
             <label className={labelClass}>State</label>
-            <input type="text" value="Rivers State" disabled className={`${inputClass} bg-gray-50`} />
+            <input type="text" value="Rivers State" disabled className={`${inputClass} bg-bg-surface`} />
           </div>
           <div>
             <label className={labelClass}>City</label>
-            <input type="text" value="Port Harcourt" disabled className={`${inputClass} bg-gray-50`} />
+            <input type="text" value="Port Harcourt" disabled className={`${inputClass} bg-bg-surface`} />
           </div>
           <div>
             <label className={labelClass}>Area/LGA</label>
@@ -160,8 +160,8 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
           <div className="flex gap-4">
             {['marine', 'tech', 'both'].map(d => (
               <label key={d} className="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="division" checked={formData.division === d} onChange={() => set('division', d)} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                <span className="text-sm text-gray-700 capitalize">{d === 'tech' ? 'Technology' : d}</span>
+                <input type="radio" name="division" checked={formData.division === d} onChange={() => set('division', d)} className="h-4 w-4 text-blue-600 border-border-subtle focus:ring-blue-500" />
+                <span className="text-sm text-text-secondary capitalize">{d === 'tech' ? 'Technology' : d}</span>
               </label>
             ))}
           </div>
@@ -173,7 +173,7 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
               <button key={p} type="button" onClick={() => toggleProduct(p)} className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors border ${
                 (formData.products as string[])?.includes(p)
                   ? 'bg-blue-100 text-blue-800 border-blue-300'
-                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                  : 'bg-bg-surface text-text-secondary border-border-subtle hover:bg-bg-elevated'
               }`}>{p}</button>
             ))}
           </div>
@@ -183,8 +183,8 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
           <div className="flex gap-4">
             {['individual', 'business', 'government'].map(c => (
               <label key={c} className="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="customer_type" checked={formData.customer_type === c} onChange={() => set('customer_type', c)} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                <span className="text-sm text-gray-700 capitalize">{c}</span>
+                <input type="radio" name="customer_type" checked={formData.customer_type === c} onChange={() => set('customer_type', c)} className="h-4 w-4 text-blue-600 border-border-subtle focus:ring-blue-500" />
+                <span className="text-sm text-text-secondary capitalize">{c}</span>
               </label>
             ))}
           </div>
@@ -229,17 +229,17 @@ export default function ManualLeadForm({ onSave, onSaveAddAnother, onSaveView, o
 
       <div className="space-y-3 mb-6">
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" checked={formData.run_ai_qualification as boolean} onChange={e => set('run_ai_qualification', e.target.checked)} className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-          <span className="text-sm text-gray-700">Run AI qualification immediately after adding</span>
+          <input type="checkbox" checked={formData.run_ai_qualification as boolean} onChange={e => set('run_ai_qualification', e.target.checked)} className="h-4 w-4 text-blue-600 rounded border-border-subtle focus:ring-blue-500" />
+          <span className="text-sm text-text-secondary">Run AI qualification immediately after adding</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" checked={formData.send_welcome_message as boolean} onChange={e => set('send_welcome_message', e.target.checked)} className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-          <span className="text-sm text-gray-700">Send welcome message automatically</span>
+          <input type="checkbox" checked={formData.send_welcome_message as boolean} onChange={e => set('send_welcome_message', e.target.checked)} className="h-4 w-4 text-blue-600 rounded border-border-subtle focus:ring-blue-500" />
+          <span className="text-sm text-text-secondary">Send welcome message automatically</span>
         </label>
       </div>
 
-      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
-        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+      <div className="flex flex-wrap gap-2 pt-4 border-t border-border-subtle">
+        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-text-secondary border border-border-subtle rounded-lg hover:bg-bg-surface">Cancel</button>
         <button type="button" onClick={handleSave} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Lead</button>
         {onSaveAddAnother && (
           <button type="button" onClick={() => { const data = gatherFormData(); onSaveAddAnother(data) }} className="px-4 py-2 text-sm bg-white text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50">

@@ -3,7 +3,7 @@ export const ROSHANAL_CRM_STAGES = [
     id: 'new_leads',
     label: 'New Leads',
     color: '#2563EB',
-    border_color: 'border-blue-600',
+    border_color: 'border-accent-primary',
     icon: 'UserPlus',
     auto_action: 'Trigger AI qualification within 5 minutes',
   },
@@ -11,7 +11,7 @@ export const ROSHANAL_CRM_STAGES = [
     id: 'contacted',
     label: 'Contacted',
     color: '#D97706',
-    border_color: 'border-amber-500',
+    border_color: 'border-accent-gold',
     icon: 'PhoneCall',
     auto_action: 'Schedule 48h follow-up if no reply',
   },
@@ -19,7 +19,7 @@ export const ROSHANAL_CRM_STAGES = [
     id: 'qualified',
     label: 'Qualified',
     color: '#7C3AED',
-    border_color: 'border-purple-600',
+    border_color: 'border-accent-purple',
     icon: 'CheckCircle',
     auto_action: 'Send product catalog + book demo call',
   },
@@ -27,7 +27,7 @@ export const ROSHANAL_CRM_STAGES = [
     id: 'proposal_sent',
     label: 'Proposal Sent',
     color: '#EA580C',
-    border_color: 'border-orange-500',
+    border_color: 'border-accent-orange',
     icon: 'FileText',
     auto_action: 'Follow up in 72h if no response',
   },
@@ -35,7 +35,7 @@ export const ROSHANAL_CRM_STAGES = [
     id: 'closed_won',
     label: 'Closed Won',
     color: '#16A34A',
-    border_color: 'border-green-600',
+    border_color: 'border-accent-emerald',
     icon: 'Star',
     auto_action: 'Send thank-you email + request review',
   },
@@ -44,10 +44,10 @@ export const ROSHANAL_CRM_STAGES = [
 export const STAGE_ORDER = ['new_leads', 'contacted', 'qualified', 'proposal_sent', 'closed_won']
 
 export const TIER_COLORS: Record<string, string> = {
-  hot: 'bg-red-500',
-  warm: 'bg-amber-500',
-  cold: 'bg-blue-500',
-  disqualified: 'bg-gray-500',
+  hot: 'bg-accent-red',
+  warm: 'bg-accent-gold',
+  cold: 'bg-accent-primary',
+  disqualified: 'bg-text-muted',
 }
 
 export const TIER_EMOJIS: Record<string, string> = {
@@ -58,10 +58,10 @@ export const TIER_EMOJIS: Record<string, string> = {
 }
 
 export const GRADE_COLORS: Record<string, string> = {
-  A: 'text-red-600',
-  B: 'text-amber-600',
-  C: 'text-blue-600',
-  D: 'text-gray-500',
+  A: 'text-accent-red',
+  B: 'text-accent-gold',
+  C: 'text-accent-primary',
+  D: 'text-text-muted',
 }
 
 export const PORT_HARCOURT_AREAS = [

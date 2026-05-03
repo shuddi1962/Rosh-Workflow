@@ -97,7 +97,7 @@ export default function DashboardSettingsPage() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
@@ -109,18 +109,18 @@ export default function DashboardSettingsPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-        <p className="text-gray-600">Manage your profile and account settings</p>
+        <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Settings</h1>
+        <p className="text-text-secondary">Manage your profile and account settings</p>
       </motion.div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/5 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 mb-6 flex items-center gap-2">
+        <div className="bg-accent-emerald/5 border border-accent-emerald/20 rounded-lg p-4 text-accent-emerald mb-6 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4" />
           {success}
         </div>
@@ -130,11 +130,11 @@ export default function DashboardSettingsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-xl border border-gray-200 p-6 space-y-6"
+        className="bg-white rounded-xl border border-border-subtle p-6 space-y-6"
       >
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-            <User className="w-5 h-5 text-gray-400" />
+          <h3 className="text-lg font-medium text-text-primary mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-text-muted" />
             Profile Information
           </h3>
           <div className="space-y-4">
@@ -160,17 +160,17 @@ export default function DashboardSettingsPage() {
             {profile && (
               <div className="pt-2">
                 <Label>Role</Label>
-                <p className="mt-1 text-sm text-gray-600 capitalize">{profile.role}</p>
+                <p className="mt-1 text-sm text-text-secondary capitalize">{profile.role}</p>
               </div>
             )}
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-200">
+        <div className="pt-4 border-t border-border-subtle">
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-accent-primary hover:bg-accent-primary/90 text-white"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -186,32 +186,32 @@ export default function DashboardSettingsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-xl border border-gray-200 p-6 mt-6 space-y-6"
+        className="bg-white rounded-xl border border-border-subtle p-6 mt-6 space-y-6"
       >
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
+          <h3 className="text-lg font-medium text-text-primary mb-4">Account Information</h3>
           <div className="space-y-3">
             {profile && (
               <>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">User ID</span>
-                  <span className="text-gray-900 font-mono text-xs">{profile.id}</span>
+                  <span className="text-text-secondary">User ID</span>
+                  <span className="text-text-primary font-mono text-xs">{profile.id}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Account Status</span>
-                  <span className={`font-medium ${profile.is_active ? 'text-green-600' : 'text-red-600'}`}>
+                  <span className="text-text-secondary">Account Status</span>
+                  <span className={`font-medium ${profile.is_active ? 'text-accent-emerald' : 'text-accent-red'}`}>
                     {profile.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Last Login</span>
-                  <span className="text-gray-900">
+                  <span className="text-text-secondary">Last Login</span>
+                  <span className="text-text-primary">
                     {profile.last_login ? new Date(profile.last_login).toLocaleString() : 'Never'}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Account Created</span>
-                  <span className="text-gray-900">
+                  <span className="text-text-secondary">Account Created</span>
+                  <span className="text-text-primary">
                     {new Date(profile.created_at).toLocaleDateString()}
                   </span>
                 </div>
@@ -225,9 +225,9 @@ export default function DashboardSettingsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white rounded-xl border border-gray-200 p-6 mt-6"
+        className="bg-white rounded-xl border border-border-subtle p-6 mt-6"
       >
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Security</h3>
+        <h3 className="text-lg font-medium text-text-primary mb-4">Security</h3>
         <Button
           onClick={handleChangePassword}
           variant="outline"

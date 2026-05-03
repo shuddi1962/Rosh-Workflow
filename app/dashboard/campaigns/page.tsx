@@ -115,13 +115,13 @@ export default function DashboardCampaignsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-full mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -129,8 +129,8 @@ export default function DashboardCampaignsPage() {
       >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Outreach Campaigns</h1>
-            <p className="text-gray-600">Create and manage WhatsApp, Email, and SMS campaigns</p>
+            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Outreach Campaigns</h1>
+            <p className="text-text-secondary">Create and manage WhatsApp, Email, and SMS campaigns</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -145,7 +145,7 @@ export default function DashboardCampaignsPage() {
                 setSelectedCampaign(null)
                 setShowEditor(true)
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-accent-primary hover:bg-blue-700 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Campaign
@@ -155,39 +155,39 @@ export default function DashboardCampaignsPage() {
       </motion.div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Mail className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-600">Total</span>
+            <Mail className="w-4 h-4 text-text-muted" />
+            <span className="text-sm text-text-secondary">Total</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 font-mono">{stats.total}</p>
+          <p className="text-2xl font-bold text-text-primary font-mono">{stats.total}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Send className="w-4 h-4 text-green-500" />
-            <span className="text-sm text-gray-600">Sent</span>
+            <Send className="w-4 h-4 text-accent-emerald" />
+            <span className="text-sm text-text-secondary">Sent</span>
           </div>
-          <p className="text-2xl font-bold text-green-600 font-mono">{stats.sent}</p>
+          <p className="text-2xl font-bold text-accent-emerald font-mono">{stats.sent}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <MessageSquare className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-gray-600">Scheduled</span>
+            <MessageSquare className="w-4 h-4 text-accent-primary" />
+            <span className="text-sm text-text-secondary">Scheduled</span>
           </div>
-          <p className="text-2xl font-bold text-blue-600 font-mono">{stats.scheduled}</p>
+          <p className="text-2xl font-bold text-accent-primary font-mono">{stats.scheduled}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
             <Mail className="w-4 h-4 text-yellow-500" />
-            <span className="text-sm text-gray-600">Drafts</span>
+            <span className="text-sm text-text-secondary">Drafts</span>
           </div>
-          <p className="text-2xl font-bold text-yellow-600 font-mono">{stats.draft}</p>
+          <p className="text-2xl font-bold text-accent-gold font-mono">{stats.draft}</p>
         </div>
       </div>
 

@@ -34,30 +34,30 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-clash font-bold text-gray-900">Product Catalog</h1>
-        <Link href="/admin/products/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <h1 className="text-3xl font-clash font-bold text-text-primary">Product Catalog</h1>
+        <Link href="/admin/products/new" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90">
           + Add Product
         </Link>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:border-gray-300 transition">
+          <div key={product.id} className="bg-white rounded-lg border border-border-subtle shadow-sm p-6 hover:border-border-default transition">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-clash font-semibold text-gray-900">{product.name}</h3>
-                <p className="text-gray-500 text-sm">{product.brand} • {product.category}</p>
+                <h3 className="font-clash font-semibold text-text-primary">{product.name}</h3>
+                <p className="text-text-muted text-sm">{product.brand} • {product.category}</p>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs ${product.division === 'marine' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
+              <span className={`px-2 py-1 rounded-full text-xs ${product.division === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-purple/10 text-accent-purple'}`}>
                 {product.division}
               </span>
             </div>
-            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+            <p className="text-text-secondary text-sm mb-4 line-clamp-2">{product.description}</p>
             <div className="flex justify-between items-center">
-              <span className="text-amber-600 font-mono font-medium">{product.price_display}</span>
+              <span className="text-accent-gold font-mono font-medium">{product.price_display}</span>
               <button
                 onClick={() => deleteProduct(product.id)}
-                className="text-red-600 text-sm hover:text-red-800"
+                className="text-accent-red text-sm hover:text-accent-red/80"
               >
                 Delete
               </button>
@@ -67,7 +67,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
       </div>
       
       {products.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-text-muted">
           <p>No products yet. Add your first product to get started.</p>
         </div>
       )}

@@ -71,13 +71,13 @@ export default function DashboardProductsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-full mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -85,11 +85,11 @@ export default function DashboardProductsPage() {
       >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Product Catalog</h1>
-            <p className="text-gray-600">Browse marine and technology products for content generation</p>
+            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Product Catalog</h1>
+            <p className="text-text-secondary">Browse marine and technology products for content generation</p>
           </div>
           <Link href="/admin/products">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-accent-primary hover:bg-accent-primary/90 text-white">
               <ExternalLink className="w-4 h-4 mr-2" />
               Full Management (Admin)
             </Button>
@@ -98,38 +98,38 @@ export default function DashboardProductsPage() {
       </motion.div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-gray-600">Total Products</span>
+            <Package className="w-4 h-4 text-accent-primary" />
+            <span className="text-sm text-text-secondary">Total Products</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900 font-mono">{products.length}</p>
+          <p className="text-2xl font-bold text-text-primary font-mono">{products.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-blue-600" />
-            <span className="text-sm text-gray-600">Marine Division</span>
+            <Package className="w-4 h-4 text-accent-primary" />
+            <span className="text-sm text-text-secondary">Marine Division</span>
           </div>
-          <p className="text-2xl font-bold text-blue-600 font-mono">{marineCount}</p>
+          <p className="text-2xl font-bold text-accent-primary font-mono">{marineCount}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-purple-600" />
-            <span className="text-sm text-gray-600">Tech Division</span>
+            <Package className="w-4 h-4 text-accent-purple" />
+            <span className="text-sm text-text-secondary">Tech Division</span>
           </div>
-          <p className="text-2xl font-bold text-purple-600 font-mono">{techCount}</p>
+          <p className="text-2xl font-bold text-accent-purple font-mono">{techCount}</p>
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <Input
             placeholder="Search products by name, brand, or category..."
             value={search}
@@ -159,8 +159,8 @@ export default function DashboardProductsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <AnimatePresence>
           {filteredProducts.length === 0 ? (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <div className="col-span-full text-center py-12 text-text-muted">
+              <Package className="w-12 h-12 mx-auto mb-4 text-text-muted" />
               <p>No products found. Add products via the admin panel.</p>
             </div>
           ) : (
@@ -170,37 +170,37 @@ export default function DashboardProductsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gray-300 hover:shadow-md transition"
+                className="bg-white rounded-xl border border-border-subtle p-4 hover:border-border-default hover:shadow-md transition"
               >
                 <div className="flex items-start justify-between mb-3">
                   <Badge variant={product.division === 'marine' ? 'default' : 'info'}
-                    className={product.division === 'marine' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}>
+                    className={product.division === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-purple/10 text-accent-purple'}>
                     {product.division}
                   </Badge>
                   {product.is_new_arrival && (
-                    <Badge className="bg-green-100 text-green-800">New</Badge>
+                    <Badge className="bg-accent-emerald/10 text-accent-emerald">New</Badge>
                   )}
                   {product.is_featured && (
-                    <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>
+                    <Badge className="bg-accent-gold/10 text-accent-gold">Featured</Badge>
                   )}
                 </div>
 
-                <h3 className="font-medium text-gray-900 mb-1">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2">{product.brand} {product.model}</p>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                <h3 className="font-medium text-text-primary mb-1">{product.name}</h3>
+                <p className="text-sm text-text-muted mb-2">{product.brand} {product.model}</p>
+                <p className="text-sm text-text-secondary mb-3 line-clamp-2">{product.description}</p>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-gray-900 font-mono">
+                  <span className="text-lg font-bold text-text-primary font-mono">
                     {product.price_display || (product.price_naira ? `₦${product.price_naira.toLocaleString()}` : 'Contact for price')}
                   </span>
                   <Badge variant={product.is_available ? 'default' : 'error'}
-                    className={product.is_available ? 'bg-green-100 text-green-800' : ''}>
+                    className={product.is_available ? 'bg-accent-emerald/10 text-accent-emerald' : ''}>
                     {product.is_available ? 'Available' : 'Out of Stock'}
                   </Badge>
                 </div>
 
                 {product.category && (
-                  <p className="text-xs text-gray-500 mt-2">{product.category}</p>
+                  <p className="text-xs text-text-muted mt-2">{product.category}</p>
                 )}
               </motion.div>
             ))

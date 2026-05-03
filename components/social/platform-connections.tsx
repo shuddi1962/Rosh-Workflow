@@ -6,14 +6,12 @@ import { Badge } from "@/components/ui/badge"
 import { Facebook, Instagram, Linkedin, Twitter, MessageCircle, Video, Globe, Plus } from "lucide-react"
 
 const platformConfig: Record<string, { icon: typeof Facebook; color: string; label: string }> = {
-  facebook: { icon: Facebook, color: "text-blue-500", label: "Facebook" },
-  instagram: { icon: Instagram, color: "text-pink-500", label: "Instagram" },
-  linkedin: { icon: Linkedin, color: "text-blue-700", label: "LinkedIn" },
-  twitter: { icon: Twitter, color: "text-gray-400", label: "Twitter/X" },
-  whatsapp: { icon: MessageCircle, color: "text-green-500", label: "WhatsApp" },
-  tiktok: { icon: Video, color: "text-text-primary", label: "TikTok" },
-  youtube: { icon: Video, color: "text-red-500", label: "YouTube" },
-  telegram: { icon: Globe, color: "text-blue-400", label: "Telegram" },
+  facebook: { icon: Facebook, color: "text-accent-primary", label: "Facebook" },
+  instagram: { icon: Instagram, color: "text-accent-purple", label: "Instagram" },
+  linkedin: { icon: Linkedin, color: "text-accent-primary", label: "LinkedIn" },
+  whatsapp: { icon: MessageCircle, color: "text-accent-emerald", label: "WhatsApp" },
+  youtube: { icon: Video, color: "text-accent-red", label: "YouTube" },
+  telegram: { icon: Globe, color: "text-accent-primary", label: "Telegram" },
 }
 
 export function PlatformConnections() {

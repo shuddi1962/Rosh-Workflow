@@ -126,13 +126,13 @@ export default function SocialPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-full mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -140,8 +140,8 @@ export default function SocialPage() {
       >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-clash text-3xl font-bold text-gray-900 mb-2">Social Media Automation</h1>
-            <p className="text-gray-600">Schedule and publish content across all platforms</p>
+            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Social Media Automation</h1>
+            <p className="text-text-secondary">Schedule and publish content across all platforms</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -156,7 +156,7 @@ export default function SocialPage() {
                 setSelectedPost(null)
                 setShowEditor(true)
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-accent-primary hover:bg-accent-primary/90 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Post
@@ -166,7 +166,7 @@ export default function SocialPage() {
       </motion.div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
@@ -179,16 +179,16 @@ export default function SocialPage() {
               key={platform}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-xl border border-gray-200 p-6"
+              className="bg-white rounded-xl border border-border-subtle p-6"
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="font-clash font-semibold text-gray-900">{platform}</h3>
+                <h3 className="font-clash font-semibold text-text-primary">{platform}</h3>
                 <Badge variant={account?.is_connected ? 'default' : 'error'}
-                  className={account?.is_connected ? 'bg-green-100 text-green-800' : ''}>
+                  className={account?.is_connected ? 'bg-accent-emerald/10 text-accent-emerald' : ''}>
                   {account?.is_connected ? 'Connected' : 'Not Connected'}
                 </Badge>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-text-secondary text-sm">
                 {account ? `${account.post_count_today} posts today` : 'Not configured'}
               </p>
             </motion.div>
@@ -210,9 +210,9 @@ export default function SocialPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-gray-400" />
+        <div className="bg-white rounded-xl border border-border-subtle p-6">
+          <h3 className="font-clash text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-text-muted" />
             Scheduled Posts
           </h3>
           <PostQueue onSelectPost={(post) => {
@@ -221,22 +221,22 @@ export default function SocialPage() {
           }} />
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-clash text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-gray-400" />
+        <div className="bg-white rounded-xl border border-border-subtle p-6">
+          <h3 className="font-clash text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Share2 className="w-5 h-5 text-text-muted" />
             Recent Posts
           </h3>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
             {posts.filter(p => p.status === 'published').length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">No published posts yet</p>
+              <p className="text-text-muted text-sm text-center py-4">No published posts yet</p>
             ) : (
               posts.filter(p => p.status === 'published').slice(0, 10).map((post) => (
-                <div key={post.id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div key={post.id} className="p-3 bg-bg-surface rounded-lg border border-border-ghost">
                   <div className="flex items-start justify-between mb-2">
-                    <p className="text-gray-900 text-sm font-medium line-clamp-2">{post.caption}</p>
+                    <p className="text-text-primary text-sm font-medium line-clamp-2">{post.caption}</p>
                     <Badge variant="info" className="ml-2">{post.platform}</Badge>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <div className="flex items-center gap-3 text-xs text-text-muted">
                     <span>{new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
                     {post.engagement && (
                       <span>

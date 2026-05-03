@@ -102,16 +102,16 @@ const CustomerSegmentsTab: React.FC<CustomerSegmentsTabProps> = ({ segments, onL
                 <div className={`p-2.5 ${colors.bg} rounded-lg`}>
                   <IconComponent className={`w-5 h-5 ${colors.text}`} />
                 </div>
-                <span className={`text-3xl font-bold text-gray-900 leading-none`}>
-                  {segment.count.toLocaleString()}
-                </span>
-              </div>
+              <span className={`text-3xl font-bold text-text-primary leading-none`}>
+                {segment.count.toLocaleString()}
+              </span>
+            </div>
 
-              <h3 className="text-base font-bold text-gray-900 mb-1">{segment.label}</h3>
-              <p className="text-xs text-gray-500 mb-3">{segment.sublabel}</p>
+            <h3 className="text-base font-bold text-text-primary mb-1">{segment.label}</h3>
+            <p className="text-xs text-text-muted mb-3">{segment.sublabel}</p>
 
-              <div className="flex items-baseline justify-between">
-                <span className="text-xs text-gray-500">customers</span>
+            <div className="flex items-baseline justify-between">
+              <span className="text-xs text-text-muted">customers</span>
                 <span className={`text-sm font-semibold ${colors.text}`}>
                   ₦{segment.avgOrder.toLocaleString()} avg order
                 </span>

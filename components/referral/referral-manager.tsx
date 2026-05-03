@@ -133,10 +133,10 @@ export default function ReferralManager({ leadId }: ReferralManagerProps) {
                 </div>
                 <div className="text-right">
                   <span className={`text-xs px-2 py-1 rounded-full ${
-                    referral.status === 'customer' ? 'bg-emerald-500/20 text-emerald-400' :
-                    referral.status === 'qualified' ? 'bg-blue-500/20 text-blue-400' :
-                    referral.status === 'paid' ? 'bg-amber-500/20 text-amber-400' :
-                    'bg-gray-500/20 text-gray-400'
+                    referral.status === 'customer' ? 'bg-accent-emerald/20 text-accent-emerald' :
+                    referral.status === 'qualified' ? 'bg-accent-primary/20 text-accent-primary' :
+                    referral.status === 'paid' ? 'bg-accent-gold/20 text-accent-gold' :
+                    'bg-text-muted/20 text-text-muted'
                   }`}>
                     {referral.status}
                   </span>

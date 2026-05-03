@@ -2,7 +2,7 @@ export default function SocialAccountsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-clash font-bold text-gray-900">Social Media Accounts</h1>
+        <h1 className="text-3xl font-clash font-bold text-text-primary">Social Media Accounts</h1>
       </div>
       
       <div className="space-y-4">
@@ -13,15 +13,15 @@ export default function SocialAccountsPage() {
           { platform: 'LinkedIn', icon: '💼' },
           { platform: 'Twitter/X', icon: '🐦' },
         ].map((account) => (
-          <div key={account.platform} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex items-center justify-between">
+          <div key={account.platform} className="bg-white p-6 rounded-lg border border-border-subtle shadow-sm flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="text-2xl">{account.icon}</span>
               <div>
-                <h3 className="font-medium text-gray-900">{account.platform}</h3>
-                <p className="text-sm text-gray-500">Not connected</p>
+                <h3 className="font-medium text-text-primary">{account.platform}</h3>
+                <p className="text-sm text-text-muted">Not connected</p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+            <button className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm">
               Connect
             </button>
           </div>

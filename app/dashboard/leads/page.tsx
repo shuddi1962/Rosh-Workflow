@@ -125,22 +125,22 @@ export default function LeadsPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
     </div>
   )
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-full mx-auto space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="font-clash text-2xl font-bold text-gray-900 mb-1">Lead Management</h1>
-        <p className="text-gray-600 text-sm">Manage and track all your business leads</p>
+        <h1 className="font-clash text-2xl font-bold text-text-primary mb-1">Lead Management</h1>
+        <p className="text-text-secondary text-sm">Manage and track all your business leads</p>
       </motion.div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red">
           Error: {error}
         </div>
       )}
@@ -156,11 +156,11 @@ export default function LeadsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-xl border border-gray-200 p-4"
+        className="bg-white rounded-xl border border-border-subtle p-4"
       >
         <div className="flex flex-col md:flex-row gap-3 mb-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
             <Input
               placeholder="Search leads by name, company, or phone..."
               value={search}
@@ -224,27 +224,27 @@ export default function LeadsPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="hover:bg-gray-50"
+                  className="hover:bg-bg-surface"
                 >
-                  <TableCell className="font-medium text-gray-900">{lead.name}</TableCell>
+                  <TableCell className="font-medium text-text-primary">{lead.name}</TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-1 text-sm text-text-secondary">
                         <Phone className="w-3 h-3" />
                         {lead.phone}
                       </div>
                       {lead.email && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-1 text-xs text-text-muted">
                           <Mail className="w-3 h-3" />
                           {lead.email}
                         </div>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-gray-600 text-sm">{lead.company || "—"}</TableCell>
+                  <TableCell className="text-text-secondary text-sm">{lead.company || "—"}</TableCell>
                   <TableCell>
                     <Badge variant={lead.division_interest === "marine" ? "default" : "info"}
-                      className={lead.division_interest === "marine" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}
+                      className={lead.division_interest === "marine" ? "bg-accent-primary/10 text-blue-800" : "bg-accent-purple/10 text-accent-purple"}
                     >
                       {lead.division_interest}
                     </Badge>
@@ -271,7 +271,7 @@ export default function LeadsPage() {
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <span className="font-mono text-sm text-gray-900">{lead.score}</span>
+                    <span className="font-mono text-sm text-text-primary">{lead.score}</span>
                   </TableCell>
                   <TableCell>
                     <Button
@@ -290,7 +290,7 @@ export default function LeadsPage() {
         </Table>
 
         {filtered.length === 0 && (
-          <div className="text-center py-8 text-gray-500 text-sm">No leads found matching your criteria</div>
+          <div className="text-center py-8 text-text-muted text-sm">No leads found matching your criteria</div>
         )}
       </motion.div>
 
@@ -302,11 +302,11 @@ export default function LeadsPage() {
           onClick={() => setEditingLead(null)}
         >
           <div
-            className="bg-white rounded-xl border border-gray-200 p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="bg-white rounded-xl border border-border-subtle p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-clash text-lg font-semibold text-gray-900">
+              <h3 className="font-clash text-lg font-semibold text-text-primary">
                 {editingLead.name}
               </h3>
               <Button
@@ -359,7 +359,7 @@ export default function LeadsPage() {
                 <Button
                   onClick={handleSaveNotes}
                   disabled={saving}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-accent-primary hover:bg-blue-700 text-white"
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

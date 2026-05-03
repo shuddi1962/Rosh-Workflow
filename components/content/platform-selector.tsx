@@ -8,7 +8,7 @@ const platforms = [
   { id: "instagram", label: "Instagram", icon: Instagram, color: "text-pink-500" },
   { id: "facebook", label: "Facebook", icon: Facebook, color: "text-blue-500" },
   { id: "linkedin", label: "LinkedIn", icon: Linkedin, color: "text-blue-700" },
-  { id: "twitter", label: "Twitter/X", icon: Twitter, color: "text-gray-400" },
+  { id: "twitter", label: "Twitter/X", icon: Twitter, color: "text-text-muted" },
   { id: "whatsapp", label: "WhatsApp", icon: MessageCircle, color: "text-green-500" },
 ]
 
@@ -38,8 +38,8 @@ export function PlatformSelector({ selected, onChange, single }: PlatformSelecto
             className={clsx(
               "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all",
               isSelected
-                ? "bg-blue-50 border-blue-500 text-blue-700"
-                : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+                ? "bg-accent-primary/10 border-accent-primary text-accent-primary"
+                : "bg-white border-border-subtle text-text-secondary hover:border-border-default"
             )}
           >
             <platform.icon className={clsx("w-4 h-4", platform.color)} />

@@ -90,18 +90,18 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
             className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Automated Lead Scraping</h2>
-              <p className="text-sm text-gray-500 mt-1">Scrape leads from Google Maps, LinkedIn, and social platforms</p>
+            <div className="p-6 border-b border-border-subtle">
+              <h2 className="text-xl font-semibold text-text-primary">Automated Lead Scraping</h2>
+              <p className="text-sm text-text-muted mt-1">Scrape leads from Google Maps, LinkedIn, and social platforms</p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Source</label>
+                <label className="block text-sm font-medium text-text-secondary mb-2">Source</label>
                 <div className="flex flex-wrap gap-2">
                   {SOURCE_TABS.map(tab => (
                     <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                      activeTab === tab.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      activeTab === tab.id ? 'bg-blue-600 text-white' : 'bg-bg-elevated text-text-secondary hover:bg-bg-overlay'
                     }`}>{tab.label}</button>
                   ))}
                 </div>
@@ -109,19 +109,19 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
 
               {activeTab === 'google_maps' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Industry Keywords</label>
+                  <label className="block text-sm font-medium text-text-secondary mb-2">Industry Keywords</label>
                   <input
                     type="text"
                     value={keywords}
                     onChange={e => setKeywords(e.target.value)}
                     placeholder="e.g., oil company Port Harcourt GRA"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-border-subtle rounded-lg text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <div className="flex flex-wrap gap-1.5">
-                    <span className="text-xs text-gray-500 mr-1">Suggestions:</span>
+                    <span className="text-xs text-text-muted mr-1">Suggestions:</span>
                     {KEYWORD_SUGGESTIONS.map(kw => (
                       <button key={kw} type="button" onClick={() => toggleKeyword(kw)} className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors border ${
-                        selectedKeywords.includes(kw) ? 'bg-blue-100 text-blue-800 border-blue-300' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                        selectedKeywords.includes(kw) ? 'bg-blue-100 text-blue-800 border-blue-300' : 'bg-bg-surface text-text-secondary border-border-subtle hover:bg-bg-elevated'
                       }`}>{kw}</button>
                     ))}
                   </div>
@@ -129,7 +129,7 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Geographic Area</label>
+                <label className="block text-sm font-medium text-text-secondary mb-3">Geographic Area</label>
                 <div className="flex gap-2 mb-4">
                   {[
                     { id: 'specific_areas', label: 'Specific Areas', icon: '📍' },
@@ -138,7 +138,7 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                     { id: 'custom', label: 'Custom', icon: '📦' },
                   ].map(mode => (
                     <button key={mode.id} type="button" onClick={() => setGeoMode(mode.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                      geoMode === mode.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      geoMode === mode.id ? 'bg-blue-600 text-white' : 'bg-bg-elevated text-text-secondary hover:bg-bg-overlay'
                     }`}>{mode.icon} {mode.label}</button>
                   ))}
                 </div>
@@ -147,22 +147,22 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                   <div className="space-y-4">
                     <div className="flex gap-2">
                       <button type="button" onClick={selectAllPH} className="text-sm text-blue-600 hover:underline">All of Rivers State</button>
-                      <span className="text-gray-300">|</span>
+                      <span className="text-border-ghost">|</span>
                       <button type="button" onClick={() => setSelectedAreas([...PH_SCRAPER_AREAS, ...BAYELSA_AREAS, ...OTHER_AREAS])} className="text-sm text-blue-600 hover:underline">All of Niger Delta</button>
-                      <span className="text-gray-300">|</span>
+                      <span className="text-border-ghost">|</span>
                       <button type="button" onClick={clearAreas} className="text-sm text-red-600 hover:underline">Clear All</button>
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Port Harcourt</h4>
+                      <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Port Harcourt</h4>
                       <div className="grid grid-cols-3 gap-1.5">
                         {PH_SCRAPER_AREAS.map(area => (
                           <label key={area} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors border ${
-                            selectedAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-800' : 'border-gray-100 text-gray-700 hover:bg-gray-50'
+                            selectedAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-800' : 'border-border-ghost text-text-secondary hover:bg-bg-surface'
                           }`}>
                             <input type="checkbox" checked={selectedAreas.includes(area)} onChange={() => toggleArea(area)} className="sr-only" />
                             <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[8px] ${
-                              selectedAreas.includes(area) ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 bg-white'
+                              selectedAreas.includes(area) ? 'bg-blue-600 border-blue-600 text-white' : 'border-border-subtle bg-white'
                             }`}>{selectedAreas.includes(area) ? '✓' : ''}</span>
                             {area}
                           </label>
@@ -171,15 +171,15 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Bayelsa</h4>
+                      <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Bayelsa</h4>
                       <div className="grid grid-cols-3 gap-1.5">
                         {BAYELSA_AREAS.map(area => (
                           <label key={area} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors border ${
-                            selectedAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-800' : 'border-gray-100 text-gray-700 hover:bg-gray-50'
+                            selectedAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-800' : 'border-border-ghost text-text-secondary hover:bg-bg-surface'
                           }`}>
                             <input type="checkbox" checked={selectedAreas.includes(area)} onChange={() => toggleArea(area)} className="sr-only" />
                             <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[8px] ${
-                              selectedAreas.includes(area) ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 bg-white'
+                              selectedAreas.includes(area) ? 'bg-blue-600 border-blue-600 text-white' : 'border-border-subtle bg-white'
                             }`}>{selectedAreas.includes(area) ? '✓' : ''}</span>
                             {area}
                           </label>
@@ -188,15 +188,15 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Other</h4>
+                      <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Other</h4>
                       <div className="grid grid-cols-3 gap-1.5">
                         {OTHER_AREAS.map(area => (
                           <label key={area} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition-colors border ${
-                            selectedAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-800' : 'border-gray-100 text-gray-700 hover:bg-gray-50'
+                            selectedAreas.includes(area) ? 'bg-blue-50 border-blue-200 text-blue-800' : 'border-border-ghost text-text-secondary hover:bg-bg-surface'
                           }`}>
                             <input type="checkbox" checked={selectedAreas.includes(area)} onChange={() => toggleArea(area)} className="sr-only" />
                             <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[8px] ${
-                              selectedAreas.includes(area) ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 bg-white'
+                              selectedAreas.includes(area) ? 'bg-blue-600 border-blue-600 text-white' : 'border-border-subtle bg-white'
                             }`}>{selectedAreas.includes(area) ? '✓' : ''}</span>
                             {area}
                           </label>
@@ -205,8 +205,8 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                     </div>
 
                     {selectedAreas.length > 0 && (
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                        <span className="text-xs text-gray-500">Selected ({selectedAreas.length}):</span>
+                      <div className="p-3 bg-bg-surface rounded-lg">
+                        <span className="text-xs text-text-muted">Selected ({selectedAreas.length}):</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {selectedAreas.map(area => (
                             <span key={area} className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs">{area}</span>
@@ -219,8 +219,8 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
 
                 {geoMode === 'city_wide' && (
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">Scrape all businesses in the entire city.</p>
-                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <p className="text-sm text-text-secondary">Scrape all businesses in the entire city.</p>
+                    <select className="w-full px-3 py-2 border border-border-subtle rounded-lg text-sm">
                       <option>Port Harcourt</option>
                       <option>Yenegoa</option>
                       <option>Warri</option>
@@ -231,41 +231,41 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
 
                 {geoMode === 'radius' && (
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">Scrape within a radius from a center point.</p>
-                    <input type="text" placeholder="Center address (e.g. GRA Phase 2, Port Harcourt)" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                    <p className="text-sm text-text-secondary">Scrape within a radius from a center point.</p>
+                    <input type="text" placeholder="Center address (e.g. GRA Phase 2, Port Harcourt)" className="w-full px-3 py-2 border border-border-subtle rounded-lg text-sm" />
                     <div className="flex items-center gap-3">
-                      <label className="text-sm text-gray-700">Radius:</label>
-                      <input type="number" defaultValue={5} min={1} max={50} className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                      <span className="text-sm text-gray-500">km</span>
+                      <label className="text-sm text-text-secondary">Radius:</label>
+                      <input type="number" defaultValue={5} min={1} max={50} className="w-20 px-3 py-2 border border-border-subtle rounded-lg text-sm" />
+                      <span className="text-sm text-text-muted">km</span>
                     </div>
                   </div>
                 )}
 
                 {geoMode === 'custom' && (
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-600">Define custom locations by entering specific addresses, landmarks, or coordinates.</p>
+                    <p className="text-sm text-text-secondary">Define custom locations by entering specific addresses, landmarks, or coordinates.</p>
                     <textarea
                       placeholder={"Enter locations (one per line):\n18A Rumuola Road, Port Harcourt\n41 Eastern Bypass, PH\nTrans Amadi Industrial Layout\n..."}
                       rows={5}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none"
+                      className="w-full px-3 py-2 border border-border-subtle rounded-lg text-sm resize-none"
                     />
-                    <p className="text-xs text-gray-500">Each line will be used as a separate search location.</p>
+                    <p className="text-xs text-text-muted">Each line will be used as a separate search location.</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Max Leads to Scrape</label>
-                <select value={maxLeads} onChange={e => setMaxLeads(Number(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                <label className="block text-sm font-medium text-text-secondary mb-2">Max Leads to Scrape</label>
+                <select value={maxLeads} onChange={e => setMaxLeads(Number(e.target.value))} className="w-full px-3 py-2 border border-border-subtle rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                   <option value={50}>50 Leads (Free tier)</option>
                   <option value={500}>500 Leads (Pro tier)</option>
                   <option value={5000}>Unlimited (Admin)</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">Estimated time: ~{Math.ceil(maxLeads / 100) * 45} seconds</p>
+                <p className="text-xs text-text-muted mt-1">Estimated time: ~{Math.ceil(maxLeads / 100) * 45} seconds</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">After Scraping</h3>
+                <h3 className="text-sm font-medium text-text-secondary mb-3">After Scraping</h3>
                 <div className="space-y-2.5">
                   {[
                     { key: 'autoQualify', label: 'Auto-qualify all scraped leads with AI' },
@@ -275,16 +275,16 @@ export default function ScraperModal({ open, onScrape, onClose }: ScraperModalPr
                     { key: 'startWhatsapp', label: 'Start WhatsApp outreach to A+B grade leads' },
                   ].map(opt => (
                     <label key={opt.key} className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={postScrape[opt.key as keyof typeof postScrape]} onChange={e => setPostScrape(prev => ({ ...prev, [opt.key]: e.target.checked }))} className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-                      <span className="text-sm text-gray-700">{opt.label}</span>
+                      <input type="checkbox" checked={postScrape[opt.key as keyof typeof postScrape]} onChange={e => setPostScrape(prev => ({ ...prev, [opt.key]: e.target.checked }))} className="h-4 w-4 text-accent-primary rounded border-border-default focus:ring-accent-primary/50" />
+                      <span className="text-sm text-text-secondary">{opt.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
-              <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+            <div className="p-6 border-t border-border-subtle flex justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-text-secondary border border-border-subtle rounded-lg hover:bg-bg-surface">Cancel</button>
               <button type="button" onClick={handleStartScraping} disabled={scraping || selectedAreas.length === 0} className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                 {scraping ? (
                   <>

@@ -16,9 +16,9 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Content Brain</h1>
-        <p className="text-sm text-gray-500">AI-powered content generation and management</p>
-        <div className="flex gap-1 mt-4 bg-gray-100 rounded-lg p-1 w-fit">
+        <h1 className="text-2xl font-bold text-text-primary mb-1">Content Brain</h1>
+        <p className="text-sm text-text-secondary">AI-powered content generation and management</p>
+        <div className="flex gap-1 mt-4 bg-bg-surface rounded-lg p-1 w-fit">
           {subNav.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -28,8 +28,8 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
                 className={clsx(
                   'px-4 py-2 text-sm font-medium rounded-md transition-all',
                   isActive
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                    ? 'bg-white text-text-primary shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-white/50'
                 )}
               >
                 {item.label}

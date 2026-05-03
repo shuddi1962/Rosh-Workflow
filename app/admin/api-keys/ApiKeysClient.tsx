@@ -45,21 +45,21 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
   if (userRole !== 'admin') {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-xl p-8 text-center">
+          <div className="w-16 h-16 bg-accent-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-accent-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-red-900 mb-2">Admin Access Required</h2>
-          <p className="text-red-700 mb-4">Only administrators can view and manage API keys.</p>
-          <div className="bg-white rounded-lg p-4 text-sm text-gray-700 max-w-md mx-auto">
+          <h2 className="text-xl font-bold text-accent-red mb-2">Admin Access Required</h2>
+          <p className="text-accent-red mb-4">Only administrators can view and manage API keys.</p>
+          <div className="bg-white rounded-lg p-4 text-sm text-text-secondary max-w-md mx-auto">
             <p className="font-medium mb-2">Current login:</p>
-            <p><span className="text-gray-500">Name:</span> {userName || 'Unknown'}</p>
-            <p><span className="text-gray-500">Role:</span> <span className="text-red-600 font-medium">{userRole || 'Not logged in'}</span></p>
+            <p><span className="text-text-muted">Name:</span> {userName || 'Unknown'}</p>
+            <p><span className="text-text-muted">Role:</span> <span className="text-accent-red font-medium">{userRole || 'Not logged in'}</span></p>
           </div>
           <div className="mt-6 flex gap-3 justify-center">
-            <a href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Switch to Admin Account</a>
+            <a href="/login" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90">Switch to Admin Account</a>
           </div>
         </div>
       </div>
@@ -161,9 +161,9 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
     <div>
       {toast && (
         <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium transition-all ${
-          toast.type === 'success' ? 'bg-green-600 text-white' :
-          toast.type === 'error' ? 'bg-red-600 text-white' :
-          'bg-blue-600 text-white'
+          toast.type === 'success' ? 'bg-accent-emerald text-white' :
+          toast.type === 'error' ? 'bg-accent-red text-white' :
+          'bg-accent-primary text-white'
         }`}>
           {toast.message}
         </div>
@@ -171,79 +171,79 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
 
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-clash font-bold text-gray-900">API Key Management</h1>
-          <p className="text-sm text-gray-500 mt-1">All keys are encrypted at rest with AES-256-GCM</p>
+          <h1 className="text-3xl font-clash font-bold text-text-primary">API Key Management</h1>
+          <p className="text-sm text-text-muted mt-1">All keys are encrypted at rest with AES-256-GCM</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={refreshKeys}
             disabled={refreshing}
-            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm disabled:opacity-50"
+            className="px-3 py-2 border border-border-default text-text-secondary rounded-lg hover:bg-bg-surface text-sm disabled:opacity-50"
           >
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </button>
-          <a href="/admin/api-keys/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+          <a href="/admin/api-keys/new" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm">
             + Add Key
           </a>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-border-subtle shadow-sm overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-bg-surface">
             <tr>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Service</th>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Key Name</th>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Status</th>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Last Test</th>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Result</th>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Usage Today</th>
-              <th className="text-left p-4 text-gray-600 text-sm font-medium">Actions</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Service</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Key Name</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Status</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Last Test</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Result</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Usage Today</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {keys.map((key) => (
-              <tr key={key.id} className="border-t border-gray-200 hover:bg-gray-50">
-                <td className="p-4 text-gray-900 font-medium">{SERVICE_LABELS[key.service] || key.service}</td>
-                <td className="p-4 text-gray-700">{key.key_name}</td>
+              <tr key={key.id} className="border-t border-border-subtle hover:bg-bg-surface">
+                <td className="p-4 text-text-primary font-medium">{SERVICE_LABELS[key.service] || key.service}</td>
+                <td className="p-4 text-text-secondary">{key.key_name}</td>
                 <td className="p-4">
                   <button
                     onClick={() => toggleActive(key.id, key.is_active)}
                     className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors ${
                       key.is_active
-                        ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-accent-emerald/20 text-accent-emerald hover:bg-accent-emerald/30'
+                        : 'bg-bg-elevated text-text-secondary hover:bg-bg-overlay'
                     }`}
                   >
                     {key.is_active ? 'Active' : 'Inactive'}
                   </button>
                 </td>
-                <td className="p-4 text-gray-600 text-sm">
+                <td className="p-4 text-text-secondary text-sm">
                   {key.last_tested ? new Date(key.last_tested).toLocaleString() : 'Never'}
                 </td>
                 <td className="p-4">
                   {key.last_test_result && (
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       key.last_test_result?.startsWith('success')
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                        ? 'bg-accent-emerald/20 text-accent-emerald'
+                        : 'bg-accent-red/20 text-accent-red'
                     }`}>
                       {key.last_test_result}
                     </span>
                   )}
                 </td>
-                <td className="p-4 text-gray-700">{key.usage_today}</td>
+                <td className="p-4 text-text-secondary">{key.usage_today}</td>
                 <td className="p-4 space-x-3">
                   <button
                     onClick={() => testKey(key.id)}
                     disabled={testing[key.id]}
-                    className="text-blue-600 hover:text-blue-800 font-medium text-sm disabled:opacity-50"
+                    className="text-accent-primary hover:text-accent-primary font-medium text-sm disabled:opacity-50"
                   >
                     {testing[key.id] ? 'Testing...' : 'Test'}
                   </button>
                   <button
                     onClick={() => deleteKey(key.id)}
-                    className="text-red-600 hover:text-red-800 font-medium text-sm"
+                    className="text-accent-red hover:text-accent-red font-medium text-sm"
                   >
                     Delete
                   </button>
@@ -254,8 +254,8 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
         </table>
         {keys.length === 0 && (
           <div className="p-8 text-center">
-            <p className="text-gray-500 mb-4">No API keys configured yet.</p>
-            <a href="/admin/api-keys/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+            <p className="text-text-muted mb-4">No API keys configured yet.</p>
+            <a href="/admin/api-keys/new" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm">
               + Add Your First Key
             </a>
           </div>

@@ -94,11 +94,11 @@ export default function ContentCalendarPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+      <div className="max-w-full">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Content Calendar</h2>
-          <p className="text-sm text-gray-500 mt-1">Schedule, manage, and publish your content</p>
+          <h2 className="text-xl font-semibold text-text-primary">Content Calendar</h2>
+          <p className="text-sm text-text-muted mt-1">Schedule, manage, and publish your content</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -111,31 +111,31 @@ export default function ContentCalendarPage() {
       </div>
 
       {view === 'month' ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-blue-600" />
-              <h3 className="font-semibold text-gray-900">{monthName}</h3>
+          <div className="bg-white rounded-xl border border-border-subtle p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="w-5 h-5 text-accent-primary" />
+                <h3 className="font-semibold text-text-primary">{monthName}</h3>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg">
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <button onClick={prevMonth} className="p-2 hover:bg-bg-surface rounded-lg">
+                <ChevronLeft className="w-5 h-5 text-text-secondary" />
               </button>
               <button
                 onClick={() => setCurrentDate(new Date())}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
+                className="px-3 py-1.5 text-sm border border-border-default rounded-lg hover:bg-bg-surface text-text-secondary"
               >
                 Today
               </button>
-              <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg">
-                <ChevronRight className="w-5 h-5 text-gray-600" />
+              <button onClick={nextMonth} className="p-2 hover:bg-bg-surface rounded-lg">
+                <ChevronRight className="w-5 h-5 text-text-secondary" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden border border-gray-200">
+          <div className="grid grid-cols-7 gap-px bg-bg-overlay rounded-lg overflow-hidden border border-border-subtle">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center text-xs font-semibold text-gray-500 bg-gray-50 py-2">
+              <div key={day} className="text-center text-xs font-semibold text-text-muted bg-bg-surface py-2">
                 {day}
               </div>
             ))}
@@ -154,11 +154,11 @@ export default function ContentCalendarPage() {
               return (
                 <div
                   key={day}
-                  className={`h-28 bg-white p-1 border border-gray-100 ${
+                  className={`h-28 bg-white p-1 border border-border-ghost ${
                     isToday ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <span className={`text-xs font-medium ${isToday ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
+                   <span className={`text-xs font-medium ${isToday ? 'text-accent-primary font-bold' : 'text-text-muted'}`}>
                     {day}
                   </span>
                   <div className="mt-1 space-y-0.5">
@@ -167,14 +167,14 @@ export default function ContentCalendarPage() {
                         key={post.id}
                         onClick={() => { setSelectedPost(post); setShowPostDetail(true) }}
                         className={`w-full text-left text-xs truncate px-1 py-0.5 rounded ${
-                          statusColors[post.status] || 'bg-gray-100 text-gray-700'
+                           statusColors[post.status] || 'bg-bg-elevated text-text-secondary'
                         }`}
                       >
                         {post.platform}
                       </button>
                     ))}
                     {dayPosts.length > 3 && (
-                      <div className="text-xs text-gray-400 px-1">+{dayPosts.length - 3} more</div>
+                      <div className="text-xs text-text-muted px-1">+{dayPosts.length - 3} more</div>
                     )}
                   </div>
                 </div>
@@ -183,8 +183,8 @@ export default function ContentCalendarPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Upcoming Posts</h3>
+        <div className="bg-white rounded-xl border border-border-subtle p-6">
+          <h3 className="font-semibold text-text-primary mb-4">Upcoming Posts</h3>
           <div className="space-y-3">
             {posts
               .filter((p) => p.status === 'scheduled' && new Date(p.scheduled_at) > new Date())
@@ -194,30 +194,30 @@ export default function ContentCalendarPage() {
                   key={post.id}
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 p-4 bg-bg-surface rounded-lg hover:bg-bg-elevated transition-colors"
                 >
                   {post.auto_generated && <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900 truncate">{post.caption?.substring(0, 80)}...</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-text-primary truncate">{post.caption?.substring(0, 80)}...</p>
+                    <p className="text-xs text-text-muted">
                       {post.platform} • {post.division === 'marine' ? 'Marine' : 'Technology'} • {post.post_type?.replace(/_/g, ' ')}
                     </p>
                   </div>
                   <StatusBadge status={post.status} size="sm" />
-                  <span className="text-xs text-gray-500 flex-shrink-0">
+                  <span className="text-xs text-text-muted flex-shrink-0">
                     {new Date(post.scheduled_at).toLocaleDateString()}
                   </span>
                   <div className="flex gap-1">
                     <button
                       onClick={() => { setSelectedPost(post); setShowPostDetail(true) }}
-                      className="p-1.5 hover:bg-white rounded text-gray-500 hover:text-gray-700"
+                      className="p-1.5 hover:bg-white rounded text-text-muted hover:text-text-secondary"
                     >
                       <CalendarIcon className="w-4 h-4" />
                     </button>
                     {post.status === 'draft' && (
                       <button
                         onClick={() => handlePublish(post.id)}
-                        className="p-1.5 hover:bg-green-50 rounded text-gray-500 hover:text-green-600"
+                        className="p-1.5 hover:bg-accent-emerald/10 rounded text-text-muted hover:text-accent-emerald"
                       >
                         <Send className="w-4 h-4" />
                       </button>
@@ -226,8 +226,8 @@ export default function ContentCalendarPage() {
                 </motion.div>
               ))}
             {posts.filter((p) => p.status === 'scheduled' && new Date(p.scheduled_at) > new Date()).length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                <CalendarIcon className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+              <div className="text-center py-8 text-text-muted">
+                <CalendarIcon className="w-8 h-8 mx-auto mb-2 text-text-muted/50" />
                 <p>No upcoming scheduled posts</p>
               </div>
             )}
@@ -236,10 +236,10 @@ export default function ContentCalendarPage() {
       )}
 
       {showPostDetail && selectedPost && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
+        <div className="mt-6 bg-white rounded-xl border border-border-subtle p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="font-semibold text-gray-900">Post Details</h3>
+              <h3 className="font-semibold text-text-primary">Post Details</h3>
               <div className="flex items-center gap-2 mt-1">
                 <StatusBadge status={selectedPost.status} size="sm" />
                 {selectedPost.auto_generated && (
@@ -249,28 +249,28 @@ export default function ContentCalendarPage() {
             </div>
             <button 
               onClick={() => setShowPostDetail(false)}
-              className="p-1 hover:bg-gray-100 rounded text-gray-500"
+              className="p-1 hover:bg-bg-surface rounded text-text-muted"
             >
               ✕
             </button>
           </div>
-          <p className="text-sm text-gray-700 mb-4">{selectedPost.caption}</p>
+          <p className="text-sm text-text-secondary mb-4">{selectedPost.caption}</p>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <p className="text-xs text-gray-500">Platform</p>
-              <p className="text-sm font-medium text-gray-900">{selectedPost.platform}</p>
+              <p className="text-xs text-text-muted">Platform</p>
+              <p className="text-sm font-medium text-text-primary">{selectedPost.platform}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500">Division</p>
-              <p className="text-sm font-medium text-gray-900">{selectedPost.division === 'marine' ? 'Marine' : 'Technology'}</p>
+              <p className="text-xs text-text-muted">Division</p>
+              <p className="text-sm font-medium text-text-primary">{selectedPost.division === 'marine' ? 'Marine' : 'Technology'}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500">Scheduled</p>
-              <p className="text-sm font-medium text-gray-900">{new Date(selectedPost.scheduled_at).toLocaleString()}</p>
+              <p className="text-xs text-text-muted">Scheduled</p>
+              <p className="text-sm font-medium text-text-primary">{new Date(selectedPost.scheduled_at).toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500">Post Type</p>
-              <p className="text-sm font-medium text-gray-900">{selectedPost.post_type?.replace(/_/g, ' ')}</p>
+              <p className="text-xs text-text-muted">Post Type</p>
+              <p className="text-sm font-medium text-text-primary">{selectedPost.post_type?.replace(/_/g, ' ')}</p>
             </div>
           </div>
           <div className="flex gap-2">

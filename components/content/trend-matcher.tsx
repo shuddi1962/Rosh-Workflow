@@ -77,8 +77,8 @@ export function TrendMatcher() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
+        <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-accent-primary" />
           Trend-to-Product Matcher
         </h3>
         <div className="flex gap-2">
@@ -94,22 +94,22 @@ export function TrendMatcher() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <h4 className="text-sm font-medium text-gray-600 mb-3">Trending Topics</h4>
+          <h4 className="text-sm font-medium text-text-secondary mb-3">Trending Topics</h4>
           <div className="space-y-2">
             {trends.map((trend) => (
-              <div key={trend.id} className="bg-white border border-gray-200 rounded-lg p-3">
+              <div key={trend.id} className="bg-white border border-border-subtle rounded-lg p-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-gray-900 text-sm font-medium">{trend.keyword}</p>
-                    <p className="text-gray-500 text-xs mt-1">{trend.description}</p>
+                    <p className="text-text-primary text-sm font-medium">{trend.keyword}</p>
+                    <p className="text-text-muted text-xs mt-1">{trend.description}</p>
                   </div>
                   <Badge status={trend.momentum_score > 80 ? "hot" : trend.momentum_score > 50 ? "warm" : "cold"}>
                     {trend.momentum_score.toFixed(0)}
                   </Badge>
                 </div>
                 <div className="flex flex-wrap gap-1 mt-2">
-                  <span className="text-xs text-gray-500">{trend.source}</span>
-                  <span className="text-xs text-blue-600">{trend.division_relevance}</span>
+                  <span className="text-xs text-text-muted">{trend.source}</span>
+                  <span className="text-xs text-accent-primary">{trend.division_relevance}</span>
                 </div>
               </div>
             ))}
@@ -117,12 +117,12 @@ export function TrendMatcher() {
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-600 mb-3">Products</h4>
+          <h4 className="text-sm font-medium text-text-secondary mb-3">Products</h4>
           <div className="space-y-2">
             {products.map((product) => (
-              <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-3">
+              <div key={product.id} className="bg-white border border-border-subtle rounded-lg p-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-gray-900 text-sm font-medium">{product.name}</p>
+                  <p className="text-text-primary text-sm font-medium">{product.name}</p>
                   <Badge status={product.division === "marine" ? "scheduled" : "live"}>
                     {product.division}
                   </Badge>
@@ -135,15 +135,15 @@ export function TrendMatcher() {
 
       {matches.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-gray-600 mb-3">Matches</h4>
+          <h4 className="text-sm font-medium text-text-secondary mb-3">Matches</h4>
           <div className="space-y-2">
             {matches.map((match, i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3">
-                <TrendingUp className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-900">{match.trend.keyword}</span>
-                <ArrowRight className="w-4 h-4 text-gray-400" />
-                <Package className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm text-gray-900">{match.product.name}</span>
+              <div key={i} className="bg-white border border-border-subtle rounded-lg p-3 flex items-center gap-3">
+                <TrendingUp className="w-4 h-4 text-accent-primary" />
+                <span className="text-sm text-text-primary">{match.trend.keyword}</span>
+                <ArrowRight className="w-4 h-4 text-text-muted" />
+                <Package className="w-4 h-4 text-accent-emerald" />
+                <span className="text-sm text-text-primary">{match.product.name}</span>
                 <Badge status="live">Score: {match.score}</Badge>
               </div>
             ))}

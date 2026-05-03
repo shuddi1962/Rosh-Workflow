@@ -40,9 +40,9 @@ export default function AdminAnalyticsPage() {
     }
   }
 
-  if (loading) return <div className="p-6 text-gray-600">Loading analytics...</div>
+  if (loading) return <div className="p-6 text-text-secondary">Loading analytics...</div>
 
-  if (!overview) return <div className="p-6 text-gray-600">No analytics data available</div>
+  if (!overview) return <div className="p-6 text-text-secondary">No analytics data available</div>
 
   const stats = [
     { label: 'Total Reach', value: overview.total_reach?.toLocaleString() || '0', change: '+0%' },
@@ -55,48 +55,48 @@ export default function AdminAnalyticsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-clash font-bold text-gray-900 mb-8">Analytics Overview</h1>
+      <h1 className="text-3xl font-clash font-bold text-text-primary mb-8">Analytics Overview</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-            <p className="text-sm text-gray-600 mb-2">{stat.label}</p>
-            <p className="text-3xl font-bold text-gray-900 font-mono">{stat.value}</p>
-            <p className="text-sm text-gray-500 mt-1">{stat.change}</p>
+          <div key={stat.label} className="bg-white p-6 rounded-lg border border-border-subtle shadow-sm hover:shadow-md transition-shadow">
+            <p className="text-sm text-text-secondary mb-2">{stat.label}</p>
+            <p className="text-3xl font-bold text-text-primary font-mono">{stat.value}</p>
+            <p className="text-sm text-text-muted mt-1">{stat.change}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Platform Breakdown</h3>
+        <div className="bg-white rounded-lg border border-border-subtle p-6">
+          <h3 className="font-semibold text-text-primary mb-4">Platform Breakdown</h3>
           {overview.platform_breakdown ? (
             <div className="space-y-3">
               {Object.entries(overview.platform_breakdown).map(([platform, count]) => (
                 <div key={platform} className="flex justify-between items-center">
-                  <span className="text-gray-700 capitalize">{platform}</span>
-                  <span className="font-mono text-gray-900">{count}</span>
+                  <span className="text-text-secondary capitalize">{platform}</span>
+                  <span className="font-mono text-text-primary">{count}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No platform data available</p>
+            <p className="text-text-muted text-sm">No platform data available</p>
           )}
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Top Performing Content</h3>
+        <div className="bg-white rounded-lg border border-border-subtle p-6">
+          <h3 className="font-semibold text-text-primary mb-4">Top Performing Content</h3>
           {overview.top_posts && overview.top_posts.length > 0 ? (
             <div className="space-y-3">
               {overview.top_posts.map((post, i) => (
-                <div key={i} className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-gray-900 text-sm font-medium truncate">{post.caption?.substring(0, 80) || 'Untitled'}...</p>
-                  <p className="text-gray-500 text-xs mt-1">Engagement: {JSON.stringify(post.engagement)}</p>
+                <div key={i} className="p-3 bg-bg-surface rounded-lg">
+                  <p className="text-text-primary text-sm font-medium truncate">{post.caption?.substring(0, 80) || 'Untitled'}...</p>
+                  <p className="text-text-muted text-xs mt-1">Engagement: {JSON.stringify(post.engagement)}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No top posts data available</p>
+            <p className="text-text-muted text-sm">No top posts data available</p>
           )}
         </div>
       </div>

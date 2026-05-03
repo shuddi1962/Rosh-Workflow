@@ -10,17 +10,17 @@ const config: Config = {
     extend: {
       colors: {
         bg: {
-          void: "#04060F",
-          base: "#080C1A",
-          surface: "#0E1220",
-          elevated: "#151B2E",
-          overlay: "#1C2438",
+          void: "#F8FAFC",
+          base: "#FFFFFF",
+          surface: "#F1F5F9",
+          elevated: "#E2E8F0",
+          overlay: "#CBD5E1",
         },
         border: {
-          ghost: "rgba(255,255,255,0.03)",
-          subtle: "rgba(255,255,255,0.07)",
-          default: "rgba(255,255,255,0.11)",
-          hover: "rgba(255,255,255,0.18)",
+          ghost: "rgba(0,0,0,0.05)",
+          subtle: "rgba(0,0,0,0.10)",
+          default: "rgba(0,0,0,0.15)",
+          hover: "rgba(0,0,0,0.25)",
         },
         accent: {
           primary: "#1A56DB",
@@ -33,9 +33,9 @@ const config: Config = {
           purple: "#8B5CF6",
         },
         text: {
-          primary: "#F0F4FF",
-          secondary: "#8B9CC8",
-          muted: "#4A5475",
+          primary: "#0F172A",
+          secondary: "#475569",
+          muted: "#94A3B8",
           "on-accent": "#FFFFFF",
         },
         status: {

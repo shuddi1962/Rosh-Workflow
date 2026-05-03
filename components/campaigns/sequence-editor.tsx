@@ -21,11 +21,11 @@ interface SequenceStep {
 }
 
 const CHANNELS = [
-  { id: 'email', label: 'Email', icon: Mail, color: 'text-blue-500' },
-  { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: 'text-green-500' },
-  { id: 'sms', label: 'SMS', icon: Phone, color: 'text-purple-500' },
-  { id: 'voice_call', label: 'Voice Call', icon: Phone, color: 'text-orange-500' },
-  { id: 'wait', label: 'Wait', icon: Clock, color: 'text-gray-500' },
+  { id: 'email', label: 'Email', icon: Mail, color: 'text-accent-primary' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, color: 'text-accent-emerald' },
+  { id: 'sms', label: 'SMS', icon: Phone, color: 'text-accent-purple' },
+  { id: 'voice_call', label: 'Voice Call', icon: Phone, color: 'text-accent-orange' },
+  { id: 'wait', label: 'Wait', icon: Clock, color: 'text-text-muted' },
 ]
 
 const CONDITIONS = [
@@ -106,8 +106,8 @@ export function SequenceEditor({ steps, onChange, campaignType }: SequenceEditor
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className={`border rounded-lg p-4 ${
-                step.status === 'skipped' ? 'border-gray-300 opacity-60' :
-                step.status === 'completed' ? 'border-emerald-300' :
+                step.status === 'skipped' ? 'border-border-default opacity-60' :
+                step.status === 'completed' ? 'border-accent-emerald/30' :
                 'border-border-subtle'
               }`}
               draggable
@@ -131,10 +131,10 @@ export function SequenceEditor({ steps, onChange, campaignType }: SequenceEditor
                   {channel && <channel.icon className={`w-4 h-4 ${channel.color}`} />}
                   <span className="text-sm font-medium">{channel?.label || step.type}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    step.status === 'draft' ? 'bg-amber-100 text-amber-700' :
-                    step.status === 'active' ? 'bg-blue-100 text-blue-700' :
-                    step.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                    'bg-gray-100 text-gray-600'
+                    step.status === 'draft' ? 'bg-accent-gold/10 text-accent-gold' :
+                    step.status === 'active' ? 'bg-accent-primary/10 text-accent-primary' :
+                    step.status === 'completed' ? 'bg-accent-emerald/10 text-accent-emerald' :
+                    'bg-bg-surface text-text-secondary'
                   }`}>
                     {step.status}
                   </span>

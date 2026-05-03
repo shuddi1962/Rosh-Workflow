@@ -79,34 +79,34 @@ export default function AdminSocialAccountsPage() {
     }
   }
 
-  if (loading) return <div className="p-6 text-gray-600">Loading accounts...</div>
+  if (loading) return <div className="p-6 text-text-secondary">Loading accounts...</div>
 
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-clash font-bold text-gray-900">Social Accounts</h1>
+        <h1 className="text-3xl font-clash font-bold text-text-primary">Social Accounts</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {accounts.map((acc) => (
-          <div key={acc.id} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div key={acc.id} className="bg-white rounded-lg border border-border-subtle p-6 hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{PLATFORM_ICONS[acc.platform] || '🔗'}</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{acc.platform}</h3>
-                  <p className="text-gray-500 text-sm">{acc.account_name}</p>
+                  <h3 className="font-semibold text-text-primary">{acc.platform}</h3>
+                  <p className="text-text-muted text-sm">{acc.account_name}</p>
                 </div>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs ${acc.is_connected ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-500'}`}>
+              <span className={`px-2 py-1 rounded-full text-xs ${acc.is_connected ? 'bg-accent-emerald/10 text-accent-emerald' : 'bg-bg-surface text-text-muted'}`}>
                 {acc.is_connected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
-            <div className="text-gray-500 text-xs mb-4">Posts today: {acc.post_count_today}</div>
+            <div className="text-text-muted text-xs mb-4">Posts today: {acc.post_count_today}</div>
             <button
               onClick={() => acc.is_connected ? disconnectAccount(acc.id) : connectAccount(acc.platform)}
               disabled={connecting === acc.platform}
-              className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${acc.is_connected ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-blue-600 text-white hover:bg-blue-700'} ${connecting === acc.platform ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${acc.is_connected ? 'bg-accent-red/10 text-accent-red hover:bg-accent-red/20' : 'bg-accent-primary text-text-on-accent hover:bg-accent-primary/90'} ${connecting === acc.platform ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {connecting === acc.platform ? 'Connecting...' : acc.is_connected ? 'Disconnect' : 'Connect'}
             </button>
@@ -114,13 +114,13 @@ export default function AdminSocialAccountsPage() {
         ))}
 
         {PLATFORMS.filter(p => !accounts.some(a => a.platform === p)).map(platform => (
-          <div key={platform} className="bg-white rounded-lg border border-gray-200 border-dashed p-6 flex flex-col items-center justify-center text-gray-400 hover:border-gray-400 transition-colors">
+          <div key={platform} className="bg-white rounded-lg border border-border-subtle border-dashed p-6 flex flex-col items-center justify-center text-text-muted hover:border-border-default transition-colors">
             <span className="text-3xl mb-3">{PLATFORM_ICONS[platform]}</span>
-            <h3 className="font-semibold text-gray-700 capitalize mb-2">{platform}</h3>
+            <h3 className="font-semibold text-text-secondary capitalize mb-2">{platform}</h3>
             <button
               onClick={() => connectAccount(platform)}
               disabled={connecting === platform}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 bg-accent-primary text-text-on-accent rounded-lg text-sm hover:bg-accent-primary/90 disabled:opacity-50 transition-colors"
             >
               {connecting === platform ? 'Connecting...' : 'Connect'}
             </button>

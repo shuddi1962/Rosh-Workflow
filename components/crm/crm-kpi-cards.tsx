@@ -38,13 +38,13 @@ export function CRMKPICards({ totalLeads, conversionRate, pipelineValue, avgLead
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow"
+            className="bg-white rounded-xl border border-border-subtle p-5 hover:shadow-md transition-shadow"
           >
             <div className={`w-10 h-10 rounded-lg ${bgColors[i]} flex items-center justify-center mb-3`}>
               <Icon className={`w-5 h-5 ${iconColors[i]}`} />
             </div>
-            <p className="text-2xl font-bold text-gray-900 font-mono">{value}</p>
-            <p className="text-sm text-gray-500 mt-1">{labels[i]}</p>
+            <p className="text-2xl font-bold text-text-primary font-mono">{value}</p>
+            <p className="text-sm text-text-muted mt-1">{labels[i]}</p>
             {changes[i] !== undefined && (
               <p className={`text-xs mt-1 font-medium ${changes[i]! >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {changes[i]! >= 0 ? '+' : ''}{changes[i]}% this week

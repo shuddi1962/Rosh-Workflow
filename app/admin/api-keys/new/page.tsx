@@ -326,34 +326,34 @@ export default function AdminApiKeyNewPage() {
     return (
       <div className="max-w-2xl">
         <div className="flex items-center gap-4 mb-6">
-          <a href="/admin/api-keys" className="text-gray-500 hover:text-gray-700">
+          <a href="/admin/api-keys" className="text-text-muted hover:text-text-secondary">
             ← Back
           </a>
-          <h1 className="text-3xl font-clash font-bold text-gray-900">Add New API Key</h1>
+          <h1 className="text-3xl font-clash font-bold text-text-primary">Add New API Key</h1>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-accent-red/10 border border-red-200 rounded-xl p-8 text-center">
+          <div className="w-16 h-16 bg-accent-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-accent-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
           <h2 className="text-xl font-bold text-red-900 mb-2">Admin Access Required</h2>
-          <p className="text-red-700 mb-4">
+          <p className="text-accent-red mb-4">
             Only administrators can add and manage API keys.
           </p>
-          <div className="bg-white rounded-lg p-4 text-sm text-gray-700 max-w-md mx-auto">
+          <div className="bg-white rounded-lg p-4 text-sm text-text-secondary max-w-md mx-auto">
             <p className="font-medium mb-2">Current login:</p>
-            <p><span className="text-gray-500">Name:</span> {userName || 'Unknown'}</p>
-            <p><span className="text-gray-500">Role:</span> <span className="text-red-600 font-medium">{userRole || 'Not logged in'}</span></p>
+            <p><span className="text-text-muted">Name:</span> {userName || 'Unknown'}</p>
+            <p><span className="text-text-muted">Role:</span> <span className="text-accent-red font-medium">{userRole || 'Not logged in'}</span></p>
           </div>
-          <p className="text-red-600 text-sm mt-4">
+          <p className="text-accent-red text-sm mt-4">
             Contact the system administrator to upgrade your account, or log in with an admin account.
           </p>
           <div className="mt-6 flex gap-3 justify-center">
-            <a href="/admin/api-keys" className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+            <a href="/admin/api-keys" className="px-4 py-2 border border-border-default text-text-secondary rounded-lg hover:bg-bg-surface">
               Back to Keys
             </a>
-            <a href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <a href="/login" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-blue-700">
               Switch Account
             </a>
           </div>
@@ -461,18 +461,18 @@ export default function AdminApiKeyNewPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center gap-4 mb-6">
-        <a href="/admin/api-keys" className="text-gray-500 hover:text-gray-700">
+        <a href="/admin/api-keys" className="text-text-muted hover:text-text-secondary">
           ← Back
         </a>
         <div>
-          <h1 className="text-3xl font-clash font-bold text-gray-900">Add New API Key</h1>
-          <p className="text-sm text-gray-500 mt-1">All keys are encrypted with AES-256-GCM before storage</p>
+          <h1 className="text-3xl font-clash font-bold text-text-primary">Add New API Key</h1>
+          <p className="text-sm text-text-muted mt-1">All keys are encrypted with AES-256-GCM before storage</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-          <label className="block text-gray-700 mb-2 font-medium">Service</label>
+        <div className="bg-white p-6 rounded-lg border border-border-subtle shadow-sm">
+          <label className="block text-text-secondary mb-2 font-medium">Service</label>
           <select
             value={selectedService}
             onChange={(e) => {
@@ -482,7 +482,7 @@ export default function AdminApiKeyNewPage() {
               setSuccess(false)
             }}
             required
-            className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 bg-white border border-border-default rounded-lg text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-accent-primary"
           >
             <option value="">Select a service...</option>
             {Object.entries(CATEGORY_LABELS).map(([catKey, catLabel]) => (
@@ -524,32 +524,32 @@ export default function AdminApiKeyNewPage() {
         )}
 
         {config && config.instructions && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-border-subtle shadow-sm overflow-hidden">
             <button
               type="button"
               onClick={() => setShowInstructions(!showInstructions)}
-              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between p-4 hover:bg-bg-surface transition-colors"
             >
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="font-semibold text-gray-900">How to Get Your API Key</span>
+                <span className="font-semibold text-text-primary">How to Get Your API Key</span>
                 <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{config.instructions.length} steps</span>
               </div>
-              <svg className={`w-5 h-5 text-gray-400 transition-transform ${showInstructions ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-5 h-5 text-text-muted transition-transform ${showInstructions ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {showInstructions && (
-              <div className="px-4 pb-4 border-t border-gray-100">
+              <div className="px-4 pb-4 border-t border-border-ghost">
                 <ol className="space-y-3 pt-4">
                   {config.instructions.map((step, i) => (
                     <li key={i} className="flex gap-3">
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5">
                         {i + 1}
                       </span>
-                      <span className="text-sm text-gray-700">{step}</span>
+                      <span className="text-sm text-text-secondary">{step}</span>
                     </li>
                   ))}
                 </ol>
@@ -559,7 +559,7 @@ export default function AdminApiKeyNewPage() {
         )}
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="p-4 bg-accent-red/10 border border-red-200 rounded-lg text-accent-red text-sm">
             {error}
           </div>
         )}
@@ -571,24 +571,24 @@ export default function AdminApiKeyNewPage() {
         )}
 
         {isSubmitting && savedCount > 0 && (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+          <div className="p-4 bg-accent-primary/10 border border-blue-200 rounded-lg text-blue-700 text-sm">
             Saving {savedCount}/{totalFields} keys...
           </div>
         )}
 
         {config && config.fields.some(f => f.required !== false) && (
-          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">API Credentials</h3>
+          <div className="bg-white p-6 rounded-lg border border-border-subtle shadow-sm space-y-4">
+            <h3 className="text-lg font-medium text-text-primary">API Credentials</h3>
             {config.fields.filter(f => f.required !== false).map((field) => (
               <div key={field.key_name}>
-                <label className="block text-gray-700 mb-2 font-medium">{field.name}</label>
+                <label className="block text-text-secondary mb-2 font-medium">{field.name}</label>
                 <input
                   type="password"
                   value={fieldValues[field.key_name] || ''}
                   onChange={(e) => handleFieldChange(field.key_name, e.target.value)}
                   placeholder={field.placeholder}
                   required
-                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 bg-white border border-border-default rounded-lg text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-blue-500 focus:border-accent-primary"
                 />
               </div>
             ))}
@@ -598,7 +598,7 @@ export default function AdminApiKeyNewPage() {
         <button
           type="submit"
           disabled={isSubmitting || !selectedService}
-          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-6 py-3 bg-accent-primary text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? `Saving... (${savedCount}/${totalFields})` : 'Save Encrypted Keys'}
         </button>
