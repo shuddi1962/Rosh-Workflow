@@ -28,7 +28,6 @@ export async function PUT(
     if (key_name !== undefined) updates.key_name = key_name
     if (is_active !== undefined) updates.is_active = is_active
     if (value) updates.encrypted_value = encryptApiKey(value)
-    updates.updated_at = new Date().toISOString()
 
     const { data, error } = await db
       .from('api_keys')
@@ -135,7 +134,7 @@ export async function POST(
     const now = new Date().toISOString()
     await db
       .from('api_keys')
-      .update({ last_tested: now, last_test_result: testResult, updated_at: now })
+      .update({ last_tested: now, last_test_result: testResult })
       .eq('id', params.id)
 
     return NextResponse.json({ result: testResult, success: testResult.startsWith('success') })

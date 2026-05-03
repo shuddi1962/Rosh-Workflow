@@ -77,9 +77,7 @@ export async function POST(request: Request) {
         key_name,
         encrypted_value,
         is_active: true,
-        usage_today: 0,
-        created_at: now,
-        updated_at: now
+        usage_today: 0
       })
       .select()
       .single()
