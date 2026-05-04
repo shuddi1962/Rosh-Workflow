@@ -98,20 +98,68 @@ async function fetchNigerianTrends(): Promise<TrendData[]> {
     const newsApiKey = await getApiKey('news_api', 'API Key')
     
     if (newsApiKey) {
-      const res = await fetch('https://newsapi.org/v2/top-headlines?country=ng&category=business&apiKey=' + newsApiKey, { next: { revalidate: 3600 } })
-      if (res.ok) {
-        const data = await res.json()
-        data.articles?.slice(0, 10).forEach((article: any) => {
-          const isMarine = /marine|boat|ship|water|oil|river|niger delta|maritime/i.test(article.title || '')
-          const isTech = /cctv|security|solar|power|technology|electricity|phcn|grid/i.test(article.title || '')
-          trends.push({
-            keyword: article.title,
-            description: article.description || '',
-            source: 'NewsAPI',
-            momentum: Math.floor(Math.random() * 40) + 60,
-            division: isMarine ? 'marine' : isTech ? 'tech' : 'both'
-          })
-        })
+      const businessKeywords = [
+        "outboard engine Nigeria",
+        "fiberglass boat Nigeria",
+        "marine equipment Nigeria",
+        "Suzuki marine Nigeria",
+        "Yamaha boat engine Nigeria",
+        "maritime security Niger Delta",
+        "NIMASA Nigeria",
+        "CCTV Nigeria",
+        "Hikvision Nigeria",
+        "solar power Nigeria",
+        "surveillance Port Harcourt",
+        "solar battery lithium Nigeria",
+        "car tracker Nigeria",
+        "smart door lock Nigeria",
+        "fire alarm Nigeria",
+        "biometric access control Nigeria",
+        "power outage Port Harcourt",
+        "PHCN electricity Nigeria",
+        "walkie talkie Nigeria",
+        "generator diesel Nigeria"
+      ]
+
+      const seenUrls = new Set<string>()
+
+      for (const keyword of businessKeywords) {
+        try {
+          const res = await fetch(
+            `https://newsapi.org/v2/everything?q=${encodeURIComponent(keyword)}&language=en&sortBy=publishedAt&pageSize=2&apiKey=${newsApiKey}`,
+            { next: { revalidate: 3600 } }
+          )
+          if (res.ok) {
+            const data = await res.json()
+            if (data.articles && data.articles.length > 0) {
+              for (const article of data.articles.slice(0, 2)) {
+                if (!article.url || seenUrls.has(article.url)) continue
+                const title = (article.title || '').toLowerCase()
+                const desc = (article.description || '').toLowerCase()
+                const content = title + ' ' + desc
+                
+                const marineSignals = /marine|boat|ship|water|engine|outboard|suzuki|yamaha|fiberglass|maritime|niger delta|oil.*gas|waterway|port.*harcourt|bonny|river|transport|navigat|vessel|dock|harbor/i.test(content)
+                const techSignals = /cctv|camera|surveillance|hikvision|solar|battery|power|electricity|phcn|security|smart.*lock|access.*control|car.*tracker|gps|fire.*alarm|biometric|fingerprint|walkie|intercom|generator|inverter|renewable|grid/i.test(content)
+                
+                if (!marineSignals && !techSignals) continue
+
+                seenUrls.add(article.url)
+                trends.push({
+                  keyword: article.title,
+                  description: article.description || '',
+                  source: 'NewsAPI',
+                  momentum: Math.floor(Math.random() * 40) + 60,
+                  division: marineSignals ? 'marine' : techSignals ? 'tech' : 'both'
+                })
+
+                if (trends.length >= 10) break
+              }
+            }
+          }
+          if (trends.length >= 10) break
+        } catch (e) {
+          console.log('NewsAPI fetch failed for:', keyword)
+        }
       }
     }
   } catch (e) {
@@ -139,14 +187,14 @@ async function fetchNigerianTrends(): Promise<TrendData[]> {
   }
 
   const fallbackTrends: TrendData[] = [
-    { keyword: 'PHCN power outage Port Harcourt', description: 'Ongoing power supply issues in Rivers State', source: 'Local Context', momentum: 90, division: 'tech' },
-    { keyword: 'Niger Delta maritime security', description: 'Security concerns for boat operators', source: 'Local Context', momentum: 85, division: 'marine' },
-    { keyword: 'Rising cost of diesel generators', description: 'Businesses seeking solar alternatives', source: 'Economic', momentum: 80, division: 'tech' },
-    { keyword: 'Rainy season boat maintenance', description: 'Preparation for waterway operations', source: 'Seasonal', momentum: 75, division: 'marine' },
-    { keyword: 'Home security demand Port Harcourt', description: 'Increasing need for CCTV systems', source: 'Local Context', momentum: 88, division: 'tech' },
-    { keyword: 'NDDC waterway projects', description: 'New contracts for marine equipment', source: 'Government', momentum: 70, division: 'marine' },
-    { keyword: 'Solar battery price drop Nigeria', description: 'Lithium batteries becoming affordable', source: 'Market', momentum: 82, division: 'tech' },
-    { keyword: 'Fishing season Bonny River', description: 'Peak season for fishing boat operators', source: 'Seasonal', momentum: 65, division: 'marine' }
+    { keyword: 'Suzuki outboard engine prices Nigeria 2026', description: 'Latest pricing and availability for Suzuki marine engines in Port Harcourt', source: 'Marine Market', momentum: 90, division: 'marine' },
+    { keyword: 'PHCN power supply update Port Harcourt', description: 'Electricity supply status driving solar demand in Rivers State', source: 'Local Context', momentum: 88, division: 'tech' },
+    { keyword: 'Solar inverter and battery prices Nigeria', description: 'Lithium battery costs dropping making solar affordable for homes and businesses', source: 'Energy Market', momentum: 85, division: 'tech' },
+    { keyword: 'Niger Delta maritime security update', description: 'Security situation affecting boat operators and marine equipment demand', source: 'Maritime', momentum: 82, division: 'marine' },
+    { keyword: 'Hikvision CCTV surveillance demand Nigeria', description: 'Growing demand for professional CCTV installation in Port Harcourt', source: 'Security Market', momentum: 80, division: 'tech' },
+    { keyword: 'Fiberglass boat repair Niger Delta', description: 'Increasing need for fiberglass boat repair services in Rivers and Bayelsa', source: 'Marine Services', momentum: 78, division: 'marine' },
+    { keyword: 'Smart door lock and biometric access control Nigeria', description: 'Growing adoption of smart security systems in Nigerian homes and offices', source: 'Tech Market', momentum: 75, division: 'tech' },
+    { keyword: 'Car tracker and GPS vehicle tracking Nigeria', description: 'Rising vehicle theft driving demand for GPS tracking in Port Harcourt', source: 'Auto Security', momentum: 72, division: 'tech' }
   ]
 
   if (trends.length < 5) {
