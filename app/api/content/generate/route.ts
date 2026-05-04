@@ -36,16 +36,18 @@ const ROSHANAL_BUSINESS_PROFILE = {
 
 export async function POST(request: NextRequest) {
   try {
-    const { division, post_type, product_id, trend_id, platform = 'instagram' } = await request.json()
+    const { division, post_type, product_id, trend_id, platform = 'instagram', model } = await request.json()
     
     if (!division || !post_type) {
       return NextResponse.json({ error: 'division and post_type are required' }, { status: 400 })
     }
     
-    const anthropicKey = await getApiKey('anthropic', 'API Key')
-    if (!anthropicKey) {
-      return NextResponse.json({ error: 'Anthropic API key not configured. Add it in Admin > API Keys.' }, { status: 500 })
+    const openRouterKey = await getApiKey('openrouter', 'API Key')
+    if (!openRouterKey) {
+      return NextResponse.json({ error: 'OpenRouter API key not configured. Add it in Admin > API Keys.' }, { status: 500 })
     }
+    
+    const selectedModel = model || 'anthropic/claude-3-5-sonnet-20241022'
     
     let productContext = ''
     if (product_id) {
@@ -132,29 +134,32 @@ CAPTION: [the post caption]
 HASHTAGS: [comma-separated hashtags]
 CTA: [call to action]`
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': anthropicKey,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${openRouterKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+        'X-Title': 'Roshanal AI'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: selectedModel,
         max_tokens: 1000,
-        messages: [{ role: 'user', content: userPrompt }],
-        system: systemPrompt
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ]
       }),
-      signal: AbortSignal.timeout(30000)
+      signal: AbortSignal.timeout(60000)
     })
     
     if (!response.ok) {
       const errorText = await response.text()
-      return NextResponse.json({ error: `Claude API error: ${errorText}` }, { status: 500 })
+      return NextResponse.json({ error: `OpenRouter API error: ${errorText}` }, { status: 500 })
     }
     
     const aiData = await response.json()
-    const generatedText = aiData.content?.[0]?.text || ''
+    const generatedText = aiData.choices?.[0]?.message?.content || ''
     
     const captionMatch = generatedText.match(/CAPTION:\s*([\s\S]*?)(?=HASHTAGS:|$)/)
     const hashtagsMatch = generatedText.match(/HASHTAGS:\s*([\s\S]*?)(?=CTA:|$)/)

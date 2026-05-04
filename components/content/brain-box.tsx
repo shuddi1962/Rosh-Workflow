@@ -13,6 +13,7 @@ export function BrainBox() {
   const [division, setDivision] = useState('marine')
   const [postType, setPostType] = useState('product_spotlight')
   const [platform, setPlatform] = useState('instagram')
+  const [model, setModel] = useState('anthropic/claude-3-5-sonnet-20241022')
   const [productId, setProductId] = useState('')
   const [trendId, setTrendId] = useState('')
   const [customPrompt, setCustomPrompt] = useState('')
@@ -33,6 +34,7 @@ export function BrainBox() {
           division,
           post_type: postType,
           platform,
+          model,
           product_id: productId || undefined,
           trend_id: trendId || undefined,
           custom_prompt: customPrompt || undefined,
@@ -104,6 +106,27 @@ export function BrainBox() {
               <SelectItem value="linkedin">LinkedIn</SelectItem>
               <SelectItem value="twitter">Twitter/X</SelectItem>
               <SelectItem value="whatsapp">WhatsApp</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-text-secondary">AI Model</Label>
+          <Select value={model} onValueChange={setModel}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="anthropic/claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</SelectItem>
+              <SelectItem value="anthropic/claude-sonnet-4-20250514">Claude Sonnet 4</SelectItem>
+              <SelectItem value="anthropic/claude-opus-20250514">Claude Opus</SelectItem>
+              <SelectItem value="anthropic/claude-3-haiku-20240307">Claude 3 Haiku (fast)</SelectItem>
+              <SelectItem value="openai/gpt-4o">GPT-4o</SelectItem>
+              <SelectItem value="openai/gpt-4o-mini">GPT-4o Mini</SelectItem>
+              <SelectItem value="google/gemini-2.5-pro-preview">Gemini 2.5 Pro</SelectItem>
+              <SelectItem value="google/gemini-2.5-flash-preview">Gemini 2.5 Flash</SelectItem>
+              <SelectItem value="meta-llama/llama-4-maverick">Llama 4 Maverick</SelectItem>
+              <SelectItem value="mistralai/mistral-large-2411">Mistral Large</SelectItem>
             </SelectContent>
           </Select>
         </div>
