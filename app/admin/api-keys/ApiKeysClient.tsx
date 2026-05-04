@@ -62,8 +62,8 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
       const data = await res.json()
       if (data.keys) {
         setKeys(prev => {
-          const updated = new Map(data.keys.map((k: ApiKey) => [k.id, k]))
-          return prev.map(k => updated.get(k.id) || k)
+          const updated = new Map<string, ApiKey>(data.keys.map((k: ApiKey) => [k.id, k]))
+          return prev.map(k => updated.get(k.id) ?? k)
         })
       }
     } catch {
