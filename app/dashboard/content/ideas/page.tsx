@@ -83,11 +83,14 @@ export default function ContentIdeasPage() {
       const res = await fetch('/api/content/daily-ideas', {
         headers: { Authorization: `Bearer ${token}` }
       })
+      const data = await res.json()
       if (res.ok) {
-        fetchIdeas()
+        await fetchIdeas()
+      } else {
+        setError(data.error || 'Failed to generate daily ideas')
       }
     } catch (err) {
-      console.error('Error generating daily ideas:', err)
+      setError(err instanceof Error ? err.message : 'Failed to generate daily ideas')
     } finally {
       setGeneratingDaily(false)
     }

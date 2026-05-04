@@ -52,13 +52,18 @@ export default function TrendsPage() {
   const handleRefresh = async () => {
     try {
       setRefreshing(true)
+      setError('')
       const token = localStorage.getItem('accessToken')
       const res = await fetch('/api/trends/refresh', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       })
-      if (!res.ok) throw new Error('Failed to refresh trends')
-      await fetchTrends()
+      const data = await res.json()
+      if (res.ok) {
+        setTrends(data.trends || [])
+      } else {
+        setError(data.error || 'Failed to refresh trends')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {

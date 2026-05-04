@@ -14,7 +14,9 @@ export async function GET(request: Request) {
     const user = verifyToken(token)
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+    console.log('[Daily Ideas] Generating ideas...')
     const ideas = await generateDailyIdeas()
+    console.log(`[Daily Ideas] Generated ${ideas.length} ideas`)
 
     const saved: any[] = []
     for (const idea of ideas) {
@@ -44,9 +46,12 @@ export async function GET(request: Request) {
         .single()
 
       if (data) saved.push(data)
-      if (error) console.error('Error saving idea:', error)
+      if (error) {
+        console.error('[Daily Ideas] Error saving idea:', error.message, idea.post_type, idea.division)
+      }
     }
 
+    console.log(`[Daily Ideas] Saved ${saved.length} ideas`)
     return NextResponse.json({ 
       success: true, 
       count: saved.length,
@@ -54,6 +59,7 @@ export async function GET(request: Request) {
     })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('[Daily Ideas] Fatal error:', message)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
