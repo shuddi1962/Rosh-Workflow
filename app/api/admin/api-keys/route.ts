@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await db
       .from('api_keys')
-      .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, updated_at, created_at')
+      .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, usage_all_time, updated_at, created_at')
       .order('updated_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

@@ -10,7 +10,7 @@ const db = new DBClient()
 export default async function AdminApiKeysPage() {
   const { data: keys, error } = await db
     .from('api_keys')
-    .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, updated_at, created_at')
+    .select('id, service, key_name, is_active, last_tested, last_test_result, usage_today, usage_all_time, updated_at, created_at')
     .order('updated_at', { ascending: false })
 
   if (error) {

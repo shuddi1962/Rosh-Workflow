@@ -26,7 +26,7 @@ export async function getApiKey(service: string, keyName: string): Promise<strin
   
   const { data, error } = await db
     .from('api_keys')
-    .select('encrypted_value')
+    .select('id, encrypted_value, usage_today, usage_all_time')
     .eq('service', service)
     .eq('key_name', keyName)
     .eq('is_active', true)
@@ -35,7 +35,50 @@ export async function getApiKey(service: string, keyName: string): Promise<strin
   if (error || !data) return null
   
   const dataObj = data as unknown as Record<string, unknown>
+  
+  // Track usage asynchronously (fire-and-forget, don't block the API call)
+  trackApiKeyUsage(
+    dataObj.id as string,
+    dataObj.usage_today as number,
+    dataObj.usage_all_time as number
+  ).catch(() => {})
+  
   return decryptApiKey(dataObj.encrypted_value as string)
+}
+
+async function trackApiKeyUsage(keyId: string, currentDaily: number, currentAllTime: number): Promise<void> {
+  try {
+    const { DBClient } = await import('@/lib/insforge/server')
+    const db = new DBClient()
+    
+    await db
+      .from('api_keys')
+      .update({ 
+        usage_today: currentDaily + 1,
+        usage_all_time: currentAllTime + 1,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', keyId)
+  } catch {
+    // Silently fail - usage tracking should never break functionality
+  }
+}
+
+export async function resetDailyUsage(): Promise<{ success: boolean; count: number }> {
+  try {
+    const { DBClient } = await import('@/lib/insforge/server')
+    const db = new DBClient()
+    
+    const { error } = await db
+      .from('api_keys')
+      .update({ usage_today: 0 })
+      .eq('is_active', true)
+    
+    if (error) return { success: false, count: 0 }
+    return { success: true, count: 1 }
+  } catch {
+    return { success: false, count: 0 }
+  }
 }
 
 export function encryptApiKey(key: string): string {

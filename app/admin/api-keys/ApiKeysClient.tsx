@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 interface ApiKey {
   id: string
@@ -10,6 +10,7 @@ interface ApiKey {
   last_tested?: string
   last_test_result?: string
   usage_today: number
+  usage_all_time?: number
   updated_at: string
   created_at?: string
 }
@@ -41,8 +42,45 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
   const [testing, setTesting] = useState<Record<string, boolean>>({})
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [resetting, setResetting] = useState(false)
+  const [autoRefresh, setAutoRefresh] = useState(true)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Auto-refresh on mount to ensure fresh data
+  // Auto-refresh usage stats every 5 seconds
+  const refreshUsage = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      if (!token) return
+      
+      const res = await fetch('/api/admin/api-keys/usage', {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store'
+      })
+      
+      if (!res.ok) return
+      
+      const data = await res.json()
+      if (data.keys) {
+        setKeys(prev => {
+          const updated = new Map(data.keys.map((k: ApiKey) => [k.id, k]))
+          return prev.map(k => updated.get(k.id) || k)
+        })
+      }
+    } catch {
+      // Silently fail - polling should not cause errors
+    }
+  }, [])
+
+  useEffect(() => {
+    if (autoRefresh) {
+      pollRef.current = setInterval(refreshUsage, 5000)
+    }
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [autoRefresh, refreshUsage])
+
+  // Initial refresh on mount
   useEffect(() => {
     refreshKeys()
   }, [])
@@ -106,6 +144,33 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
       showToast(`Refresh failed: ${message}`, 'error')
     } finally {
       setRefreshing(false)
+    }
+  }
+
+  async function resetDailyUsage() {
+    setResetting(true)
+    try {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        showToast('Authentication token not found.', 'error')
+        return
+      }
+      const res = await fetch('/api/admin/api-keys/usage', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (data.error) {
+        showToast(`Reset failed: ${data.error}`, 'error')
+      } else {
+        showToast('Daily usage reset to 0 for all keys', 'success')
+        await refreshKeys()
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      showToast(`Reset failed: ${message}`, 'error')
+    } finally {
+      setResetting(false)
     }
   }
 
@@ -195,13 +260,32 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
           <h1 className="text-3xl font-clash font-bold text-text-primary">API Key Management</h1>
           <p className="text-sm text-text-muted mt-1">All keys are encrypted at rest with AES-256-GCM</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2 mr-2">
+            <div className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-accent-emerald animate-pulse' : 'bg-text-muted'}`} />
+            <span className="text-xs text-text-secondary">{autoRefresh ? 'Live' : 'Paused'}</span>
+          </div>
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`px-3 py-2 border text-text-secondary rounded-lg text-sm transition-colors ${
+              autoRefresh ? 'border-accent-emerald/30 text-accent-emerald' : 'border-border-default hover:bg-bg-surface'
+            }`}
+          >
+            {autoRefresh ? 'Auto: ON' : 'Auto: OFF'}
+          </button>
           <button
             onClick={refreshKeys}
             disabled={refreshing}
             className="px-3 py-2 border border-border-default text-text-secondary rounded-lg hover:bg-bg-surface text-sm disabled:opacity-50"
           >
             {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
+          <button
+            onClick={resetDailyUsage}
+            disabled={resetting}
+            className="px-3 py-2 border border-accent-orange/30 text-accent-orange rounded-lg hover:bg-accent-orange/10 text-sm disabled:opacity-50"
+          >
+            {resetting ? 'Resetting...' : 'Reset Daily'}
           </button>
           <a href="/admin/api-keys/new" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm">
             + Add Key
@@ -219,12 +303,13 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
               <th className="text-left p-4 text-text-secondary text-sm font-medium">Last Test</th>
               <th className="text-left p-4 text-text-secondary text-sm font-medium">Result</th>
               <th className="text-left p-4 text-text-secondary text-sm font-medium">Usage Today</th>
+              <th className="text-left p-4 text-text-secondary text-sm font-medium">All Time</th>
               <th className="text-left p-4 text-text-secondary text-sm font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {keys.map((key) => (
-              <tr key={key.id} className="border-t border-border-subtle hover:bg-bg-surface">
+              <tr key={key.id} className="border-t border-border-subtle hover:bg-bg-surface transition-colors">
                 <td className="p-4 text-text-primary font-medium">{SERVICE_LABELS[key.service] || key.service}</td>
                 <td className="p-4 text-text-secondary">{key.key_name}</td>
                 <td className="p-4">
@@ -253,7 +338,16 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
                     </span>
                   )}
                 </td>
-                <td className="p-4 text-text-secondary">{key.usage_today}</td>
+                <td className="p-4">
+                  <span className="font-mono text-sm font-medium text-accent-emerald">
+                    {key.usage_today}
+                  </span>
+                </td>
+                <td className="p-4">
+                  <span className="font-mono text-sm text-text-secondary">
+                    {key.usage_all_time ?? key.usage_today}
+                  </span>
+                </td>
                 <td className="p-4 space-x-3">
                   <button
                     onClick={() => testKey(key.id)}

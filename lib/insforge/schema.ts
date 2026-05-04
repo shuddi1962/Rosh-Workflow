@@ -463,6 +463,7 @@ export interface ApiKey {
   last_tested?: string
   last_test_result?: string
   usage_today: number
+  usage_all_time: number
   updated_at: string
 }
 
