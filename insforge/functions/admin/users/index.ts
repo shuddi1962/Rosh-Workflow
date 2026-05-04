@@ -1,0 +1,59 @@
+export default async function(req: Request) {
+  const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' };
+  if (req.method === 'OPTIONS') return new Response('ok', { headers });
+
+  const url = Deno.env.get('INSFORGE_URL') || '';
+  const key = Deno.env.get('INSFORGE_API_KEY') || '';
+
+  try {
+    if (req.method === 'GET') {
+      const { searchParams } = new URL(req.url);
+      const role = searchParams.get('role');
+
+      let query = '?order=created_at.desc';
+      if (role === 'admin') {
+        query = '?role=eq.admin&order=created_at.desc';
+      }
+
+      const resp = await fetch(`${url}/rest/v1/users${query}`, {
+        headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+      });
+      const users = await resp.json();
+      const sanitized = users.map((u: any) => ({ ...u, password_hash: '***' }));
+      return new Response(JSON.stringify(sanitized), { headers });
+    }
+
+    if (req.method === 'POST') {
+      const data = await req.json();
+      const resp = await fetch(`${url}/rest/v1/users`, {
+        method: 'POST',
+        headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+        body: JSON.stringify({ ...data, is_active: true, created_at: new Date().toISOString() })
+      });
+      return new Response(JSON.stringify(await resp.json()), { headers });
+    }
+
+    if (req.method === 'PUT') {
+      const { id, ...update } = await req.json();
+      const resp = await fetch(`${url}/rest/v1/users?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(update)
+      });
+      return new Response(JSON.stringify(await resp.json()), { headers });
+    }
+
+    if (req.method === 'DELETE') {
+      const { id } = await req.json();
+      await fetch(`${url}/rest/v1/users?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+      });
+      return new Response(JSON.stringify({ success: true }), { headers });
+    }
+
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+  }
+}

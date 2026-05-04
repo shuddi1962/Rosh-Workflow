@@ -52,14 +52,19 @@ class QueryBuilder implements PromiseLike<QueryResult> {
   private operation: OperationType = 'select'
   private insertData: Record<string, unknown> | Record<string, unknown>[] | null = null
   private updateData: Record<string, unknown> | null = null
+  private wantsReturning = false
 
   constructor(table: string) {
     this.table = table
   }
 
   select(columns = '*'): QueryBuilder {
-    this.selectColumns = columns
-    this.operation = 'select'
+    if (this.operation === 'select') {
+      this.selectColumns = columns
+    } else {
+      this.wantsReturning = true
+      this.selectColumns = columns
+    }
     return this
   }
 
@@ -159,6 +164,9 @@ class QueryBuilder implements PromiseLike<QueryResult> {
         
         try {
           const result = await getPool().query(sql, values)
+          if (this.isSingle) {
+            return { data: result.rows[0] || null, error: null }
+          }
           return { data: result.rows.length === 1 ? result.rows[0] : result.rows, error: null }
         } catch (error) {
           return { data: null, error: { message: error instanceof Error ? error.message : 'Unknown error' } }

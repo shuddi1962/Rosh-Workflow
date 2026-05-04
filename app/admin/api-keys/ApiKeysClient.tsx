@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface ApiKey {
   id: string
@@ -42,6 +42,11 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   const [refreshing, setRefreshing] = useState(false)
 
+  // Auto-refresh on mount to ensure fresh data
+  useEffect(() => {
+    refreshKeys()
+  }, [])
+
   if (userRole !== 'admin') {
     return (
       <div className="max-w-2xl mx-auto">
@@ -75,11 +80,27 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
     setRefreshing(true)
     try {
       const token = localStorage.getItem('accessToken')
+      if (!token) {
+        showToast('Authentication token not found. Please log in again.', 'error')
+        return
+      }
       const res = await fetch('/api/admin/api-keys', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store'
       })
+      
+      if (!res.ok) {
+        const errorData = await res.json()
+        showToast(`Failed to load keys: ${errorData.error || res.statusText}`, 'error')
+        return
+      }
+      
       const data = await res.json()
-      setKeys(data.keys || [])
+      if (data.keys) {
+        setKeys(data.keys)
+      } else {
+        showToast('Invalid response format', 'error')
+      }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error'
       showToast(`Refresh failed: ${message}`, 'error')
