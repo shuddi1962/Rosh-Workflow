@@ -93,7 +93,8 @@ export async function scrapeCompetitor(competitorId: string): Promise<{ success:
 
 async function scrapeFacebookPage(competitorId: string, url: string): Promise<void> {
   try {
-    const apifyToken = process.env.APIFY_API_TOKEN
+    const { getApiKey } = await import('@/lib/env')
+    const apifyToken = await getApiKey('apify', 'API Token')
     if (!apifyToken) return
     
     const response = await fetch('https://api.apify.com/v2/acts', {
@@ -119,7 +120,8 @@ async function scrapeFacebookPage(competitorId: string, url: string): Promise<vo
 
 async function scrapeInstagramPage(competitorId: string, url: string): Promise<void> {
   try {
-    const apifyToken = process.env.APIFY_API_TOKEN
+    const { getApiKey } = await import('@/lib/env')
+    const apifyToken = await getApiKey('apify', 'API Token')
     if (!apifyToken) return
     
     const response = await fetch('https://api.apify.com/v2/acts', {

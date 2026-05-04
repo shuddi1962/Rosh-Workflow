@@ -94,20 +94,25 @@ async function fetchNigerianTrends(): Promise<TrendData[]> {
   const trends: TrendData[] = []
 
   try {
-    const res = await fetch('https://newsapi.org/v2/top-headlines?country=ng&category=business&apiKey=' + (process.env.NEWS_API_KEY || ''), { next: { revalidate: 3600 } })
-    if (res.ok) {
-      const data = await res.json()
-      data.articles?.slice(0, 10).forEach((article: any) => {
-        const isMarine = /marine|boat|ship|water|oil|river|niger delta|maritime/i.test(article.title || '')
-        const isTech = /cctv|security|solar|power|technology|electricity|phcn|grid/i.test(article.title || '')
-        trends.push({
-          keyword: article.title,
-          description: article.description || '',
-          source: 'NewsAPI',
-          momentum: Math.floor(Math.random() * 40) + 60,
-          division: isMarine ? 'marine' : isTech ? 'tech' : 'both'
+    const { getApiKey } = await import('@/lib/env')
+    const newsApiKey = await getApiKey('news_api', 'API Key')
+    
+    if (newsApiKey) {
+      const res = await fetch('https://newsapi.org/v2/top-headlines?country=ng&category=business&apiKey=' + newsApiKey, { next: { revalidate: 3600 } })
+      if (res.ok) {
+        const data = await res.json()
+        data.articles?.slice(0, 10).forEach((article: any) => {
+          const isMarine = /marine|boat|ship|water|oil|river|niger delta|maritime/i.test(article.title || '')
+          const isTech = /cctv|security|solar|power|technology|electricity|phcn|grid/i.test(article.title || '')
+          trends.push({
+            keyword: article.title,
+            description: article.description || '',
+            source: 'NewsAPI',
+            momentum: Math.floor(Math.random() * 40) + 60,
+            division: isMarine ? 'marine' : isTech ? 'tech' : 'both'
+          })
         })
-      })
+      }
     }
   } catch (e) {
     console.log('NewsAPI fetch failed, using fallback trends')

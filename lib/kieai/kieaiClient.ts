@@ -12,7 +12,7 @@ export async function pollKieTask(
   maxWaitMs = 300000
 ): Promise<KieTaskResult> {
   const { getApiKey } = await import('@/lib/env')
-  const key = await getApiKey('kie_ai', 'Production Key')
+  const key = await getApiKey('kie_ai', 'API Key')
   if (!key) throw new Error('Kie.ai API key not configured')
   
   const pollUrl = `${KIE_BASE_URL}/${endpoint}/record-info?taskId=${taskId}`

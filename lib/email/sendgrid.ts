@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer'
-
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
+import { getApiKey } from '@/lib/env'
 
 export interface EmailOptions {
   to: string
@@ -13,13 +12,18 @@ export interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
+    const sendgridKey = await getApiKey('sendgrid', 'API Key')
+    if (!sendgridKey) {
+      return { success: false, error: 'SendGrid API key not configured' }
+    }
+    
     const transporter = nodemailer.createTransport({
       host: 'smtp.sendgrid.net',
       port: 587,
       secure: false,
       auth: {
         user: 'apikey',
-        pass: SENDGRID_API_KEY
+        pass: sendgridKey
       }
     })
     

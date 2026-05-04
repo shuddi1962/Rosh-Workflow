@@ -76,7 +76,8 @@ export async function fetchNewsAPI(): Promise<TrendData[]> {
   const trends: TrendData[] = []
   
   try {
-    const newsApiKey = process.env.NEWS_API_KEY
+    const { getApiKey } = await import('@/lib/env')
+    const newsApiKey = await getApiKey('news_api', 'API Key')
     if (!newsApiKey) return trends
     
     const queries = [...MARINE_TREND_KEYWORDS.slice(0, 3), ...TECH_TREND_KEYWORDS.slice(0, 3)]

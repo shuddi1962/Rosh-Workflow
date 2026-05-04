@@ -1,25 +1,30 @@
 import axios from 'axios'
-
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER
+import { getApiKey } from '@/lib/env'
 
 export async function sendSMS(
   to: string,
   message: string
 ): Promise<{ success: boolean; sid?: string; error?: string }> {
   try {
+    const accountSid = await getApiKey('twilio', 'Account SID')
+    const authToken = await getApiKey('twilio', 'Auth Token')
+    const phoneNumber = await getApiKey('twilio', 'Phone Number')
+    
+    if (!accountSid || !authToken) {
+      return { success: false, error: 'Twilio credentials not configured' }
+    }
+    
     const response = await axios.post(
-      `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+      `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
       new URLSearchParams({
-        From: TWILIO_PHONE_NUMBER || '',
+        From: phoneNumber || '',
         To: to,
         Body: message
       }),
       {
         auth: {
-          username: TWILIO_ACCOUNT_SID || '',
-          password: TWILIO_AUTH_TOKEN || ''
+          username: accountSid,
+          password: authToken
         },
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }

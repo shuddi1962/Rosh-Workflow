@@ -8,7 +8,7 @@ export interface ApifyActorRun {
 }
 
 export async function runApifyActor(actorId: string, input: Record<string, any>) {
-  const apiKey = await getApiKey('apify', 'Production Key')
+  const apiKey = await getApiKey('apify', 'API Token')
   if (!apiKey) throw new Error('Apify API key not configured')
   
   const response = await fetch(`${APIFY_BASE_URL}/acts/${actorId}/runs?token=${apiKey}`, {
@@ -27,7 +27,7 @@ export async function runApifyActor(actorId: string, input: Record<string, any>)
 }
 
 export async function getApifyDataset(datasetId: string) {
-  const apiKey = await getApiKey('apify', 'Production Key')
+  const apiKey = await getApiKey('apify', 'API Token')
   if (!apiKey) throw new Error('Apify API key not configured')
   
   const response = await fetch(
