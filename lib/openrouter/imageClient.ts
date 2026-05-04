@@ -39,7 +39,7 @@ export async function generateImage(
 ): Promise<{ url: string; model: string; prompt: string; aspect_ratio: string }[]> {
   const { getApiKey } = await import('@/lib/env')
   const { DBClient } = await import('@/lib/insforge/server')
-  const apiKey = await getApiKey('openrouter', 'Production Key')
+  const apiKey = await getApiKey('openrouter', 'API Key')
   
   if (!apiKey) throw new Error('OpenRouter API key not configured')
   

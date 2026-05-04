@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
     
     const compObj = competitor as unknown as Record<string, unknown>
-    const apiKey = await getApiKey('apify', 'Production Key')
+    const apiKey = await getApiKey('apify', 'API Token')
     if (!apiKey) {
       return NextResponse.json({ error: 'Apify API key not configured' }, { status: 500 })
     }

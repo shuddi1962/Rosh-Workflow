@@ -28,12 +28,12 @@ export async function POST(request: NextRequest) {
     let publishResult = { status: 'simulated', message: 'Post would be published' } as Record<string, unknown>
     
     if (platformToUse === 'facebook' || platformToUse === 'instagram') {
-      const metaKey = await getApiKey('meta', 'Production Key')
+      const metaKey = await getApiKey('meta', 'WhatsApp Access Token')
       if (metaKey) {
         publishResult = { status: 'ready', message: 'Meta API configured - would publish' }
       }
     } else if (platformToUse === 'whatsapp') {
-      const metaKey = await getApiKey('meta', 'Production Key')
+      const metaKey = await getApiKey('meta', 'WhatsApp Access Token')
       if (metaKey) {
         publishResult = { status: 'ready', message: 'WhatsApp API configured - would send' }
       }

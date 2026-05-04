@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'division and post_type are required' }, { status: 400 })
     }
     
-    const anthropicKey = await getApiKey('anthropic', 'Production Key')
+    const anthropicKey = await getApiKey('anthropic', 'API Key')
     if (!anthropicKey) {
       return NextResponse.json({ error: 'Anthropic API key not configured. Add it in Admin > API Keys.' }, { status: 500 })
     }

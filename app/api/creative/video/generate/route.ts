@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'prompt is required' }, { status: 400 })
     }
     
-    const key = await getApiKey('kie_ai', 'Production Key')
+    const key = await getApiKey('kie_ai', 'API Key')
     if (!key) {
       return NextResponse.json({ error: 'Kie.ai API key not configured' }, { status: 500 })
     }

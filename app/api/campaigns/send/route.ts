@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const results = []
     
     if (campaignObj.type === 'email') {
-      const sendgridKey = await getApiKey('sendgrid', 'Production Key')
+      const sendgridKey = await getApiKey('sendgrid', 'API Key')
       if (sendgridKey) {
         for (const lead of leads as Array<Record<string, unknown>>) {
           try {
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
         }
       }
     } else if (campaignObj.type === 'sms') {
-      const twilioSid = await getApiKey('twilio_sid', 'Production Key')
-      const twilioToken = await getApiKey('twilio_token', 'Production Key')
+      const twilioSid = await getApiKey('twilio', 'Account SID')
+      const twilioToken = await getApiKey('twilio', 'Auth Token')
       
       if (twilioSid && twilioToken) {
         for (const lead of leads as Array<Record<string, unknown>>) {
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         }
       }
     } else if (campaignObj.type === 'whatsapp') {
-      const metaKey = await getApiKey('meta', 'Production Key')
+      const metaKey = await getApiKey('meta', 'WhatsApp Access Token')
       
       if (metaKey) {
         for (const lead of leads as Array<Record<string, unknown>>) {

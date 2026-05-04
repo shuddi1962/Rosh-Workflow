@@ -45,7 +45,7 @@ interface TrendResult {
 }
 
 async function fetchGoogleTrends(keywords: string[]): Promise<TrendResult[]> {
-  const apiKey = await getApiKey('google_trends', 'Production Key')
+  const apiKey = await getApiKey('google_trends', 'API Key')
   if (!apiKey) return []
   
   const results: TrendResult[] = []
@@ -74,7 +74,7 @@ async function fetchGoogleTrends(keywords: string[]): Promise<TrendResult[]> {
 }
 
 async function fetchNewsAPI(keywords: string[]): Promise<TrendResult[]> {
-  const apiKey = await getApiKey('news_api', 'Production Key')
+  const apiKey = await getApiKey('news_api', 'API Key')
   if (!apiKey) return []
   
   const results: TrendResult[] = []

@@ -133,7 +133,7 @@ async function scrapeSource(
       case 'google_maps': {
         const { getApiKey } = await import('@/lib/env')
         const { runApifyActor, getApifyDataset } = await import('@/lib/apify/client')
-        const apiKey = await getApiKey('apify', 'Production Key')
+        const apiKey = await getApiKey('apify', 'API Token')
         if (!apiKey) break
 
         const run = await runApifyActor('compass~google-maps-scraper', {
@@ -170,7 +170,7 @@ async function scrapeSource(
       case 'linkedin': {
         const { getApiKey } = await import('@/lib/env')
         const { runApifyActor, getApifyDataset } = await import('@/lib/apify/client')
-        const apiKey = await getApiKey('apify', 'Production Key')
+        const apiKey = await getApiKey('apify', 'API Token')
         if (!apiKey) break
 
         const run = await runApifyActor('apify~linkedin-profile-scraper', {

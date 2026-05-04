@@ -1,10 +1,32 @@
 import Anthropic from '@anthropic-ai/sdk'
 import axios from 'axios'
+import { getApiKey } from '@/lib/env'
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+let anthropic: Anthropic | null = null
 
-const anthropic = ANTHROPIC_API_KEY ? new Anthropic({ apiKey: ANTHROPIC_API_KEY }) : null
+export async function getAnthropicClient(): Promise<Anthropic | null> {
+  if (anthropic) return anthropic
+  
+  const dbKey = await getApiKey('anthropic', 'API Key')
+  if (dbKey) {
+    anthropic = new Anthropic({ apiKey: dbKey })
+    return anthropic
+  }
+  
+  if (process.env.ANTHROPIC_API_KEY) {
+    anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    return anthropic
+  }
+  
+  return null
+}
+
+export async function getOpenRouterKey(): Promise<string | null> {
+  const dbKey = await getApiKey('openrouter', 'API Key')
+  if (dbKey) return dbKey
+  if (process.env.OPENROUTER_API_KEY) return process.env.OPENROUTER_API_KEY
+  return null
+}
 
 export interface AIResponse {
   content: string
@@ -83,21 +105,21 @@ TONE: ${params.tone || 'professional yet approachable'}
 
 Generate the content now.`
 
-  if (ANTHROPIC_API_KEY && anthropic) {
-    return generateWithClaude(prompt)
+  const client = await getAnthropicClient()
+  if (client) {
+    return generateWithClaude(prompt, client)
   }
   
-  if (OPENROUTER_API_KEY) {
-    return generateWithOpenRouter(prompt, 'anthropic/claude-sonnet-4-20250514')
+  const openRouterKey = await getOpenRouterKey()
+  if (openRouterKey) {
+    return generateWithOpenRouter(prompt, 'anthropic/claude-sonnet-4-20250514', openRouterKey)
   }
   
   throw new Error('No AI provider configured')
 }
 
-async function generateWithClaude(prompt: string): Promise<AIResponse> {
-  if (!anthropic) throw new Error('Claude client not initialized')
-  
-  const message = await anthropic.messages.create({
+async function generateWithClaude(prompt: string, client: Anthropic): Promise<AIResponse> {
+  const message = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4000,
     temperature: 0.7,
@@ -112,7 +134,7 @@ async function generateWithClaude(prompt: string): Promise<AIResponse> {
   return { content, usage: { input_tokens: inputTokens, output_tokens: outputTokens }, cost_usd: costUsd }
 }
 
-async function generateWithOpenRouter(prompt: string, model: string): Promise<AIResponse> {
+async function generateWithOpenRouter(prompt: string, model: string, openRouterKey: string): Promise<AIResponse> {
   const response = await axios.post(
     'https://openrouter.ai/api/v1/chat/completions',
     {
@@ -123,7 +145,7 @@ async function generateWithOpenRouter(prompt: string, model: string): Promise<AI
     },
     {
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer ${openRouterKey}`,
         'Content-Type': 'application/json'
       }
     }
@@ -159,7 +181,9 @@ ${params.roshanalData}
 
 Output a structured JSON report with specific examples, not generic advice.`
 
-  return generateWithClaude(prompt)
+  const client = await getAnthropicClient()
+  if (!client) throw new Error('No AI provider configured')
+  return generateWithClaude(prompt, client)
 }
 
 export async function bridgeTrendToContent(params: TrendToContentParams): Promise<AIResponse> {
@@ -184,7 +208,9 @@ DIVISION: ${params.division}
 
 Local context first: Always ask — does this trend have a Port Harcourt / Niger Delta angle?`
 
-  return generateWithClaude(prompt)
+  const client = await getAnthropicClient()
+  if (!client) throw new Error('No AI provider configured')
+  return generateWithClaude(prompt, client)
 }
 
 export async function callClaude(
@@ -198,8 +224,9 @@ export async function callClaude(
       ]
     : [{ role: 'user' as const, content: prompt }]
 
-  if (ANTHROPIC_API_KEY && anthropic) {
-    const message = await anthropic.messages.create({
+  const client = await getAnthropicClient()
+  if (client) {
+    const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: options.max_tokens || 4000,
       temperature: 0.7,
@@ -210,7 +237,8 @@ export async function callClaude(
     return content
   }
 
-  if (OPENROUTER_API_KEY) {
+  const openRouterKey = await getOpenRouterKey()
+  if (openRouterKey) {
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
@@ -221,7 +249,7 @@ export async function callClaude(
       },
       {
         headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${openRouterKey}`,
           'Content-Type': 'application/json',
         },
       }
