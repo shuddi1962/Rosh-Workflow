@@ -21,12 +21,19 @@ export async function GET(request: Request) {
 
     const { data, error } = await db
       .from('api_keys')
-      .select('id, service, key_name, usage_today, usage_all_time, updated_at')
+      .select('id, service, key_name, is_active, usage_today, usage_all_time, updated_at')
       .order('usage_today', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    const response = NextResponse.json({ keys: data || [] })
+    const normalizedKeys = (data || []).map((k: any) => ({
+      ...k,
+      is_active: k.is_active === true || k.is_active === 'true' || k.is_active === 1,
+      usage_today: typeof k.usage_today === 'string' ? parseFloat(k.usage_today) : (k.usage_today || 0),
+      usage_all_time: typeof k.usage_all_time === 'string' ? parseFloat(k.usage_all_time) : (k.usage_all_time || 0)
+    }))
+
+    const response = NextResponse.json({ keys: normalizedKeys })
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
     response.headers.set('Pragma', 'no-cache')
     response.headers.set('Expires', '0')

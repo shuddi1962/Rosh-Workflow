@@ -17,5 +17,12 @@ export default async function AdminApiKeysPage() {
     console.error('Error fetching API keys:', error)
   }
 
-  return <ApiKeysClient initialKeys={(keys as unknown as ApiKey[]) || []} />
+  const normalizedKeys = ((keys || []) as any[]).map((k: any) => ({
+    ...k,
+    is_active: k.is_active === true || k.is_active === 'true' || k.is_active === 1,
+    usage_today: typeof k.usage_today === 'string' ? parseFloat(k.usage_today) : (k.usage_today || 0),
+    usage_all_time: typeof k.usage_all_time === 'string' ? parseFloat(k.usage_all_time) : (k.usage_all_time || 0)
+  })) as unknown as ApiKey[]
+
+  return <ApiKeysClient initialKeys={normalizedKeys} />
 }

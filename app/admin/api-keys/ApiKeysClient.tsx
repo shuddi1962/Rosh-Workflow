@@ -38,18 +38,75 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
   const userRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null
   const userName = typeof window !== 'undefined' ? localStorage.getItem('userName') : null
 
-  const [keys, setKeys] = useState<ApiKey[]>(initialKeys)
+  const [keys, setKeys] = useState<ApiKey[]>(() => {
+    return initialKeys.map(k => {
+      const raw = k as any
+      return {
+        ...k,
+        is_active: raw.is_active === true || raw.is_active === 'true' || raw.is_active === 1,
+        usage_today: typeof raw.usage_today === 'string' ? parseFloat(raw.usage_today) : raw.usage_today,
+        usage_all_time: typeof raw.usage_all_time === 'string' ? parseFloat(raw.usage_all_time) : (raw.usage_all_time ?? 0)
+      }
+    })
+  })
   const [testing, setTesting] = useState<Record<string, boolean>>({})
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const [resetting, setResetting] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(true)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const initialDataLoaded = useRef(false)
 
-  // Auto-refresh usage stats every 5 seconds
+  const getToken = useCallback(() => {
+    if (typeof window === 'undefined') return null
+    return localStorage.getItem('accessToken')
+  }, [])
+
+  const refreshKeys = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      const token = getToken()
+      if (!token) {
+        if (initialDataLoaded.current) return
+        showToast('Authentication token not found. Please log in again.', 'error')
+        return
+      }
+      const res = await fetch('/api/admin/api-keys', {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store'
+      })
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        if (!initialDataLoaded.current) {
+          showToast(`Failed to load keys: ${errorData.error || res.statusText}`, 'error')
+        }
+        return
+      }
+      
+      const data = await res.json()
+      if (data.keys && Array.isArray(data.keys)) {
+        setKeys(data.keys.map((k: any) => ({
+          ...k,
+          is_active: k.is_active === true || k.is_active === 'true' || k.is_active === 1,
+          usage_today: typeof k.usage_today === 'string' ? parseFloat(k.usage_today) : k.usage_today,
+          usage_all_time: typeof k.usage_all_time === 'string' ? parseFloat(k.usage_all_time) : (k.usage_all_time ?? 0)
+        })))
+        initialDataLoaded.current = true
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      if (!initialDataLoaded.current) {
+        showToast(`Refresh failed: ${message}`, 'error')
+      }
+    } finally {
+      setRefreshing(false)
+    }
+  }, [getToken])
+
   const refreshUsage = useCallback(async () => {
     try {
-      const token = localStorage.getItem('accessToken')
+      const token = getToken()
       if (!token) return
       
       const res = await fetch('/api/admin/api-keys/usage', {
@@ -60,30 +117,44 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
       if (!res.ok) return
       
       const data = await res.json()
-      if (data.keys) {
+      if (data.keys && Array.isArray(data.keys)) {
         setKeys(prev => {
           const updated = new Map<string, ApiKey>(data.keys.map((k: ApiKey) => [k.id, k]))
-          return prev.map(k => updated.get(k.id) ?? k)
+          return prev.map(k => {
+            const fresh = updated.get(k.id)
+            if (!fresh) return k
+            const raw = fresh as any
+            return {
+              ...k,
+              usage_today: typeof raw.usage_today === 'string' ? parseFloat(raw.usage_today) : raw.usage_today,
+              usage_all_time: typeof raw.usage_all_time === 'string' ? parseFloat(raw.usage_all_time) : (raw.usage_all_time ?? k.usage_all_time ?? 0)
+            }
+          })
         })
       }
     } catch {
       // Silently fail - polling should not cause errors
     }
-  }, [])
+  }, [getToken])
+
+  useEffect(() => {
+    if (initialKeys.length > 0) {
+      initialDataLoaded.current = true
+    }
+  }, [initialKeys.length])
+
+  useEffect(() => {
+    refreshKeys()
+  }, [refreshKeys])
 
   useEffect(() => {
     if (autoRefresh) {
-      pollRef.current = setInterval(refreshUsage, 5000)
+      pollRef.current = setInterval(refreshUsage, 3000)
     }
     return () => {
       if (pollRef.current) clearInterval(pollRef.current)
     }
   }, [autoRefresh, refreshUsage])
-
-  // Initial refresh on mount
-  useEffect(() => {
-    refreshKeys()
-  }, [])
 
   if (userRole !== 'admin') {
     return (
@@ -114,43 +185,10 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
     setTimeout(() => setToast(null), 3000)
   }
 
-  async function refreshKeys() {
-    setRefreshing(true)
-    try {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        showToast('Authentication token not found. Please log in again.', 'error')
-        return
-      }
-      const res = await fetch('/api/admin/api-keys', {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: 'no-store'
-      })
-      
-      if (!res.ok) {
-        const errorData = await res.json()
-        showToast(`Failed to load keys: ${errorData.error || res.statusText}`, 'error')
-        return
-      }
-      
-      const data = await res.json()
-      if (data.keys) {
-        setKeys(data.keys)
-      } else {
-        showToast('Invalid response format', 'error')
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      showToast(`Refresh failed: ${message}`, 'error')
-    } finally {
-      setRefreshing(false)
-    }
-  }
-
   async function resetDailyUsage() {
     setResetting(true)
     try {
-      const token = localStorage.getItem('accessToken')
+      const token = getToken()
       if (!token) {
         showToast('Authentication token not found.', 'error')
         return
@@ -177,7 +215,7 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
   async function testKey(id: string) {
     setTesting(prev => ({ ...prev, [id]: true }))
     try {
-      const token = localStorage.getItem('accessToken')
+      const token = getToken()
       const res = await fetch(`/api/admin/api-keys/${id}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
@@ -201,7 +239,7 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
   async function deleteKey(id: string) {
     if (!confirm('Are you sure you want to delete this API key?')) return
     try {
-      const token = localStorage.getItem('accessToken')
+      const token = getToken()
       const res = await fetch(`/api/admin/api-keys/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
@@ -221,7 +259,7 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
 
   async function toggleActive(id: string, currentActive: boolean) {
     try {
-      const token = localStorage.getItem('accessToken')
+      const token = getToken()
       const res = await fetch(`/api/admin/api-keys/${id}`, {
         method: 'PUT',
         headers: {
