@@ -13,18 +13,12 @@ export async function getAnthropicClient(): Promise<Anthropic | null> {
     return anthropic
   }
   
-  if (process.env.ANTHROPIC_API_KEY) {
-    anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-    return anthropic
-  }
-  
   return null
 }
 
 export async function getOpenRouterKey(): Promise<string | null> {
   const dbKey = await getApiKey('openrouter', 'API Key')
   if (dbKey) return dbKey
-  if (process.env.OPENROUTER_API_KEY) return process.env.OPENROUTER_API_KEY
   return null
 }
 

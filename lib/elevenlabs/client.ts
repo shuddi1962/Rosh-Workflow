@@ -1,6 +1,4 @@
-import { DBClient } from '@/lib/insforge/server'
-
-const db = new DBClient()
+import { getApiKey } from '@/lib/env'
 
 const ELEVENLABS_BASE = 'https://api.elevenlabs.io/v1'
 
@@ -21,14 +19,7 @@ export interface VoiceAgent {
 }
 
 export async function getElevenLabsKey(): Promise<string | null> {
-  const { data } = await db
-    .from('api_keys')
-    .select('encrypted_value')
-    .eq('service', 'elevenlabs')
-    .eq('is_active', true)
-    .single()
-  const record = data as unknown as Record<string, unknown> | null
-  return (record?.encrypted_value as string) || null
+  return getApiKey('elevenlabs', 'API Key')
 }
 
 export async function createElevenLabsAgent(config: {
