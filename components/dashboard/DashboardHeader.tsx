@@ -2,20 +2,16 @@
 
 import React, { useState } from 'react';
 import { useTenant } from '@/lib/context/TenantContext';
-import { Bell, Search, ChevronDown, HelpCircle, Menu, User, LogOut } from 'lucide-react';
+import { Bell, Search, ChevronDown, User } from 'lucide-react';
 
 export const DashboardHeader: React.FC = () => {
   const { currentTenant, tenants, switchTenant } = useTenant();
   const [tenantOpen, setTenantOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-30">
+    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
       <div className="flex items-center gap-4">
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-slate-500 p-1">
-          <Menu className="w-5 h-5" />
-        </button>
         <div className="flex items-center gap-2 text-sm text-slate-400">
           <span className="font-semibold text-slate-900">Dashboard</span>
           <span>/</span>
