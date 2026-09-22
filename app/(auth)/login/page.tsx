@@ -69,6 +69,10 @@ export default function LoginPage() {
       if (err instanceof TypeError) {
         // Network-level failure: offline, DNS, or the request was blocked.
         setError('Could not reach the server. Check your internet connection and try again.')
+      } else if (err instanceof RangeError) {
+        // The request never left the browser: something in the browser itself
+        // (e.g. an ad-blocker or other extension patching network calls) broke it.
+        setError('Your browser blocked the login request (often caused by an ad-blocker or extension). Please try an incognito/private window with extensions disabled.')
       } else {
         setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
       }
