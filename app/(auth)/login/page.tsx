@@ -14,6 +14,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
+  const fillDemoCredentials = () => {
+    setEmail('demo@roshanalinfotech.com')
+    setPassword('demo123456')
+    setError('')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -202,6 +208,13 @@ export default function LoginPage() {
                 <p><span className="text-text-primary font-medium">Email:</span> demo@roshanalinfotech.com</p>
                 <p><span className="text-text-primary font-medium">Password:</span> demo123456</p>
               </div>
+              <button
+                type="button"
+                onClick={fillDemoCredentials}
+                className="mt-3 w-full py-2.5 text-sm font-medium text-[#1468F5] bg-[#1468F5]/10 hover:bg-[#1468F5]/20 border border-[#1468F5]/20 rounded-lg transition-all"
+              >
+                Use demo credentials
+              </button>
             </div>
 
             <p className="mt-6 text-text-muted text-sm text-center">
