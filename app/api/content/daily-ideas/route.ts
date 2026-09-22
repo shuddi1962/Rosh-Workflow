@@ -35,10 +35,12 @@ export async function GET(request: Request) {
           cta: idea.cta,
           status: 'draft',
           auto_generated: true,
-          trend_keyword: idea.trend_keyword,
-          trend_source: idea.trend_source,
-          urgency: idea.urgency,
-          image_prompt: idea.image_prompt,
+          engagement: {
+            trend_keyword: idea.trend_keyword || null,
+            trend_source: idea.trend_source || null,
+            urgency: idea.urgency,
+            image_prompt: idea.image_prompt || null,
+          },
           scheduled_at: scheduledTime.toISOString(),
           created_at: now.toISOString()
         })
