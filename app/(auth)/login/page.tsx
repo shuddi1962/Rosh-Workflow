@@ -20,6 +20,56 @@ export default function LoginPage() {
     setError('')
   }
 
+  interface LoginResponse {
+    error?: string
+    accessToken?: string
+    refreshToken?: string
+    user?: { role: string; full_name: string }
+  }
+
+  const completeLogin = (status: number, text: string) => {
+    // Read as text first: a timeout / edge error page comes back as HTML,
+    // and JSON-parsing HTML throws a confusing error.
+    let data: LoginResponse = {}
+    if (text) {
+      try {
+        data = JSON.parse(text) as LoginResponse
+      } catch {
+        throw new Error(`Server returned ${status} with an unreadable response. The server may have timed out — please try again.`)
+      }
+    }
+
+    if (status < 200 || status >= 300) {
+      throw new Error(data.error || `Login failed (status ${status})`)
+    }
+
+    if (!data.accessToken || !data.user) {
+      throw new Error('Login succeeded but the response was incomplete. Please try again.')
+    }
+
+    localStorage.setItem('accessToken', data.accessToken)
+    if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
+    localStorage.setItem('userRole', data.user.role)
+    localStorage.setItem('userName', data.user.full_name)
+
+    const redirectUrl = data.user.role === 'admin' ? '/admin' : '/dashboard'
+    window.location.href = redirectUrl
+  }
+
+  // Fallback transport for browsers where window.fetch itself is broken
+  // (e.g. an extension patching fetch into infinite recursion).
+  const postLoginXHR = (emailValue: string, passwordValue: string): Promise<{ status: number; text: string }> =>
+    new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', '/api/auth/login')
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.timeout = 30000
+      xhr.onload = () => resolve({ status: xhr.status, text: xhr.responseText })
+      xhr.onerror = () => reject(new Error('Network request failed. Check your connection and try again.'))
+      xhr.ontimeout = () => reject(new Error('Login request timed out after 30 seconds. Please try again.'))
+      xhr.send(JSON.stringify({ email: emailValue, password: passwordValue }))
+    })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -31,48 +81,24 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
-
-      // Read as text first: a timeout / edge error page comes back as HTML,
-      // and res.json() on HTML throws the generic "Something went wrong".
-      const text = await res.text()
-      let data: {
-        error?: string
-        accessToken?: string
-        refreshToken?: string
-        user?: { role: string; full_name: string }
-      } = {}
-      if (text) {
-        try {
-          data = JSON.parse(text) as typeof data
-        } catch {
-          throw new Error(`Server returned ${res.status} with an unreadable response. The server may have timed out — please try again.`)
-        }
-      }
-
-      if (!res.ok) {
-        setError(data.error || `Login failed (status ${res.status})`)
-        return
-      }
-
-      if (!data.accessToken || !data.user) {
-        throw new Error('Login succeeded but the response was incomplete. Please try again.')
-      }
-
-      localStorage.setItem('accessToken', data.accessToken)
-      if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
-      localStorage.setItem('userRole', data.user.role)
-      localStorage.setItem('userName', data.user.full_name)
-
-      const redirectUrl = data.user.role === 'admin' ? '/admin' : '/dashboard'
-      window.location.href = redirectUrl
+      completeLogin(res.status, await res.text())
     } catch (err) {
-      if (err instanceof TypeError) {
+      if (err instanceof RangeError) {
+        // fetch() itself threw before the request left the browser.
+        // Retry with XMLHttpRequest, which extensions patch less often.
+        try {
+          const { status, text } = await postLoginXHR(email, password)
+          completeLogin(status, text)
+        } catch (fallbackErr) {
+          setError(
+            fallbackErr instanceof Error
+              ? fallbackErr.message
+              : 'Your browser blocked the login request (often caused by an ad-blocker or extension). Please try an incognito/private window with extensions disabled.'
+          )
+        }
+      } else if (err instanceof TypeError) {
         // Network-level failure: offline, DNS, or the request was blocked.
         setError('Could not reach the server. Check your internet connection and try again.')
-      } else if (err instanceof RangeError) {
-        // The request never left the browser: something in the browser itself
-        // (e.g. an ad-blocker or other extension patching network calls) broke it.
-        setError('Your browser blocked the login request (often caused by an ad-blocker or extension). Please try an incognito/private window with extensions disabled.')
       } else {
         setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
       }
