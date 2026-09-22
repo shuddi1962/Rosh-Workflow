@@ -14,12 +14,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
-  const fillDemoCredentials = () => {
-    setEmail('demo@roshanalinfotech.com')
-    setPassword('demo123456')
-    setError('')
-  }
-
   interface LoginResponse {
     error?: string
     accessToken?: string
@@ -159,15 +153,6 @@ export default function LoginPage() {
           ))}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="relative z-10 text-text-muted text-sm space-y-1"
-        >
-          <p>No 18A Rumuola/Rumuadaolu Road, Port Harcourt, Rivers State</p>
-          <p>08109522432 | info@roshanalinfotech.com</p>
-        </motion.div>
       </div>
 
       {/* Right Panel - Login Form */}
@@ -212,7 +197,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-12 pr-4 py-3.5 bg-bg-surface border border-border-subtle rounded-xl text-text-primary placeholder:text-text-muted focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 outline-none transition-all"
-                    placeholder="demo@roshanalinfotech.com"
+                    placeholder="you@company.com"
                     required
                   />
                 </div>
@@ -255,25 +240,6 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
-
-            <div className="mt-8 p-4 bg-[#1468F5]/5 rounded-xl border border-[#1468F5]/20">
-              <p className="text-sm font-medium text-[#1468F5] mb-2">Demo Account</p>
-              <div className="space-y-1 text-sm text-text-secondary">
-                <p><span className="text-text-primary font-medium">Email:</span> demo@roshanalinfotech.com</p>
-                <p><span className="text-text-primary font-medium">Password:</span> demo123456</p>
-              </div>
-              <button
-                type="button"
-                onClick={fillDemoCredentials}
-                className="mt-3 w-full py-2.5 text-sm font-medium text-[#1468F5] bg-[#1468F5]/10 hover:bg-[#1468F5]/20 border border-[#1468F5]/20 rounded-lg transition-all"
-              >
-                Use demo credentials
-              </button>
-            </div>
-
-            <p className="mt-6 text-text-muted text-sm text-center">
-              Contact admin for account creation
-            </p>
           </div>
 
           <p className="mt-8 text-center text-text-muted text-sm">
