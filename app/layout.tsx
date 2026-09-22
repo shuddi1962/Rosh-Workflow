@@ -13,27 +13,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function configureFetchGuard() {
-                try {
-                  Object.defineProperty(window, 'fetch', {
-                    configurable: true,
-                    get: function () {
-                      return window.__gpFetch || globalThis.fetch
-                    },
-                    set: function (value) {
-                      window.__gpFetch = value
-                    }
-                  })
-                } catch (_) {}
-              })()
-            `,
-          }}
-        />
-      </head>
       <body>
         {children}
       </body>
