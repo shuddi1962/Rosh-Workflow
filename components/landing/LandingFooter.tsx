@@ -12,7 +12,7 @@ export const LandingFooter: React.FC = () => (
             <div className="w-9 h-9 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold text-white">ROSH</span>
+            <span className="text-lg font-bold text-white">GrowPilot</span>
           </div>
           <p className="text-sm leading-relaxed text-slate-400 mb-4">The AI business operating system for modern teams.</p>
           <div className="flex gap-3">
@@ -53,7 +53,7 @@ export const LandingFooter: React.FC = () => (
         </div>
       </div>
       <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <span>&copy; 2026 ROSH. All rights reserved.</span>
+        <span>&copy; 2026 GrowPilot AI. All rights reserved.</span>
         <div className="flex gap-4">
           <a href="#" className="hover:text-white transition">Privacy Policy</a>
           <a href="#" className="hover:text-white transition">Terms of Service</a>

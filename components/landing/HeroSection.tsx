@@ -34,7 +34,7 @@ export const HeroSection: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterMo
             </h1>
 
             <p className="text-lg text-slate-600 max-w-lg mb-8 leading-relaxed">
-              ROSH is the all-in-one platform that helps businesses attract customers, manage sales, automate marketing, and grow — with the power of AI.
+              GrowPilot AI is the all-in-one platform that helps businesses attract customers, manage sales, automate marketing, and grow — with the power of AI.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-3 mb-8">
@@ -65,7 +65,7 @@ export const HeroSection: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterMo
                 <div className="w-3 h-3 rounded-full bg-red-400" />
                 <div className="w-3 h-3 rounded-full bg-amber-400" />
                 <div className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="ml-auto text-xs text-slate-400 font-mono">rosh-dashboard</span>
+                <span className="ml-auto text-xs text-slate-400 font-mono">growpilot-dashboard</span>
               </div>
               <div className="p-5 bg-white">
                 <div className="flex items-center justify-between mb-4">

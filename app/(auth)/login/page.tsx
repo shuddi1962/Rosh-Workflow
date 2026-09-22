@@ -127,14 +127,14 @@ export default function LoginPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="font-clash text-2xl font-bold text-text-primary">ROSH</span>
+            <span className="font-clash text-2xl font-bold text-text-primary">GrowPilot</span>
           </div>
           
           <h1 className="font-clash text-4xl font-bold text-text-primary mb-4 leading-tight">
             Intelligent Business Growth Platform
           </h1>
           <p className="text-text-secondary text-lg leading-relaxed">
-            AI-powered content generation, competitor intelligence, and social automation for Roshanal Infotech Limited, Port Harcourt.
+            AI-powered content generation, competitor intelligence, and social automation for ambitious businesses across Nigeria.
           </p>
         </motion.div>
 
@@ -182,7 +182,7 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-clash text-xl font-bold text-text-primary">ROSH</span>
+            <span className="font-clash text-xl font-bold text-text-primary">GrowPilot</span>
           </div>
 
           <div className="bg-white rounded-2xl border border-border-subtle p-8 shadow-lg">
@@ -277,7 +277,7 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-8 text-center text-text-muted text-sm">
-            © 2026 Roshanal Infotech Limited. All rights reserved.
+            © 2026 GrowPilot AI. All rights reserved.
           </p>
         </motion.div>
       </div>

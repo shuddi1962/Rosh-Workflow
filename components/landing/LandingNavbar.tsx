@@ -19,7 +19,7 @@ export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegister
             <div className="w-9 h-9 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">ROSH</span>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">GrowPilot</span>
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">

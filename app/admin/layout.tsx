@@ -124,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
               <div>
                 <span className="font-clash text-lg font-bold text-text-primary">Admin</span>
-                <p className="text-xs text-text-muted">Roshanal AI</p>
+                <p className="text-xs text-text-muted">GrowPilot AI</p>
               </div>
             </div>
             <button

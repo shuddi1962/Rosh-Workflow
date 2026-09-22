@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { TenantProvider } from '@/lib/context/TenantContext';
 import { LandingView } from '@/components/landing/LandingView';
 import { RegisterBusinessModal } from '@/components/modals/RegisterBusinessModal';
-import { RoshLiveChat } from '@/components/livechat/RoshLiveChat';
+import { GrowPilotChat } from '@/components/livechat/GrowPilotChat';
 import { useTenant } from '@/lib/context/TenantContext';
 import { useRouter } from 'next/navigation';
 
@@ -28,7 +28,7 @@ const HomePageInner: React.FC = () => {
           router.push('/dashboard');
         }}
       />
-      <RoshLiveChat />
+      <GrowPilotChat />
     </>
   );
 };

@@ -34,7 +34,7 @@ export const LiveAutomationTester: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0A1833] mb-4">Your AI Business Command Center</h2>
-          <p className="text-lg text-slate-600">Tell ROSH what you want to accomplish and let AI coordinate the work across your workspace.</p>
+          <p className="text-lg text-slate-600">Tell GrowPilot what you want to accomplish and let AI coordinate the work across your workspace.</p>
         </div>
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xl shadow-slate-200/50">

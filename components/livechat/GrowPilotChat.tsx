@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
 
-export const RoshLiveChat: React.FC = () => {
+export const GrowPilotChat: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([
-    { role: 'ai', text: 'Hi! I\'m ROSH AI. How can I help you today? I can answer questions about our products, pricing, or schedule a demo.' },
+    { role: 'ai', text: 'Hi! I\'m the GrowPilot AI assistant. How can I help you today? I can answer questions about our products, pricing, or schedule a demo.' },
   ]);
   const [input, setInput] = useState('');
 
@@ -28,7 +28,7 @@ export const RoshLiveChat: React.FC = () => {
       {open && (
         <div className="fixed bottom-24 right-6 z-50 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" onClick={(e) => e.stopPropagation()}>
           <div className="bg-gradient-to-r from-[#1468F5] to-[#3B82F6] p-4">
-            <h3 className="text-sm font-bold text-white">Rosh AI Assistant</h3>
+            <h3 className="text-sm font-bold text-white">GrowPilot Assistant</h3>
             <p className="text-xs text-blue-100">Usually replies instantly</p>
           </div>
           <div className="h-64 overflow-y-auto p-4 space-y-3">

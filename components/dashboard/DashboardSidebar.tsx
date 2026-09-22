@@ -67,7 +67,7 @@ export const DashboardSidebar: React.FC = () => {
             <div className="w-9 h-9 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            {!collapsed && <span className="font-bold tracking-tight text-sm text-white">ROSH</span>}
+            {!collapsed && <span className="font-bold tracking-tight text-sm text-white">GrowPilot</span>}
           </div>
           <button onClick={() => setCollapsed(!collapsed)} className="hidden lg:block text-slate-400 hover:text-white p-1">
             {collapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}

@@ -11,7 +11,7 @@ export const MultiTenantIndustryPreview: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">One Platform. Multiple Businesses.</h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">ROSH is built as a multi-tenant platform, allowing every business to operate inside its own secure workspace while using the same powerful infrastructure.</p>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">GrowPilot is built as a multi-tenant platform, allowing every business to operate inside its own secure workspace while using the same powerful infrastructure.</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">

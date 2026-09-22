@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:demo": "tsx scripts/seed-demo-user.ts"
+    "seed:demo": "tsx scripts/seed-demo-user.ts",
+    "seed:content": "tsx scripts/seed-demo-content.ts",
+    "census": "tsx scripts/db-census.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",

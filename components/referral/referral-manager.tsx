@@ -27,7 +27,7 @@ interface ReferralManagerProps {
 }
 
 export default function ReferralManager({ leadId }: ReferralManagerProps) {
-  const [referralCode, setReferralCode] = useState('ROSH-2024-XXXX')
+  const [referralCode, setReferralCode] = useState('GP-2026-XXXX')
   const [copied, setCopied] = useState(false)
   const [stats] = useState<ReferralStats>({
     total_referrals: 24,
@@ -37,9 +37,9 @@ export default function ReferralManager({ leadId }: ReferralManagerProps) {
     pending_rewards_ngn: 100000,
   })
   const [referrals] = useState<Referral[]>([
-    { id: '1', referrer_name: 'Emeka Obi', referred_name: 'Chief Okoro', referral_code: 'ROSH-2024-001', status: 'customer', reward_ngn: 50000, created_at: '2024-01-15' },
-    { id: '2', referrer_name: 'Grace Ade', referred_name: 'Hotel Trans Amadi', referral_code: 'ROSH-2024-002', status: 'qualified', reward_ngn: 25000, created_at: '2024-01-20' },
-    { id: '3', referrer_name: 'Emeka Obi', referred_name: 'NDDC Procurement', referral_code: 'ROSH-2024-003', status: 'pending', reward_ngn: 0, created_at: '2024-02-01' },
+    { id: '1', referrer_name: 'Emeka Obi', referred_name: 'Chief Okoro', referral_code: 'GP-2026-001', status: 'customer', reward_ngn: 50000, created_at: '2024-01-15' },
+    { id: '2', referrer_name: 'Grace Ade', referred_name: 'Hotel Trans Amadi', referral_code: 'GP-2026-002', status: 'qualified', reward_ngn: 25000, created_at: '2024-01-20' },
+    { id: '3', referrer_name: 'Emeka Obi', referred_name: 'NDDC Procurement', referral_code: 'GP-2026-003', status: 'pending', reward_ngn: 0, created_at: '2024-02-01' },
   ])
 
   const copyReferralLink = () => {

@@ -195,7 +195,7 @@ export function DashboardSidebar() {
               <div className="w-9 h-9 bg-gradient-to-br from-accent-primary to-accent-primary-glow rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-text-on-accent" />
               </div>
-              <span className="font-clash text-lg font-bold text-text-primary">Roshanal AI</span>
+              <span className="font-clash text-lg font-bold text-text-primary">GrowPilot AI</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
