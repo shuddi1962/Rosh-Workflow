@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Search, Send, Phone, Video, MoreVertical, Check, CheckCheck, MessageSquare, User } from 'lucide-react'
+import { Search, Send, Phone, MessageSquare, User, Megaphone, Mic } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 interface WhatsAppMessage {
   id: string
@@ -57,38 +59,42 @@ export default function WhatsAppInboxPage() {
     loadConversations()
   }, [])
 
-  const loadConversations = async () => {
+  const loadConversations = async (): Promise<void> => {
     try {
       const token = localStorage.getItem('accessToken')
       const res = await fetch('/api/whatsapp/conversations', {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json()
-        setConversations(data.conversations || [])
+        const data = await res.json() as { conversations?: Conversation[] }
+        setConversations(data.conversations && data.conversations.length > 0 ? data.conversations : MOCK_CONVERSATIONS)
+      } else {
+        setConversations(MOCK_CONVERSATIONS)
       }
     } catch {
       setConversations(MOCK_CONVERSATIONS)
     }
   }
 
-  const selectConversation = async (id: string) => {
+  const selectConversation = async (id: string): Promise<void> => {
     setSelectedConversation(id)
+    setMessages(MOCK_MESSAGES[id] || [])
     try {
       const token = localStorage.getItem('accessToken')
       const res = await fetch(`/api/whatsapp/conversations/${id}/messages`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        const data = await res.json()
-        setMessages(data.messages || [])
+        const data = await res.json() as { messages?: WhatsAppMessage[] }
+        if (data.messages && data.messages.length > 0) setMessages(data.messages)
       }
     } catch {
-      setMessages(MOCK_MESSAGES[id] || [])
+      // Fall back to the messages already set above
     }
+    setConversations(prev => prev.map(c => (c.id === id ? { ...c, unread_count: 0 } : c)))
   }
 
-  const sendMessage = async () => {
+  const sendMessage = async (): Promise<void> => {
     if (!newMessage.trim() || !selectedConversation) return
 
     const message: WhatsAppMessage = {
@@ -128,20 +134,22 @@ export default function WhatsAppInboxPage() {
   const selectedConv = conversations.find(c => c.id === selectedConversation)
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="font-clash text-3xl font-bold text-text-primary">WhatsApp Inbox</h1>
-          <p className="text-text-secondary mt-1">Manage all WhatsApp conversations in one place</p>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/20 rounded-lg">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-          <span className="text-sm text-emerald-400">Connected</span>
-        </div>
-      </div>
+    <div className="h-[calc(100vh-8rem)] flex flex-col">
+      <PageHeader
+        eyebrow="Communication"
+        title="WhatsApp Inbox"
+        description="Every customer chat in one inbox — reply fast, sell faster."
+        icon={MessageSquare}
+        actions={
+          <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+            <span className="text-sm text-emerald-700 font-medium">Connected</span>
+          </div>
+        }
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
-        <div className="bg-bg-surface border border-border-subtle rounded-xl overflow-hidden flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 min-h-0">
+        <div className="bg-white border border-border-subtle rounded-xl overflow-hidden flex flex-col min-h-[300px]">
           <div className="p-4 border-b border-border-subtle">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -149,38 +157,48 @@ export default function WhatsAppInboxPage() {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search conversations..."
-                className="w-full pl-10 pr-4 py-2 bg-bg-elevated border border-border-subtle rounded-lg text-sm text-text-primary"
+                className="w-full pl-10 pr-4 py-2 bg-bg-surface border border-border-subtle rounded-lg text-sm text-text-primary"
               />
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto">
+            {filtered.length === 0 && (
+              <div className="p-8 text-center">
+                <MessageSquare className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                <p className="text-sm font-medium text-text-primary mb-1">No conversations yet</p>
+                <p className="text-xs text-text-secondary mb-4">Run a campaign to start chatting with customers.</p>
+                <Link href="/dashboard/campaigns" className="inline-block px-4 py-2 bg-accent-primary text-white rounded-lg text-sm font-medium hover:bg-accent-primary/90">
+                  Go to Campaigns
+                </Link>
+              </div>
+            )}
             {filtered.map(conv => (
               <button
                 key={conv.id}
-                onClick={() => selectConversation(conv.id)}
-                className={`w-full p-4 border-b border-border-ghost text-left hover:bg-bg-elevated transition-colors ${
-                  selectedConversation === conv.id ? 'bg-bg-elevated' : ''
+                onClick={() => void selectConversation(conv.id)}
+                className={`w-full p-4 border-b border-border-subtle text-left hover:bg-bg-surface transition-colors ${
+                  selectedConversation === conv.id ? 'bg-bg-surface' : ''
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className="w-10 h-10 bg-accent-primary/20 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-accent-primary-glow" />
+                  <div className="relative flex-shrink-0">
+                    <div className="w-10 h-10 bg-accent-primary/10 rounded-full flex items-center justify-center">
+                      <User className="w-5 h-5 text-accent-primary" />
                     </div>
                     {conv.is_online && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-bg-surface" />
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-medium text-text-primary truncate">{conv.name}</p>
-                      <span className="text-xs text-text-muted">{conv.last_message_time}</span>
+                      <span className="text-xs text-text-muted flex-shrink-0">{conv.last_message_time}</span>
                     </div>
                     <p className="text-xs text-text-secondary truncate">{conv.last_message}</p>
                   </div>
                   {conv.unread_count > 0 && (
-                    <span className="w-5 h-5 bg-accent-primary rounded-full flex items-center justify-center text-xs text-white">
+                    <span className="w-5 h-5 bg-accent-primary rounded-full flex items-center justify-center text-xs text-white flex-shrink-0">
                       {conv.unread_count}
                     </span>
                   )}
@@ -190,27 +208,39 @@ export default function WhatsAppInboxPage() {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-bg-surface border border-border-subtle rounded-xl overflow-hidden flex flex-col">
+        <div className="lg:col-span-2 bg-white border border-border-subtle rounded-xl overflow-hidden flex flex-col min-h-[400px]">
           {selectedConv ? (
             <>
               <div className="p-4 border-b border-border-subtle flex items-center gap-3">
-                <div className="w-10 h-10 bg-accent-primary/20 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-accent-primary-glow" />
+                <div className="w-10 h-10 bg-accent-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="w-5 h-5 text-accent-primary" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-text-primary">{selectedConv.name}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-text-primary truncate">{selectedConv.name}</p>
                   <p className="text-xs text-text-muted">{selectedConv.phone}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-bg-elevated rounded-lg">
-                    <Phone className="w-5 h-5 text-text-muted" />
-                  </button>
-                  <button className="p-2 hover:bg-bg-elevated rounded-lg">
-                    <Video className="w-5 h-5 text-text-muted" />
-                  </button>
-                  <button className="p-2 hover:bg-bg-elevated rounded-lg">
-                    <MoreVertical className="w-5 h-5 text-text-muted" />
-                  </button>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <a
+                    href={`tel:${selectedConv.phone}`}
+                    aria-label={`Call ${selectedConv.name}`}
+                    className="p-2 hover:bg-bg-surface rounded-lg"
+                  >
+                    <Phone className="w-5 h-5 text-text-secondary" />
+                  </a>
+                  <Link
+                    href="/dashboard/voice/agents"
+                    aria-label="Call via voice agent"
+                    className="p-2 hover:bg-bg-surface rounded-lg"
+                  >
+                    <Mic className="w-5 h-5 text-text-secondary" />
+                  </Link>
+                  <Link
+                    href="/dashboard/campaigns"
+                    aria-label="Follow up with a campaign"
+                    className="p-2 hover:bg-bg-surface rounded-lg"
+                  >
+                    <Megaphone className="w-5 h-5 text-text-secondary" />
+                  </Link>
                 </div>
               </div>
 
@@ -224,23 +254,19 @@ export default function WhatsAppInboxPage() {
                   >
                     <div className={`max-w-[70%] px-4 py-2 rounded-lg ${
                       msg.direction === 'outbound'
-                        ? 'bg-accent-primary/20 text-text-primary'
-                        : 'bg-bg-elevated text-text-primary'
+                        ? 'bg-accent-primary/10 text-text-primary'
+                        : 'bg-bg-surface text-text-primary'
                     }`}>
                       <p className="text-sm">{msg.content}</p>
                       <div className="flex items-center justify-end gap-1 mt-1">
                         <span className="text-xs text-text-muted">{msg.timestamp}</span>
-                        {msg.direction === 'outbound' && (
-                          msg.status === 'read' ? (
-                            <CheckCheck className="w-3 h-3 text-blue-400" />
-                          ) : (
-                            <Check className="w-3 h-3 text-text-muted" />
-                          )
-                        )}
                       </div>
                     </div>
                   </motion.div>
                 ))}
+                {messages.length === 0 && (
+                  <p className="text-center text-sm text-text-muted py-8">No messages yet — say hello to start the conversation.</p>
+                )}
               </div>
 
               <div className="p-4 border-t border-border-subtle">
@@ -248,12 +274,13 @@ export default function WhatsAppInboxPage() {
                   <input
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                    onKeyDown={e => e.key === 'Enter' && void sendMessage()}
                     placeholder="Type a message..."
-                    className="flex-1 p-3 bg-bg-elevated border border-border-subtle rounded-lg text-sm text-text-primary"
+                    className="flex-1 p-3 bg-bg-surface border border-border-subtle rounded-lg text-sm text-text-primary"
                   />
                   <button
-                    onClick={sendMessage}
+                    onClick={() => void sendMessage()}
+                    aria-label="Send message"
                     className="p-3 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90"
                   >
                     <Send className="w-5 h-5" />
@@ -262,11 +289,14 @@ export default function WhatsAppInboxPage() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center p-8">
               <div className="text-center">
                 <MessageSquare className="w-16 h-16 text-text-muted mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-text-primary mb-2">Select a conversation</h3>
-                <p className="text-text-secondary">Choose a conversation from the left to start chatting</p>
+                <p className="text-text-secondary text-sm mb-6">Choose a conversation from the left to start chatting</p>
+                <Link href="/dashboard/campaigns" className="inline-block px-4 py-2.5 border border-border-subtle rounded-lg text-sm text-text-primary hover:bg-bg-surface font-medium">
+                  Or start a new campaign
+                </Link>
               </div>
             </div>
           )}

@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { AdCreator } from '@/components/ugc/ad-creator'
 import { AdPreview } from '@/components/ugc/ad-preview'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Sparkles, RefreshCw, Trash2 } from 'lucide-react'
+import { Loader2, Sparkles, RefreshCw, Trash2, Send, Megaphone, Clapperboard } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface UGCAd {
@@ -40,23 +41,28 @@ const adTypeLabels: Record<string, string> = {
   sms_blast: 'SMS Blast',
 }
 
+type AdFilter = 'all' | 'marine' | 'tech' | 'used'
+
 export default function UGCPage() {
+  const router = useRouter()
   const [ads, setAds] = useState<UGCAd[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState<AdFilter>('all')
   const [selectedAd, setSelectedAd] = useState<UGCAd | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const fetchAds = async () => {
     try {
       setLoading(true)
+      setError('')
       const token = localStorage.getItem('accessToken')
       const res = await fetch('/api/ugc/ads', {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (!res.ok) throw new Error('Failed to fetch ads')
-      const data = await res.json()
-      setAds(data.ads || data || [])
+      const data = await res.json() as { ads?: UGCAd[] } | UGCAd[]
+      setAds(Array.isArray(data) ? data : (data.ads ?? []))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -68,26 +74,10 @@ export default function UGCPage() {
     fetchAds()
   }, [])
 
-  const handleGenerate = async (adData: Record<string, unknown>) => {
-    try {
-      const token = localStorage.getItem('accessToken')
-      const res = await fetch('/api/ugc/ads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(adData)
-      })
-      if (!res.ok) throw new Error('Failed to generate ad')
-      await fetchAds()
-    } catch (err) {
-      console.error('Error generating ad:', err)
-    }
-  }
-
   const handleDelete = async (id: string) => {
+    if (!confirm('Delete this ad?')) return
     try {
+      setDeleting(true)
       const token = localStorage.getItem('accessToken')
       await fetch(`/api/ugc/ads/${id}`, {
         method: 'DELETE',
@@ -97,6 +87,8 @@ export default function UGCPage() {
       fetchAds()
     } catch (err) {
       console.error('Error deleting ad:', err)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -109,47 +101,53 @@ export default function UGCPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-accent-primary-glow" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">UGC Ad Creator</h1>
-            <p className="text-text-secondary">Generate ad scripts and creative content for all platforms</p>
-          </div>
-          <Button
-            onClick={fetchAds}
-            variant="outline"
-            className="border-border-subtle text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
-      </motion.div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-0">
+      <PageHeader
+        eyebrow="UGC Ad Creator"
+        title="Creative Studio"
+        description="Customer-style video ad scripts and creatives that feel authentic."
+        icon={Clapperboard}
+        actions={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard/campaigns')}
+              className="bg-white border-border-subtle text-text-primary hover:bg-bg-surface"
+            >
+              <Megaphone className="w-4 h-4 mr-2" />
+              Campaigns
+            </Button>
+            <Button
+              onClick={fetchAds}
+              variant="outline"
+              className="bg-white border-border-subtle text-text-primary hover:bg-bg-surface"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+          </>
+        }
+      />
 
       {error && (
-        <div className="bg-accent-red/10 border border-accent-red/30 rounded-lg p-4 text-accent-red mb-6">
+        <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
           Error: {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-        {['all', 'marine', 'tech', 'used'].map((f) => (
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
+        {(['all', 'marine', 'tech', 'used'] as AdFilter[]).map((f) => (
           <Button
             key={f}
             variant={filter === f ? 'default' : 'outline'}
             onClick={() => setFilter(f)}
-            className={filter === f ? 'bg-accent-primary hover:bg-accent-primary/90 text-white' : 'border-border-subtle text-text-secondary hover:bg-bg-elevated hover:text-text-primary'}
+            className={filter === f ? 'bg-accent-primary hover:bg-accent-primary/90 text-white' : 'bg-white border-border-subtle text-text-secondary hover:bg-bg-surface hover:text-text-primary'}
           >
             {f === 'used' ? 'Used in Campaigns' : f.charAt(0).toUpperCase() + f.slice(1)}
           </Button>
@@ -172,19 +170,39 @@ export default function UGCPage() {
                 adType={selectedAd.ad_type}
                 platform={selectedAd.platform}
               />
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   onClick={() => setSelectedAd(null)}
-                  className="border-border-subtle text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
+                  className="bg-white border-border-subtle text-text-secondary hover:bg-bg-surface hover:text-text-primary"
                 >
                   Back to List
                 </Button>
                 <Button
+                  onClick={() => router.push('/dashboard/social')}
+                  className="bg-accent-primary hover:bg-accent-primary/90 text-white"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Schedule to Social
+                </Button>
+                <Button
+                  onClick={() => router.push('/dashboard/campaigns')}
+                  variant="outline"
+                  className="bg-white border-border-subtle text-text-primary hover:bg-bg-surface"
+                >
+                  <Megaphone className="w-4 h-4 mr-2" />
+                  Use in Campaign
+                </Button>
+                <Button
                   variant="destructive"
                   onClick={() => handleDelete(selectedAd.id)}
+                  disabled={deleting}
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
+                  {deleting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4 mr-2" />
+                  )}
                   Delete
                 </Button>
               </div>
@@ -200,8 +218,8 @@ export default function UGCPage() {
         </div>
       </div>
 
-      <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
-        <h3 className="font-clash text-lg font-semibold text-text-primary mb-4">Generated Ads</h3>
+      <div className="bg-white border border-border-subtle rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">Generated Ads</h3>
         <div className="space-y-3">
           <AnimatePresence>
             {filteredAds.length === 0 ? (
@@ -216,13 +234,13 @@ export default function UGCPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setSelectedAd(ad)}
-                  className="p-4 bg-bg-elevated rounded-lg border border-border-subtle hover:border-accent-primary/50 cursor-pointer transition-all"
+                  className="p-4 bg-bg-surface rounded-lg border border-border-subtle hover:border-accent-primary/50 cursor-pointer transition-all"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-accent-purple" />
-                        <span className="text-sm font-medium text-text-primary">
+                        <Sparkles className="w-4 h-4 text-accent-gold flex-shrink-0" />
+                        <span className="text-sm font-medium text-text-primary truncate">
                           {ad.headline || adTypeLabels[ad.ad_type] || ad.ad_type}
                         </span>
                       </div>
@@ -230,14 +248,14 @@ export default function UGCPage() {
                         {ad.primary_text || ad.description}
                       </p>
                     </div>
-                    <Badge variant={ad.used_in_campaign ? 'default' : 'info'}
-                      className={ad.used_in_campaign ? 'bg-accent-emerald/20 text-accent-emerald border-accent-emerald/30' : ''}>
+                    <Badge
+                      className={ad.used_in_campaign ? 'bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 flex-shrink-0' : 'bg-accent-primary/10 text-accent-primary flex-shrink-0'}>
                       {ad.used_in_campaign ? 'Used' : 'New'}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="info" className="bg-bg-surface text-text-secondary border-border-subtle">{ad.division}</Badge>
-                    <Badge variant="info" className="bg-bg-surface text-text-secondary border-border-subtle">{ad.platform}</Badge>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge className="bg-white text-text-secondary border border-border-subtle">{ad.division}</Badge>
+                    <Badge className="bg-white text-text-secondary border border-border-subtle">{ad.platform}</Badge>
                     <span className="text-xs text-text-muted">
                       {adTypeLabels[ad.ad_type] || ad.ad_type}
                     </span>

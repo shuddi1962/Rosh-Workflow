@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Plus, Copy, Trash2, Eye, Search, Filter, Check, X } from 'lucide-react'
+import { Mail, Plus, Copy, Check, X, Search, Filter } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 interface EmailTemplate {
   id: string
@@ -222,12 +224,19 @@ Roshanal Infotech Limited`,
 ]
 
 export default function EmailTemplatesPage() {
+  const router = useRouter()
   const [templates, setTemplates] = useState<EmailTemplate[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [divisionFilter, setDivisionFilter] = useState<string>('all')
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [newName, setNewName] = useState('')
+  const [newSubject, setNewSubject] = useState('')
+  const [newContent, setNewContent] = useState('')
+  const [newDivision, setNewDivision] = useState<'marine' | 'tech' | 'both'>('tech')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     loadTemplates()
@@ -262,20 +271,64 @@ export default function EmailTemplatesPage() {
     return matchesSearch && matchesDivision
   })
 
+  const handleUseTemplate = async (template: EmailTemplate) => {
+    try {
+      await navigator.clipboard.writeText(`Subject: ${template.subject}\n\n${template.content}`)
+      setCopiedId(template.id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch {
+      console.error('Copy failed')
+    }
+    setSelectedTemplate(null)
+    router.push('/dashboard/campaigns/create')
+  }
+
+  const handleCreateTemplate = async () => {
+    if (!newName.trim() || !newSubject.trim() || !newContent.trim()) return
+    setSaving(true)
+    try {
+      const token = localStorage.getItem('accessToken')
+      const res = await fetch('/api/campaigns/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          name: newName.trim(),
+          subject: newSubject.trim(),
+          content: newContent.trim(),
+          division: newDivision,
+          type: 'custom',
+          variables: [],
+        }),
+      })
+      if (res.ok) {
+        setNewName('')
+        setNewSubject('')
+        setNewContent('')
+        setShowCreateModal(false)
+        loadTemplates()
+      }
+    } catch {
+      console.error('Failed to create template')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="font-clash text-3xl font-bold text-text-primary">Email Templates</h1>
-          <p className="text-text-secondary mt-1">Pre-built templates for all divisions and campaign types</p>
-        </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> New Template
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="Marketing"
+        title="Email Templates"
+        description="Reusable templates for promos, follow-ups and newsletters."
+        actions={
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> New Template
+          </button>
+        }
+      />
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
@@ -410,12 +463,78 @@ export default function EmailTemplatesPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2">
-                <Copy className="w-4 h-4" /> Use Template
+              <button onClick={() => selectedTemplate && handleUseTemplate(selectedTemplate)} className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2">
+                {copiedId === selectedTemplate.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                {copiedId === selectedTemplate.id ? 'Copied!' : 'Use Template'}
               </button>
-              <button className="px-4 py-2 border border-border-subtle rounded-lg text-sm text-text-secondary hover:bg-bg-elevated">
-                Edit Template
+              <button onClick={() => router.push('/dashboard/campaigns/create')} className="px-4 py-2 border border-border-subtle rounded-lg text-sm text-text-secondary hover:bg-bg-surface">
+                Open Campaign Builder
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowCreateModal(false)}>
+          <div className="bg-white border border-border-subtle rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-text-primary">New Template</h2>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-bg-surface rounded">
+                <X className="w-5 h-5 text-text-muted" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-text-secondary mb-1">Template Name</label>
+                  <input
+                    value={newName}
+                    onChange={e => setNewName(e.target.value)}
+                    placeholder="e.g. Easter Promo"
+                    className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-white text-text-primary placeholder:text-text-muted"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-text-secondary mb-1">Division</label>
+                  <select value={newDivision} onChange={e => setNewDivision(e.target.value as 'marine' | 'tech' | 'both')} className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-white text-text-primary">
+                    <option value="tech">Tech</option>
+                    <option value="marine">Marine</option>
+                    <option value="both">Both</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-text-secondary mb-1">Subject Line</label>
+                <input
+                  value={newSubject}
+                  onChange={e => setNewSubject(e.target.value)}
+                  placeholder="Email subject..."
+                  className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-white text-text-primary placeholder:text-text-muted"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-text-secondary mb-1">Content</label>
+                <textarea
+                  value={newContent}
+                  onChange={e => setNewContent(e.target.value)}
+                  placeholder="Write your template... Use {{first_name}} for personalization"
+                  rows={5}
+                  className="w-full p-2 border border-border-subtle rounded-lg text-sm resize-none bg-white text-text-primary placeholder:text-text-muted"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCreateTemplate}
+                  disabled={saving || !newName.trim() || !newSubject.trim() || !newContent.trim()}
+                  className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : 'Save Template'}
+                </button>
+                <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 border border-border-subtle rounded-lg text-sm text-text-secondary hover:bg-bg-surface">
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

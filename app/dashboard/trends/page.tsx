@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { StatusBadge } from '@/components/dashboard/status-badge'
-import { Loader2, RefreshCw, TrendingUp, Flame, Info } from 'lucide-react'
+import { Loader2, RefreshCw, TrendingUp, Flame, Info, Anchor, Cpu, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Trend {
@@ -21,12 +22,25 @@ interface Trend {
   discovered_at: string
 }
 
+interface Product {
+  id: string
+  name: string
+  division: string
+}
+
+type TrendFilter = 'all' | 'marine' | 'tech' | 'breaking'
+
 export default function TrendsPage() {
+  const router = useRouter()
   const [trends, setTrends] = useState<Trend[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState<TrendFilter>('all')
+  const [selectedProducts, setSelectedProducts] = useState<Record<string, string>>({})
+  const [matchingId, setMatchingId] = useState<string | null>(null)
+  const [matchMessage, setMatchMessage] = useState<Record<string, string>>({})
 
   const fetchTrends = async () => {
     try {
@@ -36,8 +50,8 @@ export default function TrendsPage() {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (!res.ok) throw new Error('Failed to fetch trends')
-      const data = await res.json()
-      setTrends(data.trends || data || [])
+      const data = await res.json() as { trends?: Trend[] } | Trend[]
+      setTrends(Array.isArray(data) ? data : (data.trends ?? []))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -45,8 +59,23 @@ export default function TrendsPage() {
     }
   }
 
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      const res = await fetch('/api/products', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) return
+      const data = await res.json() as { products?: Product[] } | Product[]
+      setProducts(Array.isArray(data) ? data : (data.products ?? []))
+    } catch (err) {
+      console.error('Error fetching products:', err)
+    }
+  }
+
   useEffect(() => {
     fetchTrends()
+    fetchProducts()
   }, [])
 
   const handleRefresh = async () => {
@@ -58,9 +87,9 @@ export default function TrendsPage() {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       })
-      const data = await res.json()
+      const data = await res.json() as { trends?: Trend[]; error?: string }
       if (res.ok) {
-        setTrends(data.trends || [])
+        setTrends(data.trends ?? [])
       } else {
         setError(data.error || 'Failed to refresh trends')
       }
@@ -72,19 +101,30 @@ export default function TrendsPage() {
   }
 
   const handleMatchProduct = async (trendId: string) => {
+    const productId = selectedProducts[trendId]
+    if (!productId) {
+      setMatchMessage(prev => ({ ...prev, [trendId]: 'Select a product first' }))
+      return
+    }
     try {
+      setMatchingId(trendId)
       const token = localStorage.getItem('accessToken')
-      await fetch('/api/trends/match-product', {
+      const res = await fetch('/api/trends/match-product', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ trend_id: trendId })
+        body: JSON.stringify({ trend_id: trendId, product_id: productId })
       })
+      const data = await res.json() as { error?: string }
+      if (!res.ok) throw new Error(data.error || 'Failed to match product')
+      setMatchMessage(prev => ({ ...prev, [trendId]: 'Matched successfully' }))
       fetchTrends()
     } catch (err) {
-      console.error('Error matching product:', err)
+      setMatchMessage(prev => ({ ...prev, [trendId]: err instanceof Error ? err.message : 'Match failed' }))
+    } finally {
+      setMatchingId(null)
     }
   }
 
@@ -112,25 +152,37 @@ export default function TrendsPage() {
   }
 
   return (
-    <div className="max-w-full mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Live Trend Monitor</h1>
-          <p className="text-text-secondary">Real-time trending topics for marine and tech divisions</p>
-        </div>
-        <Button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="bg-accent-primary hover:bg-accent-primary/90 text-white"
-        >
-          {refreshing ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <RefreshCw className="w-4 h-4 mr-2" />
-          )}
-          Refresh Trends
-        </Button>
-      </div>
+    <div className="max-w-full mx-auto px-4 sm:px-0">
+      <PageHeader
+        eyebrow="Live Trend Monitor"
+        title="Market Intelligence"
+        description="Live signals from Google, news and social — turned into content opportunities."
+        icon={TrendingUp}
+        actions={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard/content')}
+              className="bg-white border-border-subtle text-text-primary hover:bg-bg-surface"
+            >
+              Create Content
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+            <Button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="bg-accent-primary hover:bg-accent-primary/90 text-white"
+            >
+              {refreshing ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Refresh Trends
+            </Button>
+          </>
+        }
+      />
 
       {error && (
         <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
@@ -138,8 +190,8 @@ export default function TrendsPage() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-6">
-        {['all', 'marine', 'tech', 'breaking'].map((f) => (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {(['all', 'marine', 'tech', 'breaking'] as TrendFilter[]).map((f) => (
           <Button
             key={f}
             variant={filter === f ? 'default' : 'outline'}
@@ -155,8 +207,8 @@ export default function TrendsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-xl border border-border-subtle p-6">
-          <h3 className="font-clash text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-accent-primary" />
+          <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Anchor className="w-5 h-5 text-accent-primary" />
             Marine Trends
           </h3>
           <div className="space-y-3">
@@ -187,8 +239,8 @@ export default function TrendsPage() {
         </div>
 
         <div className="bg-white rounded-xl border border-border-subtle p-6">
-          <h3 className="font-clash text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-accent-purple" />
+          <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <Cpu className="w-5 h-5 text-accent-primary" />
             Tech Trends
           </h3>
           <div className="space-y-3">
@@ -203,7 +255,7 @@ export default function TrendsPage() {
                     key={trend.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="p-3 bg-bg-surface rounded-lg border-l-4 border-accent-purple"
+                    className="p-3 bg-bg-surface rounded-lg border-l-4 border-accent-primary"
                   >
                     <div className="flex items-start justify-between mb-1">
                       <p className="text-text-primary text-sm font-medium">{trend.keyword}</p>
@@ -220,7 +272,7 @@ export default function TrendsPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-border-subtle p-6">
-        <h3 className="font-clash text-lg font-semibold text-text-primary mb-4">All Trends</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">All Trends</h3>
         <div className="space-y-3">
           <AnimatePresence>
             {filteredTrends.map((trend) => (
@@ -229,11 +281,11 @@ export default function TrendsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="p-4 bg-bg-surface rounded-lg border border-border-ghost hover:border-border-subtle transition"
+                className="p-4 bg-bg-surface rounded-lg border border-border-subtle hover:border-accent-primary/40 transition"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       {trend.is_breaking && (
                         <Badge className="bg-accent-red/10 text-accent-red">
                           <Flame className="w-3 h-3 mr-1" />
@@ -245,8 +297,7 @@ export default function TrendsPage() {
                     <p className="text-text-secondary text-xs mb-2">{trend.description}</p>
                     <div className="flex items-center gap-3 flex-wrap">
                       <Badge
-                        variant={trend.division_relevance === 'marine' ? 'default' : 'info'}
-                        className={trend.division_relevance === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-purple/10 text-accent-purple'}
+                        className={trend.division_relevance === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-emerald/10 text-accent-emerald'}
                       >
                         {trend.division_relevance}
                       </Badge>
@@ -254,15 +305,44 @@ export default function TrendsPage() {
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${getScoreColor(trend.momentum_score)}`}>
                         Score: {trend.momentum_score}
                       </span>
+                      {(trend.matched_products?.length ?? 0) > 0 && (
+                        <span className="text-xs text-accent-emerald flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {trend.matched_products.length} product{(trend.matched_products.length > 1) ? 's' : ''} matched
+                        </span>
+                      )}
                     </div>
+                    {matchMessage[trend.id] && (
+                      <p className="text-xs text-text-secondary mt-2">{matchMessage[trend.id]}</p>
+                    )}
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleMatchProduct(trend.id)}
-                  >
-                    Match Product
-                  </Button>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-shrink-0">
+                    <select
+                      value={selectedProducts[trend.id] ?? ''}
+                      onChange={(e) => setSelectedProducts(prev => ({ ...prev, [trend.id]: e.target.value }))}
+                      className="text-xs p-2 border border-border-subtle rounded-lg bg-white text-text-primary min-w-[160px]"
+                      aria-label={`Select product to match with ${trend.keyword}`}
+                    >
+                      <option value="">Select product…</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.division})
+                        </option>
+                      ))}
+                    </select>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleMatchProduct(trend.id)}
+                      disabled={matchingId === trend.id}
+                    >
+                      {matchingId === trend.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        'Match Product'
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -271,7 +351,7 @@ export default function TrendsPage() {
           {filteredTrends.length === 0 && (
             <div className="text-center py-8 text-text-muted">
               <Info className="w-8 h-8 mx-auto mb-2 text-text-secondary" />
-              No trends found. Click "Refresh Trends" to fetch the latest trends.
+              No trends found. Click &quot;Refresh Trends&quot; to fetch the latest trends.
             </div>
           )}
         </div>

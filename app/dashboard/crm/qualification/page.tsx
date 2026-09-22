@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Loader2, RefreshCw, CheckCircle2, XCircle, Zap, Download } from 'lucide-react'
-import { TIER_EMOJIS, GRADE_COLORS } from '@/lib/crm/stages'
+import { Loader2, CheckCircle2, XCircle, Zap } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
+import { GRADE_COLORS } from '@/lib/crm/stages'
 
 interface Lead {
   id: string
@@ -23,6 +25,7 @@ interface Lead {
 }
 
 export default function QualificationQueuePage() {
+  const router = useRouter()
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [qualifying, setQualifying] = useState(false)
@@ -99,29 +102,26 @@ export default function QualificationQueuePage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="font-clash text-3xl font-bold text-text-primary">AI Qualification Queue</h1>
-          <p className="text-text-secondary mt-1">
-            {pendingLeads.length} leads pending qualification
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {pendingLeads.length > 0 && (
+      <PageHeader
+        eyebrow="Sales"
+        title="AI Qualification Queue"
+        description={`AI-scored leads ranked by likelihood to buy — work the hottest first. ${pendingLeads.length} pending.`}
+        actions={
+          pendingLeads.length > 0 ? (
             <button
               onClick={handleQualifyAll}
               disabled={qualifying}
-              className="px-4 py-2 bg-accent-purple/20 text-accent-purple rounded-lg hover:bg-accent-purple/30 text-sm flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm flex items-center gap-2 disabled:opacity-50"
             >
               {qualifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
               Qualify All Pending
             </button>
-          )}
-        </div>
-      </div>
+          ) : undefined
+        }
+      />
 
       {progress && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-accent-purple/10 border border-accent-purple/30 rounded-lg p-3 mb-6 text-sm text-accent-purple">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-accent-primary/10 border border-accent-primary/30 rounded-lg p-3 mb-6 text-sm text-accent-primary">
           {progress}
         </motion.div>
       )}
@@ -164,19 +164,19 @@ export default function QualificationQueuePage() {
       {pendingLeads.length > 0 && (
         <div className="mb-8">
           <h2 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-accent-purple" />
+            <Loader2 className="w-5 h-5 animate-spin text-accent-primary" />
             Pending Qualification ({pendingLeads.length})
           </h2>
           <div className="space-y-2">
             {pendingLeads.map(lead => (
-              <div key={lead.id} className="bg-bg-surface border border-border-subtle rounded-lg p-4 flex items-center justify-between">
+              <div key={lead.id} onClick={() => router.push(`/dashboard/crm/leads/${lead.id}`)} className="bg-white border border-border-subtle rounded-lg p-4 flex items-center justify-between cursor-pointer hover:border-border-hover transition-colors">
                 <div>
                   <h4 className="font-medium text-text-primary">{lead.full_name}</h4>
                   <p className="text-sm text-text-secondary">{lead.company || 'No company'} {lead.source}</p>
                 </div>
                 <button
-                  onClick={() => handleQualifySingle(lead.id)}
-                  className="px-3 py-1.5 bg-accent-purple/20 text-accent-purple rounded-lg text-sm hover:bg-accent-purple/30"
+                  onClick={(e) => { e.stopPropagation(); handleQualifySingle(lead.id) }}
+                  className="px-3 py-1.5 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90"
                 >
                   Qualify
                 </button>
@@ -194,7 +194,7 @@ export default function QualificationQueuePage() {
           </h2>
           <div className="space-y-2">
             {qualifiedLeads.slice(0, 20).map(lead => (
-              <div key={lead.id} className="bg-bg-surface border border-border-subtle rounded-lg p-4 flex items-center justify-between">
+              <div key={lead.id} onClick={() => router.push(`/dashboard/crm/leads/${lead.id}`)} className="bg-white border border-border-subtle rounded-lg p-4 flex items-center justify-between cursor-pointer hover:border-border-hover transition-colors">
                 <div className="flex items-center gap-3">
                   <span className={`text-lg font-bold ${GRADE_COLORS[lead.qualification_grade]}`}>{lead.qualification_grade}</span>
                   <div>
@@ -221,7 +221,7 @@ export default function QualificationQueuePage() {
           </h2>
           <div className="space-y-2">
             {disqualifiedLeads.slice(0, 10).map(lead => (
-              <div key={lead.id} className="bg-bg-surface border border-border-ghost rounded-lg p-4 flex items-center justify-between opacity-75">
+              <div key={lead.id} onClick={() => router.push(`/dashboard/crm/leads/${lead.id}`)} className="bg-white border border-border-subtle rounded-lg p-4 flex items-center justify-between opacity-75 cursor-pointer hover:border-border-hover transition-colors">
                 <div>
                   <h4 className="font-medium text-text-primary">{lead.full_name}</h4>
                   <p className="text-sm text-text-secondary">{lead.company || 'No company'} Score: {lead.score}</p>

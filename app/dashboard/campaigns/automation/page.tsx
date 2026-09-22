@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Plus, Power, PowerOff, Trash2, Edit2, Zap, Mail, Phone, MessageSquare, Bell } from 'lucide-react'
+import { Plus, Power, PowerOff, Trash2, Zap, Mail, Phone, MessageSquare, Bell, X } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 interface AutomationTrigger {
   id: string
@@ -88,9 +90,14 @@ const DEFAULT_TEMPLATES: AutomationTrigger[] = [
 ]
 
 export default function AutomationRulesPage() {
+  const router = useRouter()
   const [rules, setRules] = useState<AutomationTrigger[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [newTrigger, setNewTrigger] = useState(TRIGGER_TYPES[0].id)
+  const [newAction, setNewAction] = useState(ACTION_TYPES[0].id)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     loadRules()
@@ -131,6 +138,7 @@ export default function AutomationRulesPage() {
   }
 
   const deleteRule = async (id: string) => {
+    if (!confirm('Delete this automation rule?')) return
     try {
       const token = localStorage.getItem('accessToken')
       await fetch(`/api/campaigns/automation/${id}`, {
@@ -143,20 +151,55 @@ export default function AutomationRulesPage() {
     }
   }
 
+  const handleCreateRule = async () => {
+    if (!newName.trim()) return
+    setSaving(true)
+    try {
+      const token = localStorage.getItem('accessToken')
+      const res = await fetch('/api/campaigns/automation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          name: newName.trim(),
+          trigger_expression: newTrigger,
+          actions: [{ type: newAction, config: {} }],
+        }),
+      })
+      if (res.ok) {
+        setNewName('')
+        setShowCreateModal(false)
+        loadRules()
+      }
+    } catch {
+      console.error('Failed to create rule')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="font-clash text-3xl font-bold text-text-primary">Automation Rules</h1>
-          <p className="text-text-secondary mt-1">Set up trigger-based automation for your campaigns and CRM</p>
-        </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" /> New Rule
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="Marketing"
+        title="Automation Rules"
+        description="Set-and-forget rules: auto follow-ups, welcome series and reminders."
+        actions={
+          <>
+            <button
+              onClick={() => router.push('/dashboard/campaigns')}
+              className="px-4 py-2 border border-border-subtle text-text-secondary rounded-lg hover:bg-bg-surface text-sm bg-white"
+            >
+              All Campaigns
+            </button>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> New Rule
+            </button>
+          </>
+        }
+      />
 
       <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 mb-6">
         <h2 className="font-semibold text-text-primary mb-4">Quick Setup Templates</h2>
@@ -209,9 +252,9 @@ export default function AutomationRulesPage() {
                       {rule.actions.map((action, i) => {
                         const actionType = ACTION_TYPES.find(a => a.id === action.type)
                         return (
-                          <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 rounded-lg">
-                            {actionType && <actionType.icon className="w-4 h-4 text-emerald-400" />}
-                            <span className="text-sm text-emerald-400">Then: {actionType?.label || action.type}</span>
+                          <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-accent-emerald/10 rounded-lg">
+                            {actionType && <actionType.icon className="w-4 h-4 text-accent-emerald" />}
+                            <span className="text-sm text-accent-emerald">Then: {actionType?.label || action.type}</span>
                           </div>
                         )
                       })}
@@ -229,16 +272,14 @@ export default function AutomationRulesPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => toggleRule(rule.id)}
+                    title={rule.is_active ? 'Pause rule' : 'Activate rule'}
                     className={`p-2 rounded-lg transition-colors ${
-                      rule.is_active ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-text-muted hover:bg-bg-elevated'
+                      rule.is_active ? 'text-accent-emerald hover:bg-accent-emerald/10' : 'text-text-muted hover:bg-bg-surface'
                     }`}
                   >
                     {rule.is_active ? <Power className="w-5 h-5" /> : <PowerOff className="w-5 h-5" />}
                   </button>
-                  <button className="p-2 text-text-muted hover:bg-bg-elevated rounded-lg">
-                    <Edit2 className="w-5 h-5" />
-                  </button>
-                  <button onClick={() => deleteRule(rule.id)} className="p-2 text-accent-red hover:bg-accent-red/10 rounded-lg">
+                  <button onClick={() => deleteRule(rule.id)} title="Delete rule" className="p-2 text-accent-red hover:bg-accent-red/10 rounded-lg">
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
@@ -248,7 +289,7 @@ export default function AutomationRulesPage() {
         })}
 
         {rules.length === 0 && !loading && (
-          <div className="text-center py-12 border-2 border-dashed border-border-subtle rounded-xl">
+          <div className="text-center py-12 border-2 border-dashed border-border-subtle rounded-xl bg-white">
             <Zap className="w-12 h-12 text-text-muted mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">No automation rules yet</h3>
             <p className="text-text-secondary mb-4">Create your first automation to save time and respond faster to leads.</p>
@@ -261,6 +302,54 @@ export default function AutomationRulesPage() {
           </div>
         )}
       </div>
+
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowCreateModal(false)}>
+          <div className="bg-white border border-border-subtle rounded-xl max-w-lg w-full p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-text-primary">New Automation Rule</h2>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-bg-surface rounded">
+                <X className="w-5 h-5 text-text-muted" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-text-secondary mb-1">Rule Name</label>
+                <input
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                  placeholder="e.g. Welcome new marine leads"
+                  className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-white text-text-primary placeholder:text-text-muted"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-text-secondary mb-1">When this happens (trigger)</label>
+                <select value={newTrigger} onChange={e => setNewTrigger(e.target.value)} className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-white text-text-primary">
+                  {TRIGGER_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-text-secondary mb-1">Then do this (action)</label>
+                <select value={newAction} onChange={e => setNewAction(e.target.value)} className="w-full p-2 border border-border-subtle rounded-lg text-sm bg-white text-text-primary">
+                  {ACTION_TYPES.map(a => <option key={a.id} value={a.id}>{a.label}</option>)}
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCreateRule}
+                  disabled={saving || !newName.trim()}
+                  className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : 'Create Rule'}
+                </button>
+                <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 border border-border-subtle rounded-lg text-sm text-text-secondary hover:bg-bg-surface">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

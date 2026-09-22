@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Package, Upload, Plus, X } from 'lucide-react'
+import { Upload, ArrowLeft } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 export default function AddProductPage() {
   const router = useRouter()
@@ -51,10 +52,16 @@ export default function AddProductPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-clash text-3xl font-bold text-text-primary">Add Product</h1>
-        <p className="text-text-secondary mt-1">Add a new product to the catalog</p>
+      <div className="flex items-center gap-2 mb-4">
+        <button onClick={() => router.push('/dashboard/products')} className="p-2 hover:bg-bg-surface border border-border-subtle rounded-lg bg-white">
+          <ArrowLeft className="w-5 h-5 text-text-secondary" />
+        </button>
       </div>
+      <PageHeader
+        eyebrow="Commerce"
+        title="Add Product"
+        description="Add a new product to the catalog in under a minute."
+      />
 
       <div className="max-w-2xl bg-bg-surface border border-border-subtle rounded-xl p-6 space-y-4">
         <div>

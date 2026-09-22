@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, Search, Package, ArrowUpRight, ExternalLink } from 'lucide-react'
+import { Loader2, Search, Package, ArrowUpRight, Plus } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 interface Product {
   id: string
@@ -78,24 +79,19 @@ export default function DashboardProductsPage() {
 
   return (
     <div className="max-w-full mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Product Catalog</h1>
-            <p className="text-text-secondary">Browse marine and technology products for content generation</p>
-          </div>
-          <Link href="/admin/products">
-              <Button className="bg-accent-primary hover:bg-accent-primary/90 text-white">
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Full Management (Admin)
+      <PageHeader
+        eyebrow="Commerce"
+        title="Product Catalog"
+        description="Your full marine & technology catalog with prices, specs and images."
+        actions={
+          <Link href="/dashboard/products/add">
+            <Button className="bg-accent-primary hover:bg-accent-primary/90 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Product
             </Button>
           </Link>
-        </div>
-      </motion.div>
+        }
+      />
 
       {error && (
         <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
@@ -120,10 +116,10 @@ export default function DashboardProductsPage() {
         </div>
         <div className="bg-white rounded-xl border border-border-subtle p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Package className="w-4 h-4 text-accent-purple" />
+            <Package className="w-4 h-4 text-accent-gold" />
             <span className="text-sm text-text-secondary">Tech Division</span>
           </div>
-          <p className="text-2xl font-bold text-accent-purple font-mono">{techCount}</p>
+          <p className="text-2xl font-bold text-accent-gold font-mono">{techCount}</p>
         </div>
       </div>
 
@@ -174,7 +170,7 @@ export default function DashboardProductsPage() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <Badge variant={product.division === 'marine' ? 'default' : 'info'}
-                    className={product.division === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-purple/10 text-accent-purple'}>
+                    className={product.division === 'marine' ? 'bg-accent-primary/10 text-accent-primary' : 'bg-accent-gold/10 text-accent-gold'}>
                     {product.division}
                   </Badge>
                   {product.is_new_arrival && (

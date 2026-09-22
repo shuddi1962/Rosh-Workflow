@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { ArrowLeft, Phone, Mail, MessageSquare, Building2, MapPin, Calendar, Star, TrendingUp, Edit2, Save, X, Plus, Trash2, Clock, CheckCircle2, AlertCircle, FileText, Send, ArrowLeftRight, MousePointerClick } from 'lucide-react'
-import { ROSHANAL_CRM_STAGES, TIER_EMOJIS, GRADE_COLORS } from '@/lib/crm/stages'
+import { ArrowLeft, Phone, Mail, MessageSquare, MapPin, TrendingUp, Edit2, Save, X, Trash2, CheckCircle2, FileText, Send, ArrowLeftRight, MousePointerClick, Flame, ThermometerSun, Snowflake } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
+import { ROSHANAL_CRM_STAGES, GRADE_COLORS } from '@/lib/crm/stages'
 
 const STAGE_COLORS: Record<string, string> = {
   new_lead: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
@@ -159,8 +159,7 @@ export default function LeadProfilePage() {
     }
   }
 
-  const handleQuickAction = async (action: string) => {
-    const token = localStorage.getItem('accessToken')
+  const handleQuickAction = (action: string) => {
     if (action === 'whatsapp' && lead?.phone) {
       window.open(`https://wa.me/${lead.phone.replace(/\D/g, '')}?text=Hello ${lead.first_name}, this is Roshanal Infotech...`)
     } else if (action === 'call' && lead?.phone) {
@@ -170,31 +169,74 @@ export default function LeadProfilePage() {
     }
   }
 
+  const handleDelete = async () => {
+    if (!confirm(`Delete lead ${lead?.full_name}? This cannot be undone.`)) return
+    try {
+      const token = localStorage.getItem('accessToken')
+      const res = await fetch(`/api/crm/leads/${leadId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) router.push('/dashboard/crm/leads')
+    } catch {
+      console.error('Failed to delete lead')
+    }
+  }
+
+  function TierBadge({ tier }: { tier: string }) {
+    const t = tier?.toLowerCase() || 'cold'
+    if (t === 'hot') {
+      return (
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-accent-red">
+          <Flame className="w-4 h-4" /> Hot
+        </span>
+      )
+    }
+    if (t === 'warm') {
+      return (
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-accent-gold">
+          <ThermometerSun className="w-4 h-4" /> Warm
+        </span>
+      )
+    }
+    return (
+      <span className="inline-flex items-center gap-1 text-sm font-medium text-accent-primary">
+        <Snowflake className="w-4 h-4" /> Cold
+      </span>
+    )
+  }
+
   if (loading) return <div className="p-6 text-text-muted">Loading lead profile...</div>
   if (!lead) return <div className="p-6 text-accent-red">Lead not found</div>
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={() => router.push('/dashboard/crm')} className="p-2 hover:bg-bg-elevated rounded-lg">
+      <div className="flex items-center gap-2 mb-4">
+        <button onClick={() => router.push('/dashboard/crm/leads')} className="p-2 hover:bg-bg-surface border border-border-subtle rounded-lg bg-white">
           <ArrowLeft className="w-5 h-5 text-text-secondary" />
         </button>
-        <div className="flex-1">
-          <h1 className="font-clash text-3xl font-bold text-text-primary">{lead.full_name}</h1>
-          <p className="text-text-secondary">{lead.job_title || 'No title'} {lead.company ? `at ${lead.company}` : ''}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setEditing(!editing)} className="px-3 py-2 border border-border-subtle rounded-lg text-sm hover:bg-bg-elevated text-text-primary flex items-center gap-2">
-            {editing ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
-            {editing ? 'Cancel' : 'Edit'}
-          </button>
-          {editing && (
-            <button onClick={handleSaveEdit} className="px-3 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2">
-              <Save className="w-4 h-4" /> Save
-            </button>
-          )}
-        </div>
       </div>
+      <PageHeader
+        eyebrow="Sales"
+        title="Lead Details"
+        description={`Full history, score and next actions for ${lead.full_name}.`}
+        actions={
+          <>
+            <button onClick={() => setEditing(!editing)} className="px-3 py-2 border border-border-subtle rounded-lg text-sm hover:bg-bg-surface text-text-primary flex items-center gap-2 bg-white">
+              {editing ? <X className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
+              {editing ? 'Cancel' : 'Edit'}
+            </button>
+            {editing && (
+              <button onClick={handleSaveEdit} className="px-3 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2">
+                <Save className="w-4 h-4" /> Save
+              </button>
+            )}
+            <button onClick={handleDelete} className="px-3 py-2 border border-accent-red/30 text-accent-red rounded-lg text-sm hover:bg-accent-red/10 flex items-center gap-2 bg-white">
+              <Trash2 className="w-4 h-4" /> Delete
+            </button>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -265,7 +307,7 @@ export default function LeadProfilePage() {
               </div>
               <div className="text-center">
                 <p className="text-xs text-text-muted mb-1">Tier</p>
-                <p className="text-2xl">{TIER_EMOJIS[lead.tier] || '—'}</p>
+                <TierBadge tier={lead.tier} />
               </div>
               <div className="text-center">
                 <p className="text-xs text-text-muted mb-1">Deal Value</p>

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Save, Send, Plus, Trash2, Mail, MessageSquare, Phone, Clock, ArrowRight, CheckCircle2, AlertTriangle } from 'lucide-react'
-import { ROSHANAL_CRM_STAGES, TIER_EMOJIS } from '@/lib/crm/stages'
+import { ArrowLeft, Save, Send, Plus, Trash2, Mail, MessageSquare, Phone, ArrowRight, CheckCircle2, AlertTriangle, Flame, ThermometerSun, Snowflake } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 const CHANNELS = [
   { id: 'email', label: 'Email', icon: Mail },
@@ -12,6 +12,12 @@ const CHANNELS = [
   { id: 'sms', label: 'SMS', icon: Phone },
   { id: 'voice_call', label: 'Voice Call', icon: Phone },
 ]
+
+const TIER_ICONS: Record<string, typeof Flame> = {
+  hot: Flame,
+  warm: ThermometerSun,
+  cold: Snowflake,
+}
 
 const DIVISIONS = [
   { id: 'marine', label: 'Marine Equipment' },
@@ -116,23 +122,26 @@ export default function CampaignBuilderPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={() => router.push('/dashboard/campaigns')} className="p-2 hover:bg-bg-elevated rounded-lg">
+      <div className="flex items-center gap-2 mb-4">
+        <button onClick={() => router.push('/dashboard/campaigns')} className="p-2 hover:bg-bg-surface border border-border-subtle rounded-lg bg-white">
           <ArrowLeft className="w-5 h-5 text-text-secondary" />
         </button>
-        <div className="flex-1">
-          <h1 className="font-clash text-3xl font-bold text-text-primary">Campaign Builder</h1>
-          <p className="text-text-secondary">Create a multi-step campaign with automation</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => handleSave(false)} disabled={saving} className="px-4 py-2 border border-border-subtle rounded-lg text-sm hover:bg-bg-elevated text-text-primary flex items-center gap-2">
-            <Save className="w-4 h-4" /> Save Draft
-          </button>
-          <button onClick={() => handleSave(true)} disabled={saving} className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2">
-            <Send className="w-4 h-4" /> Save & Launch
-          </button>
-        </div>
       </div>
+      <PageHeader
+        eyebrow="Marketing"
+        title="Campaign Builder"
+        description="Build a new outreach campaign step by step."
+        actions={
+          <>
+            <button onClick={() => handleSave(false)} disabled={saving} className="px-4 py-2 border border-border-subtle rounded-lg text-sm hover:bg-bg-surface text-text-primary flex items-center gap-2 bg-white disabled:opacity-50">
+              <Save className="w-4 h-4" /> Save Draft
+            </button>
+            <button onClick={() => handleSave(true)} disabled={saving} className="px-4 py-2 bg-accent-primary text-white rounded-lg text-sm hover:bg-accent-primary/90 flex items-center gap-2 disabled:opacity-50">
+              <Send className="w-4 h-4" /> Save & Launch
+            </button>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -228,7 +237,7 @@ export default function CampaignBuilderPage() {
                     <button key={g} onClick={() => setAudience(prev => ({
                       ...prev,
                       grade: prev.grade.includes(g) ? prev.grade.filter(x => x !== g) : [...prev.grade, g]
-                    }))} className={`px-2 py-1 text-xs rounded ${audience.grade.includes(g) ? 'bg-accent-red text-white' : 'bg-bg-elevated text-text-secondary'}`}>
+                    }))} className={`px-2 py-1 text-xs rounded ${audience.grade.includes(g) ? 'bg-accent-red text-white' : 'bg-bg-surface border border-border-subtle text-text-secondary'}`}>
                       {g} Grade
                     </button>
                   ))}
@@ -237,14 +246,17 @@ export default function CampaignBuilderPage() {
               <div>
                 <p className="text-xs text-text-muted mb-1">Tier</p>
                 <div className="flex flex-wrap gap-1">
-                  {['hot', 'warm', 'cold'].map(t => (
-                    <button key={t} onClick={() => setAudience(prev => ({
-                      ...prev,
-                      tier: prev.tier.includes(t) ? prev.tier.filter(x => x !== t) : [...prev.tier, t]
-                    }))} className={`px-2 py-1 text-xs rounded ${audience.tier.includes(t) ? 'bg-accent-primary text-white' : 'bg-bg-elevated text-text-secondary'}`}>
-                      {TIER_EMOJIS[t]} {t}
-                    </button>
-                  ))}
+                  {['hot', 'warm', 'cold'].map(t => {
+                    const TierIcon = TIER_ICONS[t]
+                    return (
+                      <button key={t} onClick={() => setAudience(prev => ({
+                        ...prev,
+                        tier: prev.tier.includes(t) ? prev.tier.filter(x => x !== t) : [...prev.tier, t]
+                      }))} className={`px-2 py-1 text-xs rounded flex items-center gap-1 ${audience.tier.includes(t) ? 'bg-accent-primary text-white' : 'bg-bg-surface border border-border-subtle text-text-secondary'}`}>
+                        <TierIcon className="w-3 h-3" /> {t}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             </div>

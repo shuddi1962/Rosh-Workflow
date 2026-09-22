@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Users, UserPlus, Download, Loader2, RefreshCw, Target, TrendingUp, Star, Crown, RefreshCw as RefreshCwIcon, AlertTriangle, Building2, Wrench } from 'lucide-react'
+import { UserPlus, Download, Loader2 } from 'lucide-react'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 import { CRMKPICards } from '@/components/crm/crm-kpi-cards'
-import KanbanPipeline, { PIPELINE_STAGES } from '@/components/crm/kanban-pipeline'
+import KanbanPipeline from '@/components/crm/kanban-pipeline'
 import LeadGenerationTab from '@/components/crm/lead-generation-tab'
 import CustomerSegmentsTab from '@/components/crm/customer-segments-tab'
 import B2BWholesaleTab from '@/components/crm/b2b-wholesale-tab'
@@ -136,22 +137,26 @@ export default function CRMPipelinePage() {
   if (loading) return <div className="p-6 text-text-muted flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin" />Loading CRM...</div>
 
   return (
-    <div className="bg-bg-void min-h-screen">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Customers & CRM</h1>
-          <p className="text-sm text-text-muted mt-1">Manage leads, pipeline, and customer relationships</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button onClick={handleExport} className="px-4 py-2 border border-border-subtle text-text-secondary rounded-lg hover:bg-bg-surface text-sm flex items-center gap-2">
-            <Download className="w-4 h-4" /> Export
-          </button>
-          <button onClick={() => setShowDualEntry(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-2">
-            <UserPlus className="w-4 h-4" /> Add Lead
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Sales"
+        title="Customers & CRM"
+        description="Track every lead from first contact to closed deal."
+        actions={
+          <>
+            <button onClick={handleExport} className="px-4 py-2 border border-border-subtle text-text-secondary rounded-lg hover:bg-bg-surface text-sm flex items-center gap-2 bg-white">
+              <Download className="w-4 h-4" /> Export
+            </button>
+            <button onClick={() => router.push('/dashboard/crm/leads')} className="px-4 py-2 border border-border-subtle text-text-secondary rounded-lg hover:bg-bg-surface text-sm bg-white">
+              All Leads
+            </button>
+            <button onClick={() => setShowDualEntry(true)} className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90 text-sm font-medium flex items-center gap-2">
+              <UserPlus className="w-4 h-4" /> Add Lead
+            </button>
+          </>
+        }
+      />
 
       {/* Shared KPI Cards */}
       <CRMKPICards

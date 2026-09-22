@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { CampaignList } from '@/components/campaigns/campaign-list'
 import { CampaignEditor } from '@/components/campaigns/campaign-editor'
-import { CampaignStats } from '@/components/campaigns/campaign-stats'
 import { Button } from '@/components/ui/button'
 import { Loader2, Plus, RefreshCw, Mail, MessageSquare, Send } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 interface Campaign {
   id: string
@@ -28,6 +29,7 @@ interface Campaign {
 }
 
 export default function DashboardCampaignsPage() {
+  const router = useRouter()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -122,37 +124,35 @@ export default function DashboardCampaignsPage() {
 
   return (
     <div className="max-w-full mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="font-clash text-3xl font-bold text-text-primary mb-2">Outreach Campaigns</h1>
-            <p className="text-text-secondary">Create and manage WhatsApp, Email, and SMS campaigns</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={fetchCampaigns}
-              variant="outline"
-            >
+      <PageHeader
+        eyebrow="Marketing"
+        title="Outreach Campaigns"
+        description="WhatsApp, email and SMS campaigns that turn contacts into customers."
+        actions={
+          <>
+            <Button onClick={fetchCampaigns} variant="outline">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
             <Button
-              onClick={() => {
-                setSelectedCampaign(null)
-                setShowEditor(true)
-              }}
-              className="bg-accent-primary hover:bg-blue-700 text-white"
+              onClick={() => router.push('/dashboard/campaigns/create')}
+              className="bg-accent-primary hover:bg-accent-primary/90 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Campaign
             </Button>
-          </div>
-        </div>
-      </motion.div>
+          </>
+        }
+      />
+
+      <div className="flex flex-wrap gap-2 mb-6">
+        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/campaigns/templates')}>
+          <Mail className="w-4 h-4 mr-2" /> Email Templates
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/campaigns/automation')}>
+          <Send className="w-4 h-4 mr-2" /> Automation Rules
+        </Button>
+      </div>
 
       {error && (
         <div className="bg-accent-red/10 border border-accent-red/20 rounded-lg p-4 text-accent-red mb-6">
