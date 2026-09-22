@@ -13,9 +13,17 @@ import {
 } from 'recharts';
 
 export const RevenueOverviewChart: React.FC = () => {
-  const { currentTenant, activeFilterPeriod } = useTenant();
-  const data = currentTenant.revenueHistory || [];
+  const { currentTenant, activeFilterPeriod, setActiveFilterPeriod } = useTenant();
   const [period, setPeriod] = useState(activeFilterPeriod);
+
+  const fullData = currentTenant.revenueHistory || [];
+  const sliceCount: Record<typeof period, number> = { today: 1, '7d': 2, '30d': 4, ytd: 99 };
+  const data = fullData.slice(-sliceCount[period]);
+
+  const handlePeriod = (p: typeof period) => {
+    setPeriod(p);
+    setActiveFilterPeriod(p);
+  };
 
   const chartData = data.map((d) => ({
     name: d.label,
@@ -42,7 +50,7 @@ export const RevenueOverviewChart: React.FC = () => {
           {(['today', '7d', '30d', 'ytd'] as const).map((p) => (
             <button
               key={p}
-              onClick={() => setPeriod(p)}
+              onClick={() => handlePeriod(p)}
               className={`px-2 py-1 text-[10px] font-semibold rounded-md transition ${
                 period === p
                   ? 'bg-white shadow text-slate-900'

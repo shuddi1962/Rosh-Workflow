@@ -20,6 +20,7 @@ export interface BusinessTenant {
   currencySymbol: string;
   ownerName: string;
   ownerEmail: string;
+  phone?: string;
   plan: 'Starter' | 'Growth' | 'Enterprise';
   monthlyRevenue: number;
   revenueGrowth: number;
@@ -37,6 +38,10 @@ export interface BusinessTenant {
     current: number;
     previous: number;
   }[];
+}
+
+export interface BusinessRegistration extends Omit<BusinessTenant, 'id' | 'automations' | 'revenueHistory'> {
+  phone?: string;
 }
 
 export interface MetricCardData {

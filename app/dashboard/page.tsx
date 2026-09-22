@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { MetricCards } from '@/components/dashboard/MetricCards'
 import { AiCommandCenter } from '@/components/dashboard/AiCommandCenter'
 import { ActiveAutomationsPanel } from '@/components/dashboard/ActiveAutomationsPanel'
@@ -16,12 +17,13 @@ import { Rocket, Users, Target, PenLine, ArrowRight } from 'lucide-react'
 
 function DashboardContent() {
   const { currentTenant } = useTenant()
+  const router = useRouter()
 
   const quickActions = [
-    { icon: Rocket, label: 'Create Campaign', color: '#1468F5', bg: 'bg-[#1468F5]' },
-    { icon: Users, label: 'Find Leads', color: '#10B981', bg: 'bg-[#10B981]' },
-    { icon: Target, label: 'Analyze Competitors', color: '#EF233C', bg: 'bg-[#EF233C]' },
-    { icon: PenLine, label: 'Create Content', color: '#1468F5', bg: 'bg-[#1468F5]' },
+    { icon: Rocket, label: 'Create Campaign', color: '#1468F5', bg: 'bg-[#1468F5]', href: '/dashboard/campaigns/create' },
+    { icon: Users, label: 'Find Leads', color: '#10B981', bg: 'bg-[#10B981]', href: '/dashboard/crm/leads' },
+    { icon: Target, label: 'Analyze Competitors', color: '#EF233C', bg: 'bg-[#EF233C]', href: '/dashboard/competitors' },
+    { icon: PenLine, label: 'Create Content', color: '#1468F5', bg: 'bg-[#1468F5]', href: '/dashboard/content' },
   ]
 
   return (
@@ -38,6 +40,7 @@ function DashboardContent() {
           {quickActions.map((a) => (
             <button
               key={a.label}
+              onClick={() => router.push(a.href)}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white ${a.bg} hover:opacity-90 transition shadow-sm`}
             >
               <a.icon className="w-4 h-4" />

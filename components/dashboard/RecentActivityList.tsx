@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { ActivityItem } from '@/lib/types';
-import { UserPlus, TrendingUp, Eye, ShoppingCart, UserCheck, Bell } from 'lucide-react';
+import { UserPlus, TrendingUp, Eye, ShoppingCart, UserCheck } from 'lucide-react';
 
 const activities: ActivityItem[] = [
   { id: '1', title: 'New lead from LinkedIn', subtitle: 'Acme Security Ltd · 2m ago', time: '2m ago', badge: { label: 'New', variant: 'new' }, iconType: 'lead' },
@@ -27,15 +28,29 @@ const badgeColors: Record<string, string> = {
   order: 'bg-[#1468F5]/10 text-[#1468F5]',
 };
 
-export const RecentActivityList: React.FC = () => (
+const activityLinks: Record<string, string> = {
+  lead: '/dashboard/crm/leads',
+  performance: '/dashboard/campaigns',
+  competitor: '/dashboard/competitors',
+  order: '/dashboard/products',
+  user: '/dashboard/crm',
+};
+
+export const RecentActivityList: React.FC = () => {
+  const router = useRouter();
+  return (
   <div className="bg-white rounded-2xl border border-slate-200 p-6">
     <div className="flex items-center justify-between mb-5">
       <h3 className="text-base font-bold text-slate-900">Recent Activity</h3>
-      <button className="text-xs text-blue-600 font-semibold hover:underline">View All</button>
+      <button onClick={() => router.push('/dashboard/analytics')} className="text-xs text-blue-600 font-semibold hover:underline">View All</button>
     </div>
-    <div className="space-y-4">
+    <div className="space-y-1">
       {activities.map((a) => (
-        <div key={a.id} className="flex items-start gap-3">
+        <button
+          key={a.id}
+          onClick={() => router.push(activityLinks[a.iconType] || '/dashboard')}
+          className="w-full flex items-start gap-3 p-2 -mx-2 rounded-xl hover:bg-slate-50 transition text-left"
+        >
           <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-500 flex-shrink-0 mt-0.5">
             {iconMap[a.iconType]}
           </div>
@@ -47,8 +62,9 @@ export const RecentActivityList: React.FC = () => (
             <div className="text-xs text-slate-500 mt-0.5">{a.subtitle}</div>
           </div>
           <span className="text-[10px] text-slate-400 flex-shrink-0">{a.time}</span>
-        </div>
+        </button>
       ))}
     </div>
   </div>
-);
+  );
+};

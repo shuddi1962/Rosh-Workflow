@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, Save, User, CheckCircle2, Settings as SettingsIcon, Bell, Lock } from 'lucide-react'
+import { Loader2, Save, User, CheckCircle2, Settings as SettingsIcon, Bell, Lock, Building2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/dashboard/PageHeader'
+import { useTenant } from '@/lib/context/TenantContext'
 
 interface UserProfile {
   id: string
@@ -19,7 +20,7 @@ interface UserProfile {
   created_at: string
 }
 
-type SettingsTab = 'profile' | 'preferences' | 'notifications'
+type SettingsTab = 'profile' | 'business' | 'preferences' | 'notifications'
 
 interface Preferences {
   compact_view: boolean
@@ -65,6 +66,18 @@ export default function DashboardSettingsPage() {
   const [passwordSaving, setPasswordSaving] = useState(false)
   const [passwordMsg, setPasswordMsg] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const { currentTenant, updateTenant } = useTenant()
+  const [bizForm, setBizForm] = useState({
+    name: '',
+    industry: '',
+    ownerName: '',
+    ownerEmail: '',
+    phone: '',
+    currency: 'NGN',
+    plan: 'Growth' as 'Starter' | 'Growth' | 'Enterprise',
+    productsSummary: '',
+  })
+  const [bizSaved, setBizSaved] = useState('')
 
   const fetchProfile = async (): Promise<void> => {
     try {
@@ -93,6 +106,27 @@ export default function DashboardSettingsPage() {
     setPrefs(loadJson<Preferences>('roshanal_prefs', DEFAULT_PREFS))
     setNotifs(loadJson<NotificationSettings>('roshanal_notifs', DEFAULT_NOTIFS))
   }, [])
+
+  useEffect(() => {
+    setBizForm({
+      name: currentTenant.name,
+      industry: currentTenant.industry,
+      ownerName: currentTenant.ownerName,
+      ownerEmail: currentTenant.ownerEmail,
+      phone: currentTenant.phone || '',
+      currency: currentTenant.currency,
+      plan: currentTenant.plan,
+      productsSummary: currentTenant.productsSummary,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTenant.id])
+
+  const handleSaveBusiness = (): void => {
+    const symbol = bizForm.currency === 'USD' ? '$' : '₦'
+    updateTenant(currentTenant.id, { ...bizForm, currencySymbol: symbol })
+    setBizSaved(`Business details for ${bizForm.name} saved — they now appear across the whole dashboard.`)
+    setTimeout(() => setBizSaved(''), 4000)
+  }
 
   const handleSave = async (): Promise<void> => {
     try {
@@ -179,6 +213,7 @@ export default function DashboardSettingsPage() {
 
   const tabs: Array<{ id: SettingsTab; label: string }> = [
     { id: 'profile', label: 'Profile' },
+    { id: 'business', label: 'Business' },
     { id: 'preferences', label: 'Preferences' },
     { id: 'notifications', label: 'Notifications' },
   ]
@@ -200,12 +235,12 @@ export default function DashboardSettingsPage() {
         icon={SettingsIcon}
       />
 
-      <div className="flex gap-1 p-1 bg-bg-surface border border-border-subtle rounded-lg mb-6">
+      <div className="flex gap-1 p-1 bg-bg-surface border border-border-subtle rounded-lg mb-6 overflow-x-auto">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 min-w-[110px] px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? 'bg-white text-text-primary shadow-sm border border-border-subtle'
                 : 'text-text-secondary hover:text-text-primary'
@@ -401,6 +436,102 @@ export default function DashboardSettingsPage() {
             )}
           </motion.div>
         </>
+      )}
+
+      {activeTab === 'business' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl border border-border-subtle p-6 space-y-6"
+        >
+          <div>
+            <h3 className="text-lg font-medium text-text-primary mb-1 flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-text-muted" /> Business Details
+            </h3>
+            <p className="text-xs text-text-secondary">
+              Currently editing: <span className="font-semibold text-text-primary">{currentTenant.name}</span> ({currentTenant.plan} plan).
+              Changes appear across the whole dashboard instantly.
+            </p>
+          </div>
+          {bizSaved && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-emerald-700 text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" /> {bizSaved}
+            </div>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="bizName">Business Name</Label>
+              <Input id="bizName" value={bizForm.name} onChange={(e) => setBizForm({ ...bizForm, name: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="bizIndustry">Industry</Label>
+              <select
+                id="bizIndustry"
+                value={bizForm.industry}
+                onChange={(e) => setBizForm({ ...bizForm, industry: e.target.value })}
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/30"
+              >
+                {['Marine & Technology', 'Marine & Oil Gas', 'Healthcare & Clinics', 'Retail & Fashion', 'Security & Surveillance', 'Real Estate', 'Professional Services', 'Manufacturing', 'Education', 'Other'].map((ind) => (
+                  <option key={ind} value={ind}>{ind}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="bizOwner">Owner Name</Label>
+              <Input id="bizOwner" value={bizForm.ownerName} onChange={(e) => setBizForm({ ...bizForm, ownerName: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="bizEmail">Owner Email</Label>
+              <Input id="bizEmail" type="email" value={bizForm.ownerEmail} onChange={(e) => setBizForm({ ...bizForm, ownerEmail: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="bizPhone">Phone / WhatsApp</Label>
+              <Input id="bizPhone" value={bizForm.phone} onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })} placeholder="0803..." className="mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="bizCurrency">Currency</Label>
+              <select
+                id="bizCurrency"
+                value={bizForm.currency}
+                onChange={(e) => setBizForm({ ...bizForm, currency: e.target.value })}
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/30"
+              >
+                <option value="NGN">NGN (₦ Naira)</option>
+                <option value="USD">USD ($ Dollar)</option>
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <Label>Plan</Label>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {(['Starter', 'Growth', 'Enterprise'] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setBizForm({ ...bizForm, plan: p })}
+                    className={`py-2 rounded-lg text-sm font-semibold border transition ${bizForm.plan === p ? 'bg-accent-primary text-white border-accent-primary' : 'bg-white text-text-secondary border-border-subtle hover:border-border-hover'}`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="sm:col-span-2">
+              <Label htmlFor="bizProducts">Products & Services Summary</Label>
+              <textarea
+                id="bizProducts"
+                value={bizForm.productsSummary}
+                onChange={(e) => setBizForm({ ...bizForm, productsSummary: e.target.value })}
+                rows={3}
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent-primary/30 resize-none"
+              />
+            </div>
+          </div>
+          <div className="pt-4 border-t border-border-subtle">
+            <Button onClick={handleSaveBusiness} className="bg-accent-primary hover:bg-accent-primary/90 text-white">
+              <Save className="w-4 h-4 mr-2" /> Save Business Details
+            </Button>
+          </div>
+        </motion.div>
       )}
 
       {activeTab === 'preferences' && (

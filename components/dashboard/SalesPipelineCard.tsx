@@ -1,17 +1,23 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useTenant } from '@/lib/context/TenantContext';
+import { ArrowRight } from 'lucide-react';
 
 const stages = [
-  { id: '1', name: 'New Leads', count: 248, amount: '₦1,240,000', color: '#1468F5', width: 100 },
-  { id: '2', name: 'Contacted', count: 182, amount: '₦910,000', color: '#3B82F6', width: 73 },
-  { id: '3', name: 'Qualified', count: 120, amount: '₦720,000', color: '#10B981', width: 48 },
-  { id: '4', name: 'Proposal Sent', count: 76, amount: '₦480,000', color: '#F59E0B', width: 31 },
-  { id: '5', name: 'Closed Won', count: 42, amount: '₦260,000', color: '#10B981', width: 17 },
+  { id: '1', name: 'New Leads', count: 248, amount: 1240000, color: '#1468F5', width: 100 },
+  { id: '2', name: 'Contacted', count: 182, amount: 910000, color: '#3B82F6', width: 73 },
+  { id: '3', name: 'Qualified', count: 120, amount: 720000, color: '#10B981', width: 48 },
+  { id: '4', name: 'Proposal Sent', count: 76, amount: 480000, color: '#F59E0B', width: 31 },
+  { id: '5', name: 'Closed Won', count: 42, amount: 260000, color: '#10B981', width: 17 },
 ];
 
 export const SalesPipelineCard: React.FC = () => {
+  const { formatCurrency } = useTenant();
+  const router = useRouter();
+  const total = stages.reduce((s, st) => s + st.amount, 0);
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-5">
@@ -20,12 +26,12 @@ export const SalesPipelineCard: React.FC = () => {
       </div>
       <div className="space-y-3">
         {stages.map((s) => (
-          <div key={s.id} className="flex items-center gap-3">
+          <button key={s.id} onClick={() => router.push('/dashboard/crm')} className="w-full flex items-center gap-3 text-left group">
             <div className="w-2 h-8 rounded-full" style={{ backgroundColor: s.color }} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-700">{s.name}</span>
-                <span className="text-sm font-bold text-slate-900">{s.amount}</span>
+                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{s.name}</span>
+                <span className="text-sm font-bold text-slate-900">{formatCurrency(s.amount)}</span>
               </div>
               <div className="w-full h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
                 <div
@@ -35,13 +41,19 @@ export const SalesPipelineCard: React.FC = () => {
               </div>
             </div>
             <span className="text-xs font-semibold text-slate-500 w-8 text-right">{s.count}</span>
-          </div>
+          </button>
         ))}
       </div>
       <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
         <span className="text-xs text-slate-400">Total pipeline value</span>
-        <span className="text-lg font-bold text-slate-900">₦3,610,000</span>
+        <span className="text-lg font-bold text-slate-900">{formatCurrency(total)}</span>
       </div>
+      <button
+        onClick={() => router.push('/dashboard/crm')}
+        className="mt-4 w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-[#1468F5] hover:underline"
+      >
+        Open CRM Pipeline <ArrowRight className="w-3.5 h-3.5" />
+      </button>
     </div>
   );
 };

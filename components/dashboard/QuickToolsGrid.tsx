@@ -1,24 +1,28 @@
 'use client';
 
 import React from 'react';
-import { MessageSquare, Mail, Send, Globe, BarChart3, Zap, PenLine, Video, Target, Users, ShoppingCart, Settings } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { PenLine, Video, Target, Users, BarChart3, Settings } from 'lucide-react';
 
 const tools = [
-  { icon: PenLine, label: 'Content Generator', desc: 'AI-powered content creation', color: '#1468F5' },
-  { icon: Users, label: 'Lead Finder', desc: 'Discover new prospects', color: '#10B981' },
-  { icon: Video, label: 'Video Studio', desc: 'Create UGC video scripts', color: '#EF233C' },
-  { icon: Settings, label: 'Automation', desc: 'Set up workflows', color: '#1468F5' },
-  { icon: BarChart3, label: 'Reports', desc: 'Generate insights', color: '#1468F5' },
-  { icon: Target, label: 'Competitor Analysis', desc: 'Spy on competitors', color: '#EF233C' },
+  { icon: PenLine, label: 'Content Generator', desc: 'AI-powered content creation', color: '#1468F5', href: '/dashboard/content' },
+  { icon: Users, label: 'Lead Finder', desc: 'Discover new prospects', color: '#10B981', href: '/dashboard/crm/leads' },
+  { icon: Video, label: 'Video Studio', desc: 'Create UGC video scripts', color: '#EF233C', href: '/dashboard/creative/video' },
+  { icon: Settings, label: 'Automation', desc: 'Set up workflows', color: '#1468F5', href: '/dashboard/campaigns/automation' },
+  { icon: BarChart3, label: 'Reports', desc: 'Generate insights', color: '#1468F5', href: '/dashboard/analytics' },
+  { icon: Target, label: 'Competitor Analysis', desc: 'Spy on competitors', color: '#EF233C', href: '/dashboard/competitors' },
 ];
 
-export const QuickToolsGrid: React.FC = () => (
+export const QuickToolsGrid: React.FC = () => {
+  const router = useRouter();
+  return (
   <div className="bg-white rounded-2xl border border-slate-200 p-6">
     <h3 className="text-base font-bold text-slate-900 mb-5">Quick Tools</h3>
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {tools.map((t) => (
         <button
           key={t.label}
+          onClick={() => router.push(t.href)}
           className="flex flex-col items-center gap-2 p-4 rounded-xl border border-slate-100 hover:border-[#1468F5]/20 hover:bg-[#1468F5]/5 transition text-center group"
         >
           <div
@@ -35,4 +39,5 @@ export const QuickToolsGrid: React.FC = () => (
       ))}
     </div>
   </div>
-);
+  );
+};

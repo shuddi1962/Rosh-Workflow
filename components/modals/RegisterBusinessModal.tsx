@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Building2, User, Mail, Phone, Globe, Briefcase } from 'lucide-react';
+import { X, Building2, User, Mail, Phone, Briefcase } from 'lucide-react';
+import type { BusinessRegistration } from '@/lib/types';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: BusinessRegistration) => void;
 }
 
 export const RegisterBusinessModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {

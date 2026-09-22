@@ -1,13 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { AutomationRoutine, BusinessTenant } from '@/lib/types';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { AutomationRoutine, BusinessTenant, BusinessRegistration } from '@/lib/types';
 
 interface TenantContextType {
   currentTenant: BusinessTenant;
   tenants: BusinessTenant[];
   switchTenant: (tenantId: string) => void;
-  registerBusiness: (business: Omit<BusinessTenant, 'id' | 'automations' | 'revenueHistory'>) => void;
+  registerBusiness: (business: BusinessRegistration) => void;
+  updateTenant: (tenantId: string, patch: Partial<BusinessTenant>) => void;
   toggleAutomation: (automationId: string) => void;
   formatCurrency: (amount: number) => string;
   isRegistrationOpen: boolean;
@@ -131,22 +132,63 @@ const DEFAULT_TENANTS: BusinessTenant[] = [
   },
 ];
 
+const STORAGE_KEY = 'rosh-tenants-v1';
+const CURRENT_KEY = 'rosh-current-tenant-v1';
+
+function loadTenants(): BusinessTenant[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_TENANTS;
+    const parsed = JSON.parse(raw) as BusinessTenant[];
+    if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_TENANTS;
+    return parsed;
+  } catch {
+    return DEFAULT_TENANTS;
+  }
+}
+
+function loadCurrentId(fallback: string): string {
+  try {
+    return localStorage.getItem(CURRENT_KEY) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
 export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [tenants, setTenants] = useState<BusinessTenant[]>(DEFAULT_TENANTS);
-  const [currentTenantId, setCurrentTenantId] = useState<string>(DEFAULT_TENANTS[0].id);
+  const [tenants, setTenants] = useState<BusinessTenant[]>(() => {
+    if (typeof window === 'undefined') return DEFAULT_TENANTS;
+    return loadTenants();
+  });
+  const [currentTenantId, setCurrentTenantId] = useState<string>(() => {
+    if (typeof window === 'undefined') return DEFAULT_TENANTS[0].id;
+    return loadCurrentId(DEFAULT_TENANTS[0].id);
+  });
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [activeFilterPeriod, setActiveFilterPeriod] = useState<'today' | '7d' | '30d' | 'ytd'>('30d');
   const [siteSwitcherOpen, setSiteSwitcherOpen] = useState(false);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tenants));
+      localStorage.setItem(CURRENT_KEY, currentTenantId);
+    } catch {
+      // storage full or unavailable — tenants still work for this session
+    }
+  }, [tenants, currentTenantId]);
+
   const currentTenant = tenants.find((t) => t.id === currentTenantId) || tenants[0];
 
   const switchTenant = useCallback((tenantId: string) => {
-    if (tenants.find((t) => t.id === tenantId)) setCurrentTenantId(tenantId);
-  }, [tenants]);
+    setTenants((prev) => {
+      if (prev.find((t) => t.id === tenantId)) setCurrentTenantId(tenantId);
+      return prev;
+    });
+  }, []);
 
-  const registerBusiness = useCallback((business: Omit<BusinessTenant, 'id' | 'automations' | 'revenueHistory'>) => {
+  const registerBusiness = useCallback((business: BusinessRegistration) => {
     const newId = business.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now().toString().slice(-4);
     const defaultRoutines: AutomationRoutine[] = [
       { id: `auto-${Date.now()}-1`, title: `WhatsApp Concierge for ${business.name}`, description: `Auto-qualifies incoming buyers and delivers instant quotes.`, channel: 'whatsapp', active: true, executionsToday: 1, lastExecution: 'Just registered', successRate: '100%' },
@@ -159,6 +201,10 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const newTenant: BusinessTenant = { ...business, id: newId, automations: defaultRoutines, revenueHistory: history };
     setTenants((prev) => [newTenant, ...prev]);
     setCurrentTenantId(newId);
+  }, []);
+
+  const updateTenant = useCallback((tenantId: string, patch: Partial<BusinessTenant>) => {
+    setTenants((prev) => prev.map((t) => (t.id === tenantId ? { ...t, ...patch, id: t.id } : t)));
   }, []);
 
   const toggleAutomation = useCallback((automationId: string) => {
@@ -178,7 +224,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   return (
     <TenantContext.Provider value={{
-      currentTenant, tenants, switchTenant, registerBusiness, toggleAutomation,
+      currentTenant, tenants, switchTenant, registerBusiness, updateTenant, toggleAutomation,
       formatCurrency, isRegistrationOpen, setIsRegistrationOpen, activeFilterPeriod, setActiveFilterPeriod,
       siteSwitcherOpen, setSiteSwitcherOpen,
     }}>

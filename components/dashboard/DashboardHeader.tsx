@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { useTenant } from '@/lib/context/TenantContext';
-import { Bell, Search, ChevronDown, User } from 'lucide-react';
+import { Bell, Search, ChevronDown, Plus } from 'lucide-react';
 
 export const DashboardHeader: React.FC = () => {
-  const { currentTenant, tenants, switchTenant } = useTenant();
+  const { currentTenant, tenants, switchTenant, setIsRegistrationOpen } = useTenant();
   const [tenantOpen, setTenantOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -59,6 +59,15 @@ export const DashboardHeader: React.FC = () => {
                   </div>
                 </button>
               ))}
+              <button
+                onClick={() => { setTenantOpen(false); setIsRegistrationOpen(true); }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-[#1468F5] hover:bg-[#1468F5]/5 transition mt-1 border-t border-slate-100 pt-3"
+              >
+                <span className="w-6 h-6 rounded-full bg-[#1468F5]/10 flex items-center justify-center">
+                  <Plus className="w-3.5 h-3.5" />
+                </span>
+                Register New Business
+              </button>
             </div>
           )}
         </div>
