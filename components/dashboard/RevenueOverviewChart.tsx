@@ -1,37 +1,113 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTenant } from '@/lib/context/TenantContext';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 export const RevenueOverviewChart: React.FC = () => {
-  const { currentTenant, formatCurrency } = useTenant();
+  const { currentTenant, activeFilterPeriod } = useTenant();
   const data = currentTenant.revenueHistory || [];
-  const maxVal = Math.max(...data.map((d) => d.current), 1);
+  const [period, setPeriod] = useState(activeFilterPeriod);
+
+  const chartData = data.map((d) => ({
+    name: d.label,
+    current: d.current,
+    previous: d.previous,
+  }));
+
+  const formatCurrency = (value: number) => {
+    if (value >= 1000000) return `₦${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `₦${(value / 1000).toFixed(0)}K`;
+    return `₦${value}`;
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-base font-bold text-slate-900">Revenue Overview</h3>
-        <div className="flex items-center gap-3 text-xs text-slate-400">
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-slate-200 rounded" /> Previous</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-blue-500 rounded" /> Current</span>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-base font-bold text-slate-900">Revenue Overview</h3>
+          <p className="text-xs text-slate-500 mt-1">
+            {formatCurrency(currentTenant.monthlyRevenue)} · +{currentTenant.revenueGrowth}% vs previous period
+          </p>
+        </div>
+        <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+          {(['today', '7d', '30d', 'ytd'] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`px-2 py-1 text-[10px] font-semibold rounded-md transition ${
+                period === p
+                  ? 'bg-white shadow text-slate-900'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {p.toUpperCase()}
+            </button>
+          ))}
         </div>
       </div>
-      <div className="flex items-end gap-2 h-48">
-        {data.map((m) => {
-          const curH = (m.current / maxVal) * 100;
-          const prevH = (m.previous / maxVal) * 100;
-          return (
-            <div key={m.label} className="flex-1 flex flex-col items-center gap-1">
-              <div className="w-full flex items-end gap-1" style={{ height: '160px' }}>
-                <div className="flex-1 bg-slate-100 rounded-t-md" style={{ height: `${prevH}%` }} />
-                <div className="flex-1 bg-gradient-to-t from-blue-600 to-indigo-500 rounded-t-md" style={{ height: `${curH}%` }} />
-              </div>
-              <span className="text-[10px] text-slate-400 font-medium">{m.label}</span>
-            </div>
-          );
-        })}
-      </div>
+
+      <ResponsiveContainer width="100%" height={260}>
+        <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+          <defs>
+            <linearGradient id="currentGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#1468F5" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="#1468F5" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="previousGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#94A3B8" stopOpacity={0.1} />
+              <stop offset="100%" stopColor="#94A3B8" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 11, fill: '#94A3B8' }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            tickFormatter={formatCurrency}
+            tick={{ fontSize: 11, fill: '#94A3B8' }}
+            axisLine={false}
+            tickLine={false}
+            width={70}
+          />
+          <Tooltip
+            formatter={(value: number) => [formatCurrency(value), '']}
+            labelStyle={{ color: '#0F172A', fontWeight: 600 }}
+            contentStyle={{
+              borderRadius: '12px',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            }}
+          />
+          <Area
+            type="monotone"
+            dataKey="previous"
+            stroke="#94A3B8"
+            strokeWidth={2}
+            fill="url(#previousGradient)"
+            name="Previous Period"
+          />
+          <Area
+            type="monotone"
+            dataKey="current"
+            stroke="#1468F5"
+            strokeWidth={2.5}
+            fill="url(#currentGradient)"
+            name="Current Period"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 };

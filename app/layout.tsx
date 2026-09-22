@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Roshanal AI - Intelligent Business Growth Platform',
-  description: 'AI-powered marketing platform for Roshanal Infotech Limited, Port Harcourt, Nigeria',
+  title: 'ROSH — AI Business Operating System',
+  description: 'More leads. More sales. Less work. The autonomous AI business operating system for modern teams.',
 }
 
 export default function RootLayout({
@@ -14,9 +14,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600,500&display=swap" rel="stylesheet" />
-        <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function configureFetchGuard() {
+                try {
+                  Object.defineProperty(window, 'fetch', {
+                    configurable: true,
+                    get: function () {
+                      return window.__roshFetch || globalThis.fetch
+                    },
+                    set: function (value) {
+                      window.__roshFetch = value
+                    }
+                  })
+                } catch (_) {}
+              })()
+            `,
+          }}
+        />
       </head>
       <body>
         {children}

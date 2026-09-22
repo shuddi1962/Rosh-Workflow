@@ -229,7 +229,7 @@ export default function DashboardAnalyticsPage() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="count" fill="#8B5CF6" name="Campaigns" />
+                <Bar dataKey="count" fill="#1468F5" name="Campaigns" />
               </BarChart>
             </ResponsiveContainer>
           ) : (

@@ -53,8 +53,8 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-white to-bg-surface p-12 flex-col justify-between relative overflow-hidden border-r border-border-subtle">
         {/* Background pattern */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px]" />
-          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-indigo-600/5 rounded-full blur-[80px]" />
+          <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#1468F5]/5 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-[#EF233C]/5 rounded-full blur-[80px]" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23000000&quot; fill-opacity=&quot;0.03&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]" />
         </div>
         
@@ -64,10 +64,10 @@ export default function LoginPage() {
           className="relative z-10"
         >
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#1A56DB] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="font-clash text-2xl font-bold text-text-primary">Roshanal AI</span>
+            <span className="font-clash text-2xl font-bold text-text-primary">ROSH</span>
           </div>
           
           <h1 className="font-clash text-4xl font-bold text-text-primary mb-4 leading-tight">
@@ -94,7 +94,7 @@ export default function LoginPage() {
               <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <feature.icon className="w-5 h-5 text-accent-primary" />
               </div>
-              <span className="font-medium">{feature.text}</span>
+              <p className="text-text-primary font-medium">{feature.text}</p>
             </div>
           ))}
         </motion.div>
@@ -119,10 +119,10 @@ export default function LoginPage() {
         >
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#1A56DB] to-[#3B82F6] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-clash text-xl font-bold text-text-primary">Roshanal AI</span>
+            <span className="font-clash text-xl font-bold text-text-primary">ROSH</span>
           </div>
 
           <div className="bg-white rounded-2xl border border-border-subtle p-8 shadow-lg">
@@ -183,7 +183,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-gradient-to-r from-[#1A56DB] to-[#3B82F6] text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-[#1468F5] to-[#3B82F6] text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -196,8 +196,8 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="mt-8 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-              <p className="text-sm font-medium text-accent-primary mb-2">Demo Account</p>
+            <div className="mt-8 p-4 bg-[#1468F5]/5 rounded-xl border border-[#1468F5]/20">
+              <p className="text-sm font-medium text-[#1468F5] mb-2">Demo Account</p>
               <div className="space-y-1 text-sm text-text-secondary">
                 <p><span className="text-text-primary font-medium">Email:</span> demo@roshanalinfotech.com</p>
                 <p><span className="text-text-primary font-medium">Password:</span> demo123456</p>

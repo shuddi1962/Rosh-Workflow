@@ -2,85 +2,83 @@
 
 import React, { useState } from 'react';
 import { useTenant } from '@/lib/context/TenantContext';
-import { Play, Pause, CheckCircle2, MessageSquare, Send, Mail } from 'lucide-react';
+import { Sparkles, Send, ArrowRight, Loader2 } from 'lucide-react';
 
 export const LiveAutomationTester: React.FC = () => {
-  const { currentTenant, toggleAutomation } = useTenant();
-  const [selectedAuto, setSelectedAuto] = useState(0);
-  const auto = currentTenant.automations[selectedAuto];
+  const [prompt, setPrompt] = useState('');
+  const [events, setEvents] = useState<string[]>([]);
+  const [running, setRunning] = useState(false);
+  const { currentTenant } = useTenant();
 
-  const channelIcons: Record<string, React.ReactNode> = {
-    whatsapp: <MessageSquare className="w-4 h-4" />,
-    email: <Mail className="w-4 h-4" />,
-    sms: <Send className="w-4 h-4" />,
-    meta: <Send className="w-4 h-4" />,
-    crm: <CheckCircle2 className="w-4 h-4" />,
+  const runDemo = () => {
+    if (!prompt.trim()) return;
+    setRunning(true);
+    setEvents([]);
+    const steps = [
+      `Analyzing: "${prompt}"`,
+      `Generating action plan for ${currentTenant.name}...`,
+      'Creating campaign segments and messaging...',
+      'Scheduling cross-platform deployment...',
+      'Results ready — 47 leads targeted, est. ₦2.4M pipeline',
+    ];
+    steps.forEach((step, i) => {
+      setTimeout(() => {
+        setEvents((prev) => [...prev, step]);
+        if (i === steps.length - 1) setRunning(false);
+      }, (i + 1) * 800);
+    });
   };
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Live Automation Sandbox</h2>
-          <p className="text-lg text-slate-600">See how ROSH AI handles real customer interactions in real-time</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#0A1833] mb-4">Your AI Business Command Center</h2>
+          <p className="text-lg text-slate-600">Tell ROSH what you want to accomplish and let AI coordinate the work across your workspace.</p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            {currentTenant.automations.map((a, i) => (
-              <button
-                key={a.id}
-                onClick={() => setSelectedAuto(i)}
-                className={`w-full text-left p-5 rounded-2xl border transition-all ${
-                  selectedAuto === i
-                    ? 'border-blue-200 bg-white shadow-lg shadow-blue-500/5'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="text-blue-600">{channelIcons[a.channel]}</div>
-                    <span className="text-xs font-semibold text-blue-600 uppercase">{a.channel}</span>
-                  </div>
-                  <div className={`w-10 h-5 rounded-full transition-colors cursor-pointer ${a.active ? 'bg-green-500' : 'bg-slate-300'}`} onClick={(e) => { e.stopPropagation(); toggleAutomation(a.id); }}>
-                    <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform mt-0.5 ${a.active ? 'translate-x-5.5 ml-0.5' : 'translate-x-0.5'}`} />
-                  </div>
-                </div>
-                <h4 className="font-bold text-slate-900 mb-1">{a.title}</h4>
-                <p className="text-sm text-slate-500 mb-3">{a.description}</p>
-                <div className="flex items-center gap-4 text-xs text-slate-400">
-                  <span>{a.executionsToday} runs today</span>
-                  <span>{a.lastExecution}</span>
-                  <span className="text-emerald-600 font-semibold">{a.successRate}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xl shadow-slate-200/50">
             <div className="flex items-center gap-2 mb-4">
-              <div className={`w-2 h-2 rounded-full ${auto?.active ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
-              <span className="text-sm font-semibold text-slate-700">{auto?.title}</span>
-            </div>
-            <div className="space-y-4 font-mono text-sm">
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                <p className="text-slate-500 text-xs mb-1">Incoming Message</p>
-                <p className="text-slate-800">&quot;Do you have Hikvision 4K cameras available for my office?&quot;</p>
+              <div className="w-8 h-8 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-lg flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                <p className="text-blue-500 text-xs mb-1">AI Processing (12s)</p>
-                <p className="text-blue-800">Checking inventory → Matching product specs → Calculating installation → Formatting response</p>
-              </div>
-              <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                <p className="text-emerald-500 text-xs mb-1">Response Sent</p>
-                <p className="text-emerald-800">Yes! We have Hikvision DS-2CD2T87G2P in stock. ₦185,000/unit with free installation in Port Harcourt. Shall I schedule a site survey?</p>
-              </div>
+              <span className="text-sm font-semibold text-slate-900">AI Command Center</span>
             </div>
-            <div className="mt-4 flex items-center gap-3 text-xs text-slate-400">
-              <span>Latency: 12.3s</span>
-              <span>Confidence: 98.5%</span>
-              <span className="text-emerald-600 font-semibold">Status: Delivered</span>
+            <div className="relative mb-4">
+              <input
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Launch a new campaign for our CCTV products."
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1468F5] pr-12"
+                onKeyDown={(e) => e.key === 'Enter' && runDemo()}
+              />
+              <button
+                onClick={runDemo}
+                disabled={running || !prompt.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-[#1468F5] text-white flex items-center justify-center hover:bg-[#1257D4] disabled:opacity-40 transition"
+              >
+                {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              </button>
             </div>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['Create campaign', 'Find leads', 'Analyze competitors', 'Generate content', 'Create report'].map((s) => (
+                <button key={s} onClick={() => setPrompt(s)} className="text-xs px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+                  {s}
+                </button>
+              ))}
+            </div>
+            {events.length > 0 && (
+              <div className="bg-slate-900 rounded-xl p-4 mt-4">
+                <div className="space-y-2 font-mono text-sm">
+                  {events.map((e, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className="text-[#1468F5]">{'>'}</span>
+                      <span className="text-slate-300">{e}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

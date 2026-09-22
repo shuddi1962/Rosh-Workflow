@@ -1,9 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Send, Loader2, Copy, Check } from 'lucide-react';
+import { useTenant } from '@/lib/context/TenantContext';
+import { Sparkles, Send, Loader2, Copy, Check, Wand2, Users, Radar, PenLine, Target, ArrowRight } from 'lucide-react';
+
+const actionCards = [
+  { icon: Wand2, label: 'AI Campaign', desc: 'Omni-channel ads', color: '#1468F5', bg: 'bg-[#1468F5]/10' },
+  { icon: Users, label: 'Find Leads', desc: 'AI prospector', color: '#10B981', bg: 'bg-[#10B981]/10' },
+  { icon: Radar, label: 'Radar Spy', desc: 'Competitor intel', color: '#EF233C', bg: 'bg-[#EF233C]/10' },
+  { icon: PenLine, label: 'AI Content', desc: 'Text, image, video', color: '#1468F5', bg: 'bg-[#1468F5]/10' },
+];
 
 export const AiCommandCenter: React.FC = () => {
+  const { currentTenant } = useTenant();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState('');
@@ -15,69 +24,82 @@ export const AiCommandCenter: React.FC = () => {
     setResult('');
     setTimeout(() => {
       setLoading(false);
-      setResult(`WhatsApp Broadcast Message for Roshanal Infotech:
+      setResult(`AI action plan for ${currentTenant.name}:
 
-⚓ **Suzuki 100HP Outboard Engine — IN STOCK NOW!**
-
-Looking for a reliable outboard engine for your boat? We have genuine Suzuki 100HP engines available for immediate delivery in Port Harcourt.
-
-✅ 2-Year Warranty
-✅ Free Installation Consultation
-✅ Competitive Price: ₦450,000
-
-📞 Call: 08109522432
-💬 WhatsApp: 08033170802
-📍 No 18A Rumuola Road, Port Harcourt
-
-Limited stock — order before they run out!
-
-#SuzukiEngine #MarineEquipment #PortHarcourt #BoatEngine`);
-    }, 2000);
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+1. Segment active leads by intent and location
+2. Generate WhatsApp + email follow-up sequences
+3. Launch targeted campaign across Instagram and Facebook
+4. Track responses and auto-qualify new opportunities
+5. Sync results to CRM pipeline in real-time`);
+    }, 1200);
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-white/10 p-6">
+    <div className="bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+        <div className="w-8 h-8 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-lg flex items-center justify-center">
           <Sparkles className="w-4 h-4 text-white" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-white">AI Command Center</h3>
-          <p className="text-xs text-slate-400">Generate content, campaigns, and automations with AI</p>
+          <h3 className="text-base font-bold text-slate-900">AI Command Center</h3>
+          <p className="text-xs text-slate-400">What would you like to do today?</p>
         </div>
       </div>
-
-      <div className="relative mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        {actionCards.map((a) => (
+          <button key={a.label} className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-100 hover:border-slate-300 transition text-left">
+            <div className={`w-8 h-8 rounded-lg ${a.bg} flex items-center justify-center`}>
+              <a.icon className="w-4 h-4" style={{ color: a.color }} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-800">{a.label}</p>
+              <p className="text-[10px] text-slate-400">{a.desc}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+      <div className="relative mb-3">
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Ask AI to create a WhatsApp broadcast for Suzuki engines..."
-          className="w-full h-24 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+          placeholder={`Ask me anything... e.g. Create a campaign for ${currentTenant.productsSummary}`}
+          className="w-full h-20 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1468F5] resize-none"
         />
         <button
           onClick={handleGenerate}
           disabled={loading || !prompt.trim()}
-          className="absolute bottom-3 right-3 w-9 h-9 rounded-lg bg-purple-600 text-white flex items-center justify-center hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          className="absolute bottom-2 right-2 w-8 h-8 rounded-lg bg-[#1468F5] text-white flex items-center justify-center hover:bg-[#1257D4] disabled:opacity-40 transition"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </button>
       </div>
-
+      <div className="flex flex-wrap gap-2">
+        {['Find 50 leads', 'Analyze competitors', 'Create WhatsApp campaign', 'Generate report'].map((suggestion) => (
+          <button
+            key={suggestion}
+            onClick={() => setPrompt(suggestion)}
+            className="text-[10px] px-2 py-1 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
       {result && (
-        <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+        <div className="mt-3 bg-slate-50 rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-purple-400">AI Generated</span>
-            <button onClick={handleCopy} className="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
-              {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
+            <span className="text-xs font-semibold text-[#1468F5]">✦ AI Generated</span>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(result);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1"
+            >
+              {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
-          <pre className="text-sm text-slate-300 whitespace-pre-wrap font-sans">{result}</pre>
+          <pre className="text-xs text-slate-700 whitespace-pre-wrap">{result}</pre>
         </div>
       )}
     </div>

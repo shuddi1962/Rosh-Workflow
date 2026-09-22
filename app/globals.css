@@ -1,31 +1,27 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @theme {
-  /* Font families */
-  --font-clash: 'Clash Display', sans-serif;
-  --font-cabinet: 'Cabinet Grotesk', sans-serif;
-  --font-jetbrains: 'JetBrains Mono', monospace;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
 
-  /* Light theme color palette */
-  --color-bg-void: #F8FAFC;
+  --color-bg-void: #F6F9FD;
   --color-bg-base: #FFFFFF;
   --color-bg-surface: #F1F5F9;
   --color-bg-elevated: #E2E8F0;
   --color-bg-overlay: #CBD5E1;
-  --color-border-ghost: rgba(0, 0, 0, 0.05);
-  --color-border-subtle: rgba(0, 0, 0, 0.10);
-  --color-border-default: rgba(0, 0, 0, 0.15);
-  --color-border-hover: rgba(0, 0, 0, 0.25);
-  --color-accent-primary: #1A56DB;
+  --color-border-ghost: rgba(0, 0, 0, 0.03);
+  --color-border-subtle: rgba(0, 0, 0, 0.05);
+  --color-border-default: rgba(0, 0, 0, 0.08);
+  --color-border-hover: rgba(0, 0, 0, 0.12);
+  --color-accent-primary: #1468F5;
   --color-accent-primary-glow: #3B82F6;
-  --color-accent-primary-soft: rgba(26, 86, 219, 0.1);
+  --color-accent-primary-soft: rgba(20, 104, 245, 0.1);
   --color-accent-gold: #F59E0B;
   --color-accent-gold-light: #FCD34D;
   --color-accent-emerald: #10B981;
-  --color-accent-red: #EF4444;
+  --color-accent-red: #EF233C;
   --color-accent-orange: #F97316;
-  --color-accent-purple: #8B5CF6;
-  --color-text-primary: #0F172A;
+  --color-text-primary: #0A1833;
   --color-text-secondary: #475569;
   --color-text-muted: #94A3B8;
   --color-text-on-accent: #FFFFFF;
@@ -36,7 +32,6 @@
   --color-status-published: #10B981;
 }
 
-/* Base reset */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -48,20 +43,21 @@ html {
 
 body {
   margin: 0;
-  font-family: var(--font-cabinet);
+  font-family: var(--font-sans);
   background-color: var(--color-bg-void);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   min-height: 100vh;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-clash);
+  font-family: var(--font-sans);
   margin: 0;
   line-height: 1.2;
+  font-weight: 700;
 }
 
 a {
@@ -76,8 +72,4 @@ button {
 
 input, textarea, select {
   font-family: inherit;
-}
-
-code, pre {
-  font-family: var(--font-jetbrains);
 }

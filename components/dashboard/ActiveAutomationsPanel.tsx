@@ -2,34 +2,40 @@
 
 import React from 'react';
 import { useTenant } from '@/lib/context/TenantContext';
-import { Play, Pause, MessageSquare, Send as SendIcon, Mail, CheckCircle2, Zap } from 'lucide-react';
+import { Pause, Play, Radio, Zap } from 'lucide-react';
 
 export const ActiveAutomationsPanel: React.FC = () => {
   const { currentTenant, toggleAutomation } = useTenant();
-  const channelIcons: Record<string, React.ReactNode> = {
-    whatsapp: <MessageSquare className="w-3.5 h-3.5" />,
-    email: <Mail className="w-3.5 h-3.5" />,
-    sms: <SendIcon className="w-3.5 h-3.5" />,
-    meta: <SendIcon className="w-3.5 h-3.5" />,
-    crm: <CheckCircle2 className="w-3.5 h-3.5" />,
-  };
-
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-base font-bold text-slate-900">Active Automations</h3>
-        <span className="text-xs text-slate-400">{currentTenant.automations.filter((a) => a.active).length} running</span>
+        <div>
+          <h3 className="text-base font-bold text-slate-900">Active Automations</h3>
+          <p className="text-xs text-slate-400">Background AI agents</p>
+        </div>
+        <span className="text-xs font-semibold text-[#10B981] bg-[#10B981]/10 px-2 py-1 rounded-full">
+          {currentTenant.automations.filter((a) => a.active).length} active
+        </span>
       </div>
       <div className="space-y-3">
         {currentTenant.automations.map((a) => (
-          <div key={a.id} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition group">
-            <div className="text-blue-600">{channelIcons[a.channel]}</div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-slate-900 truncate">{a.title}</div>
-              <div className="text-xs text-slate-400 mt-0.5">{a.executionsToday} runs · {a.lastExecution} · {a.successRate}</div>
+          <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${a.active ? 'bg-[#10B981]/10 text-[#10B981]' : 'bg-slate-200 text-slate-400'}`}>
+              {a.active ? <Radio className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
             </div>
-            <button onClick={() => toggleAutomation(a.id)} className={`w-10 h-5 rounded-full transition-colors flex-shrink-0 ${a.active ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-              <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform mt-0.5 ${a.active ? 'translate-x-5 ml-0.5' : 'translate-x-0.5'}`} />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-800 truncate">{a.title}</p>
+              <p className="text-[10px] text-slate-400">{a.executionsToday} runs today · {a.successRate} success</p>
+            </div>
+            <button
+              onClick={() => toggleAutomation(a.id)}
+              className={`text-[10px] px-2 py-1 rounded-full border ${
+                a.active
+                  ? 'border-[#10B981]/30 text-[#10B981] hover:bg-[#10B981]/10'
+                  : 'border-slate-200 text-slate-400 hover:bg-slate-100'
+              } transition`}
+            >
+              {a.active ? 'Pause' : 'Resume'}
             </button>
           </div>
         ))}

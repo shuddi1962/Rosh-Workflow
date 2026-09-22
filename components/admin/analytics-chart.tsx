@@ -11,7 +11,7 @@ interface AnalyticsChartProps {
   colors?: string[]
 }
 
-const defaultColors = ["#1A56DB", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444"]
+const defaultColors = ["#1468F5", "#10B981", "#F59E0B", "#EF233C", "#3B82F6"]
 
 export function AnalyticsChart({ data, type = "bar", xKey = "date", yKeys = ["value"], height = 300, colors = defaultColors }: AnalyticsChartProps) {
   return (

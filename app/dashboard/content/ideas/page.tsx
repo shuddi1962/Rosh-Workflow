@@ -229,7 +229,7 @@ export default function ContentIdeasPage() {
           <Button
             onClick={handleDailyGeneration}
             disabled={generatingDaily}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+            className="bg-gradient-to-r from-[#1468F5] to-[#3B82F6] hover:from-[#1257D4] hover:to-[#2563EB] text-white"
           >
             {generatingDaily ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
             Generate Daily Ideas

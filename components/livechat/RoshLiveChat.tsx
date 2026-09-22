@@ -21,13 +21,13 @@ export const RoshLiveChat: React.FC = () => {
 
   return (
     <>
-      <button onClick={() => setOpen(!open)} className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-xl shadow-blue-500/30 hover:scale-110 transition">
+      <button onClick={() => setOpen(!open)} className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-full flex items-center justify-center shadow-xl shadow-blue-500/30 hover:scale-110 transition">
         {open ? <X className="w-6 h-6 text-white" /> : <MessageCircle className="w-6 h-6 text-white" />}
       </button>
 
       {open && (
         <div className="fixed bottom-24 right-6 z-50 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4">
+          <div className="bg-gradient-to-r from-[#1468F5] to-[#3B82F6] p-4">
             <h3 className="text-sm font-bold text-white">Rosh AI Assistant</h3>
             <p className="text-xs text-blue-100">Usually replies instantly</p>
           </div>

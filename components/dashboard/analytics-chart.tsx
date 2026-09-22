@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 
-const COLORS = ['#1A56DB', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6']
+const COLORS = ['#1468F5', '#10B981', '#F59E0B', '#EF233C', '#3B82F6']
 
 export default function AnalyticsChart() {
   const [analytics, setAnalytics] = useState<any[]>([])

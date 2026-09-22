@@ -16,8 +16,8 @@ interface CRMKPICardsProps {
 
 const iconMap = [Target, TrendingUp, Star, Users]
 const labels = ['Total Leads', 'Conversion Rate', 'Pipeline Value', 'Avg Lead Score']
-const bgColors = ['bg-blue-50', 'bg-green-50', 'bg-purple-50', 'bg-orange-50']
-const iconColors = ['text-blue-600', 'text-green-600', 'text-purple-600', 'text-orange-600']
+const bgColors = ['bg-[#1468F5]/10', 'bg-[#10B981]/10', 'bg-[#1468F5]/10', 'bg-[#F59E0B]/10']
+const iconColors = ['text-[#1468F5]', 'text-[#10B981]', 'text-[#1468F5]', 'text-[#F59E0B]']
 
 export function CRMKPICards({ totalLeads, conversionRate, pipelineValue, avgLeadScore, totalLeadsChange, conversionChange, pipelineChange, scoreChange }: CRMKPICardsProps) {
   const values = [

@@ -87,7 +87,7 @@ export const RegisterBusinessModal: React.FC<Props> = ({ isOpen, onClose, onSubm
               </button>
             ))}
           </div>
-          <button type="submit" className="w-full py-3.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-xl transition mt-2">
+          <button type="submit" className="w-full py-3.5 rounded-xl text-sm font-bold bg-gradient-to-r from-[#1468F5] to-[#3B82F6] text-white hover:shadow-xl transition mt-2">
             Launch AI Engine
           </button>
         </form>

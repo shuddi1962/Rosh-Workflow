@@ -11,10 +11,10 @@ const campaigns: CampaignData[] = [
 ];
 
 const statusColors: Record<string, string> = {
-  Published: 'bg-emerald-50 text-emerald-600',
+  Published: 'bg-[#10B981]/10 text-[#10B981]',
   Draft: 'bg-slate-100 text-slate-500',
-  Scheduled: 'bg-blue-50 text-blue-600',
-  Ended: 'bg-red-50 text-red-500',
+  Scheduled: 'bg-[#1468F5]/10 text-[#1468F5]',
+  Ended: 'bg-[#EF233C]/10 text-[#EF233C]',
 };
 
 const channelLogos: Record<string, string> = { instagram: '📸', facebook: '👤', tiktok: '🎵', twitter: '🐦' };

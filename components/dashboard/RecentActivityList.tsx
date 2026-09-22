@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { ActivityItem } from '@/lib/types';
-import { UserPlus, TrendingUp, Eye, ShoppingCart, UserCheck } from 'lucide-react';
+import { UserPlus, TrendingUp, Eye, ShoppingCart, UserCheck, Bell } from 'lucide-react';
 
 const activities: ActivityItem[] = [
-  { id: '1', title: 'New lead from WhatsApp', subtitle: 'Suzuki 100HP inquiry — Port Harcourt', time: '2m ago', badge: { label: 'New', variant: 'new' }, iconType: 'lead' },
-  { id: '2', title: 'Campaign "CCTV Promo" completed', subtitle: '2,340 reached · 14.2% engagement', time: '18m ago', badge: { label: 'Success', variant: 'success' }, iconType: 'performance' },
-  { id: '3', title: 'Competitor price alert', subtitle: 'MarineTech PH dropped Yamaha prices 8%', time: '1h ago', badge: { label: 'Alert', variant: 'alert' }, iconType: 'competitor' },
-  { id: '4', title: 'New order received', subtitle: 'Hikvision DS-2CD2T87 × 4 units', time: '2h ago', badge: { label: '₦740K', variant: 'order' }, iconType: 'order' },
-  { id: '5', title: 'Lead qualified by AI', subtitle: 'Dr. Amadi — Solar installation inquiry', time: '3h ago', badge: { label: 'Qualified', variant: 'success' }, iconType: 'user' },
+  { id: '1', title: 'New lead from LinkedIn', subtitle: 'Acme Security Ltd · 2m ago', time: '2m ago', badge: { label: 'New', variant: 'new' }, iconType: 'lead' },
+  { id: '2', title: 'Campaign performance improved', subtitle: '+24% engagement · 12m ago', time: '12m ago', badge: { label: 'Success', variant: 'success' }, iconType: 'performance' },
+  { id: '3', title: 'Competitor detected', subtitle: 'Hikvision launched new camera · 25m ago', time: '25m ago', badge: { label: 'Alert', variant: 'alert' }, iconType: 'competitor' },
+  { id: '4', title: 'Order received', subtitle: '₦250,000 · 47m ago', time: '47m ago', badge: { label: 'Order', variant: 'order' }, iconType: 'order' },
+  { id: '5', title: 'New customer registered', subtitle: 'Sunrise Trading Co. · 1h ago', time: '1h ago', badge: { label: 'Success', variant: 'success' }, iconType: 'user' },
 ];
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -21,10 +21,10 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 const badgeColors: Record<string, string> = {
-  new: 'bg-blue-50 text-blue-600',
-  success: 'bg-emerald-50 text-emerald-600',
-  alert: 'bg-amber-50 text-amber-700',
-  order: 'bg-purple-50 text-purple-600',
+  new: 'bg-[#1468F5]/10 text-[#1468F5]',
+  success: 'bg-[#10B981]/10 text-[#10B981]',
+  alert: 'bg-[#F59E0B]/10 text-[#F59E0B]',
+  order: 'bg-[#1468F5]/10 text-[#1468F5]',
 };
 
 export const RecentActivityList: React.FC = () => (
