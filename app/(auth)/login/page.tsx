@@ -32,22 +32,46 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password })
       })
 
-      const data = await res.json()
+      // Read as text first: a timeout / edge error page comes back as HTML,
+      // and res.json() on HTML throws the generic "Something went wrong".
+      const text = await res.text()
+      let data: {
+        error?: string
+        accessToken?: string
+        refreshToken?: string
+        user?: { role: string; full_name: string }
+      } = {}
+      if (text) {
+        try {
+          data = JSON.parse(text) as typeof data
+        } catch {
+          throw new Error(`Server returned ${res.status} with an unreadable response. The server may have timed out — please try again.`)
+        }
+      }
 
       if (!res.ok) {
-        setError(data.error || 'Invalid credentials')
+        setError(data.error || `Login failed (status ${res.status})`)
         return
       }
 
+      if (!data.accessToken || !data.user) {
+        throw new Error('Login succeeded but the response was incomplete. Please try again.')
+      }
+
       localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('refreshToken', data.refreshToken)
+      if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
       localStorage.setItem('userRole', data.user.role)
       localStorage.setItem('userName', data.user.full_name)
 
       const redirectUrl = data.user.role === 'admin' ? '/admin' : '/dashboard'
       window.location.href = redirectUrl
-    } catch {
-      setError('Something went wrong. Please try again.')
+    } catch (err) {
+      if (err instanceof TypeError) {
+        // Network-level failure: offline, DNS, or the request was blocked.
+        setError('Could not reach the server. Check your internet connection and try again.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
