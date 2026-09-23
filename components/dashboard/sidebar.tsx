@@ -222,11 +222,12 @@ export function DashboardSidebar() {
       <button
         onClick={() => {
           if (lockedPlan) { goLocked(); return }
-          if (lockedRole) return
+          // Role-locked items stay clickable: the destination page opens
+          // regardless of staff role so nothing ever dead-ends on a padlock.
           router.push(href)
           setSidebarOpen(false)
         }}
-        title={lockedPlan ? `Requires ${lockedPlan} plan — click to see upgrade options` : lockedRole ? 'Not included in your staff role' : label}
+        title={lockedPlan ? `Requires ${lockedPlan} plan — click to see upgrade options` : lockedRole ? 'Not included in your staff role — click to open anyway' : label}
         className={clsx(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
           active
@@ -268,11 +269,12 @@ export function DashboardSidebar() {
                   key={item.href}
                   onClick={() => {
                     if (lockedPlan) { goLocked(); return }
-                    if (lockedRole) return
+                    // Role-locked items stay clickable: the destination page
+                    // opens regardless of staff role so no padlock dead-ends.
                     router.push(item.href)
                     setSidebarOpen(false)
                   }}
-                  title={lockedPlan ? `Requires ${lockedPlan} plan — click to see upgrade options` : lockedRole ? 'Not included in your staff role' : item.label}
+                  title={lockedPlan ? `Requires ${lockedPlan} plan — click to see upgrade options` : lockedRole ? 'Not included in your staff role — click to open anyway' : item.label}
                   className={clsx(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
                     isActive(item.href)

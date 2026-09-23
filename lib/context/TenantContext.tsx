@@ -135,13 +135,24 @@ const DEFAULT_TENANTS: BusinessTenant[] = [
 const STORAGE_KEY = 'rosh-tenants-v1';
 const CURRENT_KEY = 'rosh-current-tenant-v1';
 
+function isRoshanalWorkspace(t: BusinessTenant): boolean {
+  return t.id === 'roshanal' || t.ownerEmail === 'info@roshanalinfotech.com';
+}
+
+// The Roshanal Team workspace is always Enterprise — this heals stale
+// localStorage caches that may still hold an older plan and guarantees every
+// module is unlocked for the team without paying.
+function ensureRoshanalEnterprise(list: BusinessTenant[]): BusinessTenant[] {
+  return list.map((t) => (isRoshanalWorkspace(t) && t.plan !== 'Enterprise' ? { ...t, plan: 'Enterprise' } : t));
+}
+
 function loadTenants(): BusinessTenant[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_TENANTS;
     const parsed = JSON.parse(raw) as BusinessTenant[];
     if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_TENANTS;
-    return parsed;
+    return ensureRoshanalEnterprise(parsed);
   } catch {
     return DEFAULT_TENANTS;
   }
