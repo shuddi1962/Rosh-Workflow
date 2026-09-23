@@ -48,6 +48,8 @@ export default function CRMPipelinePage() {
   const [showDualEntry, setShowDualEntry] = useState(false)
   const [showAddLead, setShowAddLead] = useState(false)
   const [scrapingHistory, setScrapingHistory] = useState<Array<{ timestamp: string; source: string; query: string; count: number }>>([])
+  const [scraping, setScraping] = useState(false)
+  const [scrapeError, setScrapeError] = useState('')
 
   useEffect(() => { fetchLeads() }, [])
 
@@ -86,14 +88,41 @@ export default function CRMPipelinePage() {
     router.push(`/dashboard/crm/leads/${lead.id}`)
   }
 
-  const handleScrape = (config: Record<string, unknown>) => {
-    setScrapingHistory(prev => [{
-      timestamp: new Date().toISOString(),
-      source: (config.source as string) || 'Google Maps',
-      query: (config.keywords as string) || '',
-      count: Math.floor(Math.random() * 50) + 10,
-    }, ...prev])
-    fetchLeads()
+  const handleScrape = async (config: Record<string, unknown>) => {
+    setScraping(true)
+    setScrapeError('')
+    try {
+      const token = localStorage.getItem('accessToken')
+      const keywords = String(config.keywords || '').split(/[\s,]+/).map((s) => s.trim()).filter(Boolean)
+      if (keywords.length === 0) throw new Error('Enter at least one keyword to scrape.')
+      const areas = ([...((config.selectedAreas as string[]) || [])] as string[])
+      if (config.location && !areas.includes(String(config.location))) areas.push(String(config.location))
+      const res = await fetch('/api/crm/leads/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          source: String(config.source || 'google_maps').toLowerCase().replace(/\s+/g, '_'),
+          keywords,
+          areas,
+          max_leads: Number(config.maxLeads || 50),
+          auto_qualify: true,
+          add_qualified_to_pipeline: true,
+        }),
+      })
+      const data = await res.json() as { leads_added?: number; error?: string; message?: string }
+      if (!res.ok) throw new Error(data.error || 'Scrape failed')
+      setScrapingHistory(prev => [{
+        timestamp: new Date().toISOString(),
+        source: (config.source as string) || 'Google Maps',
+        query: String(config.keywords || ''),
+        count: Number(data.leads_added ?? 0),
+      }, ...prev])
+      fetchLeads()
+    } catch (e) {
+      setScrapeError(e instanceof Error ? e.message : 'Scrape failed')
+    } finally {
+      setScraping(false)
+    }
   }
 
   const handleExport = () => {

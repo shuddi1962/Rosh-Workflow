@@ -353,7 +353,7 @@ export default function AdminApiKeyNewPage() {
             <a href="/admin/api-keys" className="px-4 py-2 border border-border-default text-text-secondary rounded-lg hover:bg-bg-surface">
               Back to Keys
             </a>
-            <a href="/login" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-blue-700">
+            <a href="/admin/login" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-blue-700">
               Switch Account
             </a>
           </div>

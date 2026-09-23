@@ -34,17 +34,20 @@ export default function AdminLeadsPage() {
   const [filterStatus, setFilterStatus] = useState("all")
   const [showAddLead, setShowAddLead] = useState(false)
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
+  const [importing, setImporting] = useState(false)
+  const [notice, setNotice] = useState('')
+
+  const fetchLeads = async () => {
+    const token = localStorage.getItem("accessToken")
+    const res = await fetch("/api/leads", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const data = await res.json()
+    setLeads(data.leads || [])
+    setLoading(false)
+  }
 
   useEffect(() => {
-    const fetchLeads = async () => {
-      const token = localStorage.getItem("accessToken")
-      const res = await fetch("/api/leads", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const data = await res.json()
-      setLeads(data.leads || [])
-      setLoading(false)
-    }
     fetchLeads()
   }, [])
 
@@ -94,6 +97,67 @@ export default function AdminLeadsPage() {
     URL.revokeObjectURL(url)
   }
 
+  const handleImportFile = async (file: File) => {
+    setImporting(true)
+    setNotice('')
+    try {
+      const text = await file.text()
+      const lines = text.split(/\r?\n/).filter((l) => l.trim())
+      if (lines.length < 2) throw new Error('CSV is empty — expected a header row plus data rows.')
+      const splitRow = (row: string): string[] => {
+        const out: string[] = []
+        let cur = ''
+        let inQuotes = false
+        for (let i = 0; i < row.length; i++) {
+          const ch = row[i]
+          if (ch === '"') {
+            if (inQuotes && row[i + 1] === '"') { cur += '"'; i++ }
+            else inQuotes = !inQuotes
+          } else if (ch === ',' && !inQuotes) { out.push(cur.trim()); cur = '' }
+          else cur += ch
+        }
+        out.push(cur.trim())
+        return out
+      }
+      const headers = splitRow(lines[0]).map((h) => h.toLowerCase())
+      const idx = (names: string[]): number => {
+        for (const n of names) { const i = headers.indexOf(n); if (i >= 0) return i }
+        return -1
+      }
+      const iName = idx(['name', 'full_name', 'full name'])
+      const iPhone = idx(['phone', 'phone_number', 'mobile'])
+      if (iName < 0 || iPhone < 0) throw new Error('CSV needs at least "name" and "phone" columns.')
+      const iEmail = idx(['email'])
+      const iCompany = idx(['company', 'organisation', 'organization'])
+      const iLocation = idx(['location', 'city', 'address'])
+      const iNotes = idx(['notes', 'note', 'remarks'])
+      const leads = lines.slice(1).map(splitRow).filter((c) => c[iPhone] || c[iName]).map((c) => ({
+        name: c[iName] || 'Unknown',
+        phone: c[iPhone] || '',
+        email: iEmail >= 0 ? c[iEmail] : '',
+        company: iCompany >= 0 ? c[iCompany] : '',
+        location: iLocation >= 0 && c[iLocation] ? c[iLocation] : 'Port Harcourt',
+        notes: iNotes >= 0 ? c[iNotes] : '',
+        source: 'csv_import',
+      }))
+      if (leads.length === 0) throw new Error('No valid rows found (each row needs a name and phone).')
+      const token = localStorage.getItem("accessToken")
+      const res = await fetch('/api/leads/import', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leads }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Import failed')
+      setNotice(data.message || `${leads.length} leads imported`)
+      await fetchLeads()
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : 'Import failed')
+    } finally {
+      setImporting(false)
+    }
+  }
+
   if (loading) return <div className="text-text-muted text-sm">Loading leads...</div>
 
   return (
@@ -104,10 +168,20 @@ export default function AdminLeadsPage() {
           <p className="text-text-muted text-sm">Admin view — manage all leads across the organization</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => {}}>
+          <label className={`inline-flex items-center px-4 py-2 border border-border-subtle rounded-lg text-sm font-medium cursor-pointer hover:bg-bg-surface ${importing ? 'opacity-50 pointer-events-none' : ''}`}>
             <Upload className="w-4 h-4 mr-2" />
-            Import CSV
-          </Button>
+            {importing ? 'Importing...' : 'Import CSV'}
+            <input
+              type="file"
+              accept=".csv"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (f) handleImportFile(f)
+                e.target.value = ''
+              }}
+            />
+          </label>
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -119,6 +193,11 @@ export default function AdminLeadsPage() {
         </div>
       </div>
 
+      {notice && (
+        <div className="bg-accent-primary/10 border border-accent-primary/20 rounded-lg p-3 text-sm text-text-primary">
+          {notice}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <KPICard title="Total Leads" value={stats.total} icon={Users} color="blue" />
         <KPICard title="Customers" value={stats.customers} icon={Users} color="emerald" />

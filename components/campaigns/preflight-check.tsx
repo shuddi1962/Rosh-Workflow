@@ -102,7 +102,27 @@ export function PreflightCheck({ campaignName, campaignType, steps, audience, on
     }
 
     const hasErrors = issues.some(i => i.type === 'error')
-    const recipientCount = Math.floor(Math.random() * 500) + 50
+    // Real recipient estimate: leads matching the selected audience filters.
+    let recipientCount = 0
+    try {
+      const token = localStorage.getItem('accessToken')
+      const leadsRes = await fetch('/api/crm/leads?limit=500', { headers: { Authorization: `Bearer ${token}` } })
+      if (leadsRes.ok) {
+        const leadsData = await leadsRes.json() as { leads?: Array<Record<string, unknown>> }
+        const tiers = audience?.tier ?? []
+        const stages = audience?.stage ?? []
+        recipientCount = (leadsData.leads || []).filter((l) =>
+          (tiers.length > 0 ? tiers.includes(String(l.tier || '')) : true) &&
+          (stages.length > 0 ? stages.includes(String(l.stage || '')) : true) &&
+          !(l.opted_out === true)
+        ).length
+      }
+    } catch {
+      // recipientCount stays 0 — reported below
+    }
+    if (recipientCount === 0) {
+      issues.push({ type: 'warning', message: 'No leads currently match the selected audience filters' })
+    }
 
     const preflightResult: PreflightResult = {
       ready: !hasErrors,

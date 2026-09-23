@@ -49,7 +49,7 @@ export async function generateImage(
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL!,
-      'X-Title': 'GrowPilot AI Creative Studio',
+      'X-Title': 'GrowPilot Creative Studio',
     },
     body: JSON.stringify({
       model,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Save, Send, Plus, Trash2, Mail, MessageSquare, Phone, ArrowRight, CheckCircle2, AlertTriangle, Flame, ThermometerSun, Snowflake } from 'lucide-react'
@@ -30,6 +30,7 @@ export default function CampaignBuilderPage() {
   const [name, setName] = useState('')
   const [division, setDivision] = useState('tech')
   const [campaignType, setCampaignType] = useState('email')
+  const [presetNote, setPresetNote] = useState('')
   const [steps, setSteps] = useState<Array<{
     id: string
     type: string
@@ -53,6 +54,28 @@ export default function CampaignBuilderPage() {
     recipient_count: number
   } | null>(null)
 
+  // Honor deep-links from CRM/lead actions (?type=sms&segment=... etc.)
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search)
+    const t = (q.get('type') || '').toLowerCase()
+    const typeMap: Record<string, string> = { sms: 'sms', whatsapp: 'whatsapp', email: 'email', voice: 'voice_call', quote: 'email', demo: 'email', catalog: 'whatsapp' }
+    if (t && typeMap[t]) {
+      setCampaignType(typeMap[t])
+      setSteps([{ id: crypto.randomUUID(), type: typeMap[t], delay_days: 0, delay_hours: 0, subject: '', content: '', condition: '' }])
+    }
+    const notes: string[] = []
+    if (t === 'quote') notes.push('Opened from “Send quote” — draft your quote email below.')
+    if (t === 'demo') notes.push('Opened from “Schedule demo” — draft your demo invite below.')
+    if (t === 'catalog') notes.push('Opened from “Send catalog” — attach your catalog link below.')
+    const segment = q.get('segment')
+    if (segment) notes.push(`Target segment: ${segment}`)
+    if (notes.length > 0) {
+      setPresetNote(notes.join(' '))
+      if (!name) setName(`${t ? t.charAt(0).toUpperCase() + t.slice(1) : 'New'} campaign${segment ? ` — ${segment}` : ''}`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const addStep = () => {
     setSteps(prev => [...prev, {
       id: crypto.randomUUID(),
@@ -73,7 +96,7 @@ export default function CampaignBuilderPage() {
     setSteps(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s))
   }
 
-  const runPreflightCheck = () => {
+  const runPreflightCheck = async () => {
     const issues: string[] = []
     let recipient_count = 0
 
@@ -83,9 +106,25 @@ export default function CampaignBuilderPage() {
       issues.push('Email steps require a subject line')
     }
 
-    const gradeFilters = audience.grade.length > 0 ? `Grade: ${audience.grade.join(', ')}` : ''
-    const tierFilters = audience.tier.length > 0 ? `Tier: ${audience.tier.join(', ')}` : ''
-    recipient_count = Math.floor(Math.random() * 500) + 50
+    // Real recipient estimate from leads matching the selected audience filters.
+    try {
+      const token = localStorage.getItem('accessToken')
+      const res = await fetch('/api/crm/leads?limit=500', { headers: { Authorization: `Bearer ${token}` } })
+      if (res.ok) {
+        const data = await res.json() as { leads?: Array<Record<string, unknown>> }
+        const matched = (data.leads || []).filter((l) =>
+          (audience.tier.length === 0 || audience.tier.includes(String(l.tier || ''))) &&
+          (audience.stage.length === 0 || audience.stage.includes(String(l.stage || ''))) &&
+          !(l.opted_out === true)
+        )
+        recipient_count = matched.length
+        const pending = matched.filter((l) => String(l.qualification_status || '') === 'pending').length
+        if (pending > 0) issues.push(`${pending} matched leads still have pending qualification`)
+        if (recipient_count === 0) issues.push('No leads match the selected audience filters')
+      }
+    } catch {
+      issues.push('Could not load leads for recipient estimate')
+    }
 
     setPreflightResult({
       ready: issues.length === 0,
@@ -142,6 +181,12 @@ export default function CampaignBuilderPage() {
           </>
         }
       />
+
+      {presetNote && (
+        <div className="bg-accent-primary/10 border border-accent-primary/20 rounded-xl p-3 text-sm text-text-primary mb-6">
+          {presetNote}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">

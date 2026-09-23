@@ -82,16 +82,17 @@ export default function SocialAutoReplyPage() {
 
         if (platformsRes.ok) {
           const data = await platformsRes.json()
-          setPlatforms(data.platforms || AUTO_REPLY_PLATFORMS.map(p => ({
-            id: p.id, name: p.name, icon: p.icon, isConnected: Math.random() > 0.3,
-            isEnabled: Math.random() > 0.2, triggers: p.triggers, repliesToday: Math.floor(Math.random() * 100),
-            leadsCreated: Math.floor(Math.random() * 20), lastEvent: `${Math.floor(Math.random() * 60)}m ago`,
+          setPlatforms((data.platforms || []).map((p: Record<string, unknown>) => ({
+            id: String(p.id), name: String(p.name), icon: String(p.icon || ''),
+            isConnected: Boolean(p.isConnected), isEnabled: Boolean(p.isEnabled),
+            triggers: (p.triggers as string[]) || [], repliesToday: Number(p.repliesToday || 0),
+            leadsCreated: Number(p.leadsCreated || 0), lastEvent: String(p.lastEvent || 'No activity yet'),
           })))
         } else {
           setPlatforms(AUTO_REPLY_PLATFORMS.map(p => ({
-            id: p.id, name: p.name, icon: p.icon, isConnected: Math.random() > 0.3,
-            isEnabled: Math.random() > 0.2, triggers: p.triggers, repliesToday: Math.floor(Math.random() * 100),
-            leadsCreated: Math.floor(Math.random() * 20), lastEvent: `${Math.floor(Math.random() * 60)}m ago`,
+            id: p.id, name: p.name, icon: p.icon, isConnected: false,
+            isEnabled: false, triggers: p.triggers, repliesToday: 0,
+            leadsCreated: 0, lastEvent: 'Connect an account to start',
           })))
         }
 
@@ -147,11 +148,16 @@ export default function SocialAutoReplyPage() {
     if (!platform) return
 
     const newEnabled = !platform.isEnabled
-    await fetch(`/api/social/auto-reply/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ isEnabled: newEnabled }),
-    })
+    try {
+      const res = await fetch(`/api/social/auto-reply/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ isEnabled: newEnabled }),
+      })
+      if (!res.ok) return
+    } catch {
+      return
+    }
     setPlatforms(prev => prev.map(p => p.id === id ? { ...p, isEnabled: newEnabled } : p))
   }
 

@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
         id: result.user.id,
         email: result.user.email,
         full_name: result.user.full_name,
-        role: result.user.role
+        role: result.user.role,
+        department: result.user.department || 'administration',
+        staff_role: result.user.staff_role || 'viewer',
+        business_id: result.user.business_id || null
       },
       accessToken: result.accessToken,
       refreshToken: result.refreshToken

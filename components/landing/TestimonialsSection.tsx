@@ -10,7 +10,7 @@ const testimonials = [
 ];
 
 export const TestimonialsSection: React.FC = () => (
-  <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F6F9FD]">
+    <section id="resources" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F6F9FD]">
     <div className="max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold text-[#0A1833] mb-4">Real Businesses. Real Results.</h2>

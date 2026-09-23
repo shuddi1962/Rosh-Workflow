@@ -34,7 +34,7 @@ export const HeroSection: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterMo
             </h1>
 
             <p className="text-lg text-slate-600 max-w-lg mb-8 leading-relaxed">
-              GrowPilot AI is the all-in-one platform that helps businesses attract customers, manage sales, automate marketing, and grow — with the power of AI.
+              GrowPilot is the all-in-one platform that helps businesses attract customers, manage sales, automate marketing, and grow — with the power of AI.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-3 mb-8">

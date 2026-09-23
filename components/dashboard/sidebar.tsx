@@ -31,9 +31,79 @@ import {
   FolderOpen,
   ChevronDown,
   ChevronRight,
+  Warehouse,
+  Receipt,
+  CalendarCheck,
+  ClipboardList,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { clsx } from "clsx"
+import { Lock } from "lucide-react"
+import { useTenant } from "@/lib/context/TenantContext"
+import { moduleAccessible, MODULE_MIN_PLAN } from "@/lib/plans"
+import { roleAllows } from "@/lib/roles"
+
+// Minimum plan per workspace route. Routes not listed are open to all plans.
+const HREF_MIN_PLAN: Record<string, keyof typeof MODULE_MIN_PLAN | string> = {
+  "/dashboard/content": "content",
+  "/dashboard/trends": "trends",
+  "/dashboard/competitors": "competitors",
+  "/dashboard/crm": "crm",
+  "/dashboard/crm/leads": "crm",
+  "/dashboard/crm/qualification": "crm",
+  "/dashboard/social": "social",
+  "/dashboard/campaigns": "campaigns",
+  "/dashboard/campaigns/create": "campaigns",
+  "/dashboard/campaigns/templates": "campaigns",
+  "/dashboard/campaigns/automation": "automation",
+  "/dashboard/creative/images": "creative",
+  "/dashboard/creative/video": "video",
+  "/dashboard/creative/banners": "creative",
+  "/dashboard/creative/scraper": "creative",
+  "/dashboard/creative/library": "creative",
+  "/dashboard/creative/ugc": "ugc",
+  "/dashboard/voice/agents": "voice",
+  "/dashboard/whatsapp": "whatsapp",
+  "/dashboard/reviews": "whatsapp",
+  "/dashboard/referrals": "whatsapp",
+  "/dashboard/print": "whatsapp",
+  "/dashboard/analytics": "analytics",
+  "/dashboard/work": "work",
+}
+
+// Workspace route → module key for department role checks.
+const HREF_MODULE: Record<string, string> = {
+  "/dashboard": "overview",
+  "/dashboard/content": "content",
+  "/dashboard/trends": "trends",
+  "/dashboard/competitors": "competitors",
+  "/dashboard/crm": "crm",
+  "/dashboard/crm/leads": "crm",
+  "/dashboard/crm/qualification": "crm",
+  "/dashboard/social": "social",
+  "/dashboard/campaigns": "campaigns",
+  "/dashboard/campaigns/create": "campaigns",
+  "/dashboard/campaigns/templates": "campaigns",
+  "/dashboard/campaigns/automation": "campaigns",
+  "/dashboard/products": "products",
+  "/dashboard/inventory": "inventory",
+  "/dashboard/documents": "documents",
+  "/dashboard/work": "work",
+  "/dashboard/operations": "overview",
+  "/dashboard/creative/images": "creative",
+  "/dashboard/creative/video": "creative",
+  "/dashboard/creative/banners": "creative",
+  "/dashboard/creative/scraper": "creative",
+  "/dashboard/creative/library": "creative",
+  "/dashboard/creative/ugc": "ugc",
+  "/dashboard/voice/agents": "voice",
+  "/dashboard/whatsapp": "whatsapp",
+  "/dashboard/reviews": "whatsapp",
+  "/dashboard/referrals": "whatsapp",
+  "/dashboard/print": "whatsapp",
+  "/dashboard/analytics": "analytics",
+  "/dashboard/settings": "settings",
+}
 
 const mainNavItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
@@ -70,6 +140,13 @@ const campaignSubItems = [
   { icon: Shield, label: "Automation", href: "/dashboard/campaigns/automation" },
 ]
 
+const operationsSubItems = [
+  { icon: ClipboardList, label: "Overview", href: "/dashboard/operations" },
+  { icon: Warehouse, label: "Inventory", href: "/dashboard/inventory" },
+  { icon: Receipt, label: "Receipt Custody", href: "/dashboard/documents" },
+  { icon: CalendarCheck, label: "Schedule & Reports", href: "/dashboard/work" },
+]
+
 const bonusItems = [
   { icon: MessageSquare, label: "WhatsApp Inbox", href: "/dashboard/whatsapp" },
   { icon: Phone, label: "Voice Agents", href: "/dashboard/voice/agents" },
@@ -84,16 +161,38 @@ export function DashboardSidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userName, setUserName] = useState("User")
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    operations: true,
     creative: false,
     crm: false,
     campaigns: false,
     bonus: false,
   })
 
+  const { currentTenant } = useTenant()
+  const [staffRole, setStaffRole] = useState<string | null>(null)
+
   useEffect(() => {
     const name = localStorage.getItem("userName")
     if (name) setUserName(name)
+    setStaffRole(localStorage.getItem("staffRole"))
   }, [])
+
+  const planLocked = (href: string): string | null => {
+    const key = HREF_MIN_PLAN[href]
+    if (!key) return null
+    const min = MODULE_MIN_PLAN[key as keyof typeof MODULE_MIN_PLAN] || "Starter"
+    return moduleAccessible(currentTenant.plan, min) ? null : min
+  }
+
+  const roleLocked = (href: string): boolean => {
+    const mod = HREF_MODULE[href]
+    if (!mod) return false
+    return !roleAllows(staffRole, mod)
+  }
+
+  const goLocked = () => {
+    window.location.href = "/#pricing"
+  }
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
@@ -109,26 +208,37 @@ export function DashboardSidebar() {
     localStorage.removeItem("refreshToken")
     localStorage.removeItem("userRole")
     localStorage.removeItem("userName")
+    localStorage.removeItem("userDepartment")
+    localStorage.removeItem("staffRole")
+    localStorage.removeItem("businessId")
     router.push("/login")
   }
 
   const NavItem = ({ icon: Icon, label, href }: { icon: typeof LayoutDashboard; label: string; href: string }) => {
     const active = isActive(href)
+    const lockedPlan = planLocked(href)
+    const lockedRole = !lockedPlan && roleLocked(href)
     return (
       <button
         onClick={() => {
+          if (lockedPlan) { goLocked(); return }
+          if (lockedRole) return
           router.push(href)
           setSidebarOpen(false)
         }}
+        title={lockedPlan ? `Requires ${lockedPlan} plan — click to see upgrade options` : lockedRole ? 'Not included in your staff role' : label}
         className={clsx(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
           active
             ? "bg-accent-primary/10 text-accent-primary-glow border-l-2 border-accent-primary"
-            : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
+            : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary",
+          (lockedPlan || lockedRole) && "opacity-60"
         )}
       >
         <Icon className="w-5 h-5 flex-shrink-0" />
-        {label}
+        <span className="flex-1 text-left">{label}</span>
+        {lockedPlan && <Lock className="w-4 h-4 text-accent-gold flex-shrink-0" />}
+        {lockedRole && <Lock className="w-4 h-4 text-text-muted flex-shrink-0" />}
       </button>
     )
   }
@@ -150,24 +260,34 @@ export function DashboardSidebar() {
         </button>
         {isExpanded && (
           <div className="ml-4 space-y-1 border-l border-border-ghost pl-4">
-            {items.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => {
-                  router.push(item.href)
-                  setSidebarOpen(false)
-                }}
-                className={clsx(
-                  "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
-                  isActive(item.href)
-                    ? "bg-accent-primary/10 text-accent-primary-glow"
-                    : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
-                )}
-              >
-                <item.icon className="w-4 h-4 flex-shrink-0" />
-                {item.label}
-              </button>
-            ))}
+            {items.map((item) => {
+              const lockedPlan = planLocked(item.href)
+              const lockedRole = !lockedPlan && roleLocked(item.href)
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => {
+                    if (lockedPlan) { goLocked(); return }
+                    if (lockedRole) return
+                    router.push(item.href)
+                    setSidebarOpen(false)
+                  }}
+                  title={lockedPlan ? `Requires ${lockedPlan} plan — click to see upgrade options` : lockedRole ? 'Not included in your staff role' : item.label}
+                  className={clsx(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+                    isActive(item.href)
+                      ? "bg-accent-primary/10 text-accent-primary-glow"
+                      : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary",
+                    (lockedPlan || lockedRole) && "opacity-60"
+                  )}
+                >
+                  <item.icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {lockedPlan && <Lock className="w-3.5 h-3.5 text-accent-gold flex-shrink-0" />}
+                  {lockedRole && <Lock className="w-3.5 h-3.5 text-text-muted flex-shrink-0" />}
+                </button>
+              )
+            })}
           </div>
         )}
       </div>
@@ -195,7 +315,7 @@ export function DashboardSidebar() {
               <div className="w-9 h-9 bg-gradient-to-br from-accent-primary to-accent-primary-glow rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-text-on-accent" />
               </div>
-              <span className="font-clash text-lg font-bold text-text-primary">GrowPilot AI</span>
+              <span className="font-clash text-lg font-bold text-text-primary">GrowPilot</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -210,6 +330,9 @@ export function DashboardSidebar() {
           {mainNavItems.map((item) => (
             <NavItem key={item.href} icon={item.icon} label={item.label} href={item.href} />
           ))}
+
+          <div className="pt-4 pb-2 px-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Operations</div>
+          <CollapsibleSection title="Operations" items={operationsSubItems} sectionKey="operations" />
 
           <div className="pt-4 pb-2 px-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Creative Studio</div>
           <CollapsibleSection title="Creative Studio" items={creativeSubItems} sectionKey="creative" />

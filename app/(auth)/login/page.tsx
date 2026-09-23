@@ -18,7 +18,7 @@ export default function LoginPage() {
     error?: string
     accessToken?: string
     refreshToken?: string
-    user?: { role: string; full_name: string }
+    user?: { role: string; full_name: string; department?: string; staff_role?: string; business_id?: string | null }
   }
 
   const completeLogin = (status: number, text: string) => {
@@ -45,6 +45,9 @@ export default function LoginPage() {
     if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken)
     localStorage.setItem('userRole', data.user.role)
     localStorage.setItem('userName', data.user.full_name)
+    if (data.user.department) localStorage.setItem('userDepartment', data.user.department)
+    if (data.user.staff_role) localStorage.setItem('staffRole', data.user.staff_role)
+    if (data.user.business_id) localStorage.setItem('businessId', data.user.business_id)
 
     const redirectUrl = data.user.role === 'admin' ? '/admin' : '/dashboard'
     window.location.href = redirectUrl
@@ -243,7 +246,12 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-8 text-center text-text-muted text-sm">
-            © 2026 GrowPilot AI. All rights reserved.
+            © 2026 GrowPilot. All rights reserved.
+          </p>
+          <p className="mt-3 text-center text-sm">
+            <Link href="/admin/login" className="text-text-muted hover:text-accent-primary transition">
+              Administrator? Sign in to the admin console →
+            </Link>
           </p>
         </motion.div>
       </div>

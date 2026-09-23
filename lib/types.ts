@@ -21,7 +21,7 @@ export interface BusinessTenant {
   ownerName: string;
   ownerEmail: string;
   phone?: string;
-  plan: 'Starter' | 'Growth' | 'Enterprise';
+  plan: 'Starter' | 'Professional' | 'Business' | 'Enterprise' | 'Growth';
   monthlyRevenue: number;
   revenueGrowth: number;
   totalLeads: number;

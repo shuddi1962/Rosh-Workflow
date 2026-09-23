@@ -12,7 +12,7 @@ interface Props {
 
 export const RegisterBusinessModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
   const [form, setForm] = useState({
-    name: '', ownerName: '', ownerEmail: '', phone: '', industry: '', plan: 'Growth' as 'Starter' | 'Growth' | 'Enterprise',
+    name: '', ownerName: '', ownerEmail: '', phone: '', industry: '', plan: 'Professional' as 'Starter' | 'Professional' | 'Business' | 'Enterprise',
   });
 
   if (!isOpen) return null;
@@ -81,9 +81,9 @@ export const RegisterBusinessModal: React.FC<Props> = ({ isOpen, onClose, onSubm
               <option value="Other">Other</option>
             </select>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            {(['Starter', 'Growth', 'Enterprise'] as const).map((p) => (
-              <button key={p} type="button" onClick={() => setForm({ ...form, plan: p })} className={`py-3 rounded-xl text-sm font-semibold border transition ${form.plan === p ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}>
+          <div className="grid grid-cols-4 gap-2">
+            {(['Starter', 'Professional', 'Business', 'Enterprise'] as const).map((p) => (
+              <button key={p} type="button" onClick={() => setForm({ ...form, plan: p })} className={`py-3 rounded-xl text-xs font-semibold border transition ${form.plan === p ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}>
                 {p}
               </button>
             ))}

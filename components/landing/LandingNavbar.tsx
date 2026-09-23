@@ -23,7 +23,7 @@ export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegister
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            <a href="#" className="hover:text-[#1468F5] transition">Home</a>
+            <a href="#top" className="hover:text-[#1468F5] transition">Home</a>
             <a href="#features" className="hover:text-[#1468F5] transition">Solutions</a>
             <a href="#industries" className="hover:text-[#1468F5] transition">Industries</a>
             <a href="#pricing" className="hover:text-[#1468F5] transition">Pricing</a>
@@ -47,7 +47,7 @@ export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegister
 
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-slate-100 p-4 space-y-3">
-          <a href="#" className="block py-2 text-sm font-medium text-slate-600">Home</a>
+          <a href="#top" className="block py-2 text-sm font-medium text-slate-600">Home</a>
           <a href="#features" className="block py-2 text-sm font-medium text-slate-600">Solutions</a>
           <a href="#industries" className="block py-2 text-sm font-medium text-slate-600">Industries</a>
           <a href="#pricing" className="block py-2 text-sm font-medium text-slate-600">Pricing</a>

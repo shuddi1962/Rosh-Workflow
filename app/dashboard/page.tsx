@@ -11,6 +11,7 @@ import { TopCampaignsTable } from '@/components/dashboard/TopCampaignsTable'
 import { AudienceDemographics } from '@/components/dashboard/AudienceDemographics'
 import { SalesPipelineCard } from '@/components/dashboard/SalesPipelineCard'
 import { QuickToolsGrid } from '@/components/dashboard/QuickToolsGrid'
+import { OperationsWidgets } from '@/components/dashboard/OperationsWidgets'
 import { useTenant } from '@/lib/context/TenantContext'
 import { motion } from 'framer-motion'
 import { Rocket, Users, Target, PenLine, ArrowRight } from 'lucide-react'
@@ -61,6 +62,10 @@ function DashboardContent() {
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <MetricCards />
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+        <OperationsWidgets />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

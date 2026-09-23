@@ -173,7 +173,7 @@ export default function ApiKeysClient({ initialKeys }: { initialKeys: ApiKey[] }
             <p><span className="text-text-muted">Role:</span> <span className="text-accent-red font-medium">{userRole || 'Not logged in'}</span></p>
           </div>
           <div className="mt-6 flex gap-3 justify-center">
-            <a href="/login" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90">Switch to Admin Account</a>
+            <a href="/admin/login" className="px-4 py-2 bg-accent-primary text-white rounded-lg hover:bg-accent-primary/90">Switch to Admin Account</a>
           </div>
         </div>
       </div>

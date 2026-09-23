@@ -74,7 +74,7 @@ export default function DashboardSettingsPage() {
     ownerEmail: '',
     phone: '',
     currency: 'NGN',
-    plan: 'Growth' as 'Starter' | 'Growth' | 'Enterprise',
+    plan: 'Professional' as 'Starter' | 'Professional' | 'Business' | 'Enterprise' | 'Growth',
     productsSummary: '',
   })
   const [bizSaved, setBizSaved] = useState('')
@@ -502,8 +502,8 @@ export default function DashboardSettingsPage() {
             </div>
             <div className="sm:col-span-2">
               <Label>Plan</Label>
-              <div className="grid grid-cols-3 gap-2 mt-1">
-                {(['Starter', 'Growth', 'Enterprise'] as const).map((p) => (
+              <div className="grid grid-cols-4 gap-2 mt-1">
+                {(['Starter', 'Professional', 'Business', 'Enterprise'] as const).map((p) => (
                   <button
                     key={p}
                     type="button"

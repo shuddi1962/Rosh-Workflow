@@ -27,38 +27,38 @@ export const LandingFooter: React.FC = () => (
             <li><a href="#features" className="hover:text-white transition">Features</a></li>
             <li><a href="#pricing" className="hover:text-white transition">Pricing</a></li>
             <li><a href="#industries" className="hover:text-white transition">Industries</a></li>
-            <li><a href="#" className="hover:text-white transition">Integrations</a></li>
-            <li><a href="#" className="hover:text-white transition">Changelog</a></li>
+            <li><a href="#features" className="hover:text-white transition">Integrations</a></li>
+            <li><a href="#resources" className="hover:text-white transition">Changelog</a></li>
           </ul>
         </div>
         <div>
           <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Solutions</h4>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-white transition">Marketing</a></li>
-            <li><a href="#" className="hover:text-white transition">Sales</a></li>
-            <li><a href="#" className="hover:text-white transition">Commerce</a></li>
-            <li><a href="#" className="hover:text-white transition">Automation</a></li>
-            <li><a href="#" className="hover:text-white transition">Analytics</a></li>
+            <li><a href="#features" className="hover:text-white transition">Marketing</a></li>
+            <li><a href="#features" className="hover:text-white transition">Sales</a></li>
+            <li><a href="#features" className="hover:text-white transition">Commerce</a></li>
+            <li><a href="#features" className="hover:text-white transition">Automation</a></li>
+            <li><a href="#features" className="hover:text-white transition">Analytics</a></li>
           </ul>
         </div>
         <div>
           <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Resources</h4>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:text-white transition">Help Center</a></li>
-            <li><a href="#" className="hover:text-white transition">Documentation</a></li>
-            <li><a href="#" className="hover:text-white transition">Guides</a></li>
-            <li><a href="#" className="hover:text-white transition">Customers</a></li>
-            <li><a href="#" className="hover:text-white transition">Webinars</a></li>
+            <li><a href="#resources" className="hover:text-white transition">Help Center</a></li>
+            <li><a href="#resources" className="hover:text-white transition">Documentation</a></li>
+            <li><a href="#resources" className="hover:text-white transition">Guides</a></li>
+            <li><a href="#resources" className="hover:text-white transition">Customers</a></li>
+            <li><a href="#resources" className="hover:text-white transition">Webinars</a></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <span>&copy; 2026 GrowPilot AI. All rights reserved.</span>
+        <span>&copy; 2026 GrowPilot. All rights reserved.</span>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-white transition">Privacy Policy</a>
-          <a href="#" className="hover:text-white transition">Terms of Service</a>
-          <a href="#" className="hover:text-white transition">Security</a>
-          <a href="#" className="hover:text-white transition">Contact</a>
+          <a href="/legal#privacy" className="hover:text-white transition">Privacy Policy</a>
+          <a href="/legal#terms" className="hover:text-white transition">Terms of Service</a>
+          <a href="/legal#security" className="hover:text-white transition">Security</a>
+          <a href="/legal#contact" className="hover:text-white transition">Contact</a>
         </div>
       </div>
     </div>

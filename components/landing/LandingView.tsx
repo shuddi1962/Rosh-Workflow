@@ -22,7 +22,7 @@ interface Props {
 }
 
 export const LandingView: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterModal }) => (
-  <div className="min-h-screen bg-white">
+    <div id="top" className="min-h-screen bg-white">
     <LandingNavbar onOpenDashboard={onOpenDashboard} onOpenRegisterModal={onOpenRegisterModal} />
     <main>
       <HeroSection onOpenDashboard={onOpenDashboard} onOpenRegisterModal={onOpenRegisterModal} />

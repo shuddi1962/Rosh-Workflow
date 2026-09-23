@@ -18,7 +18,12 @@ import {
   X,
   LogOut,
   Sparkles,
-  ToggleRight
+  ToggleRight,
+  Building2,
+  UserCog,
+  ClipboardList,
+  CreditCard,
+  Target
 } from 'lucide-react'
 
 const adminNavSections = [
@@ -26,16 +31,26 @@ const adminNavSections = [
     label: 'Overview',
     items: [
       { icon: LayoutDashboard, label: 'Admin Overview', href: '/admin' },
+      { icon: ClipboardList, label: 'Operations', href: '/admin/operations' },
+    ]
+  },
+  {
+    label: 'Businesses & People',
+    items: [
+      { icon: Building2, label: 'Tenants & Plans', href: '/admin/tenants' },
+      { icon: UserCog, label: 'Staff & Roles', href: '/admin/staff' },
+      { icon: Users, label: 'Users', href: '/admin/users' },
+      { icon: Target, label: 'Leads', href: '/admin/leads' },
     ]
   },
   {
     label: 'Management',
     items: [
       { icon: Key, label: 'API Keys', href: '/admin/api-keys' },
-      { icon: Users, label: 'Users', href: '/admin/users' },
       { icon: Package, label: 'Products', href: '/admin/products' },
       { icon: Megaphone, label: 'Campaigns', href: '/admin/campaigns' },
       { icon: Share2, label: 'Social Accounts', href: '/admin/social-accounts' },
+      { icon: CreditCard, label: 'Billing Plans', href: '/admin/plans' },
     ]
   },
   {
@@ -63,11 +78,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    if (pathname === '/admin/login') {
+      setIsLoading(false)
+      return
+    }
     const token = localStorage.getItem('accessToken')
     const name = localStorage.getItem('userName')
     const role = localStorage.getItem('userRole')
     if (!token) {
-      router.push('/login')
+      router.push('/admin/login')
       return
     }
     if (role !== 'admin') {
@@ -76,7 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (name) setUserName(name)
     setIsLoading(false)
-  }, [router])
+  }, [router, pathname])
 
   if (isLoading) {
     return (
@@ -96,7 +115,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('userRole')
     localStorage.removeItem('userName')
-    router.push('/login')
+    localStorage.removeItem('userDepartment')
+    localStorage.removeItem('staffRole')
+    localStorage.removeItem('businessId')
+    router.push('/admin/login')
+  }
+
+  // The admin sign-in page uses its own standalone layout (no sidebar chrome).
+  if (pathname === '/admin/login') {
+    return <>{children}</>
   }
 
   return (
@@ -124,7 +151,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
               <div>
                 <span className="font-clash text-lg font-bold text-text-primary">Admin</span>
-                <p className="text-xs text-text-muted">GrowPilot AI</p>
+                <p className="text-xs text-text-muted">GrowPilot</p>
               </div>
             </div>
             <button
@@ -186,7 +213,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-surface hover:text-text-primary transition-all"
             >
               <Sparkles className="w-4 h-4" />
-              Dashboard
+              User workspace
             </button>
             <button
               onClick={handleLogout}

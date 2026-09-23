@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await db
       .from('users')
-      .select('id, email, full_name, role, is_active, last_login, created_at')
+      .select('id, email, full_name, role, department, staff_role, business_id, is_active, last_login, created_at')
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -40,7 +40,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const { email, password, full_name, role = 'operator' } = await request.json()
+    const body = (await request.json()) as Record<string, unknown>
+    const { email, password, full_name, role = 'operator' } = body as { email: string; password: string; full_name: string; role?: string }
 
     if (!email || !password || !full_name) {
       return NextResponse.json({ error: 'email, password, and full_name are required' }, { status: 400 })
@@ -55,10 +56,13 @@ export async function POST(request: Request) {
         password_hash,
         full_name,
         role,
+        department: String(body.department || 'administration'),
+        staff_role: String(body.staff_role || 'viewer'),
+        business_id: body.business_id ? String(body.business_id) : null,
         is_active: true,
         created_at: new Date().toISOString()
       })
-      .select('id, email, full_name, role, is_active, created_at')
+      .select('id, email, full_name, role, department, staff_role, business_id, is_active, created_at')
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

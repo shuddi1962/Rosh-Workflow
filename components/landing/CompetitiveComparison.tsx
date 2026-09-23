@@ -25,7 +25,7 @@ export const CompetitiveComparison: React.FC = () => {
             <thead>
               <tr className="bg-[#F6F9FD]">
                 <th className="text-left p-4 font-semibold text-slate-700">Capability</th>
-                <th className="text-center p-4 font-semibold text-[#1468F5]">GrowPilot AI Operating System</th>
+                <th className="text-center p-4 font-semibold text-[#1468F5]">GrowPilot Operating System</th>
                 <th className="text-center p-4 font-semibold text-slate-500">Fragmented Stack</th>
               </tr>
             </thead>

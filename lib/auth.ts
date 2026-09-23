@@ -13,6 +13,9 @@ export interface JWTPayload {
   email: string
   role: string
   name: string
+  department?: string
+  staffRole?: string
+  businessId?: string | null
 }
 
 export async function hashPassword(password: string): Promise<string> {
@@ -59,7 +62,10 @@ export async function authenticateUser(email: string, password: string): Promise
     userId: userObj.id as string,
     email: userObj.email as string,
     role: userObj.role as string,
-    name: userObj.full_name as string
+    name: userObj.full_name as string,
+    department: (userObj.department as string) || 'administration',
+    staffRole: (userObj.staff_role as string) || 'viewer',
+    businessId: (userObj.business_id as string) || null
   }
 
   const { accessToken, refreshToken } = generateTokens(payload)

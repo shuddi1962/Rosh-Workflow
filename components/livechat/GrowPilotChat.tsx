@@ -6,7 +6,7 @@ import { MessageCircle, X, Send } from 'lucide-react';
 export const GrowPilotChat: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai'; text: string }[]>([
-    { role: 'ai', text: 'Hi! I\'m the GrowPilot AI assistant. How can I help you today? I can answer questions about our products, pricing, or schedule a demo.' },
+    { role: 'ai', text: 'Hi! I\'m the GrowPilot assistant. How can I help you today? I can answer questions about our products, pricing, or schedule a demo.' },
   ]);
   const [input, setInput] = useState('');
 

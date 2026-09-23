@@ -50,6 +50,7 @@ export default function AdminPage() {
   ])
   const [recentActions, setRecentActions] = useState<AuditLog[]>([])
   const [apiKeySummary, setApiKeySummary] = useState<ApiKeySummary>({ total: 0, active: 0, inactive: 0, tested_today: 0, services: [] })
+  const [workspace, setWorkspace] = useState({ businesses: 0, staff: 0, pendingReceipts: 0, pendingReports: 0, lowStock: 0 })
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -62,7 +63,7 @@ export default function AdminPage() {
     const headers = { Authorization: `Bearer ${token}` }
 
     try {
-      const [overviewRes, healthRes, logsRes, usersRes, productsRes, leadsRes, apiKeysRes] = await Promise.all([
+      const [overviewRes, healthRes, logsRes, usersRes, productsRes, leadsRes, apiKeysRes, tenantsRes, staffRes, opsRes] = await Promise.all([
         fetch('/api/admin/analytics/overview', { headers }),
         fetch('/api/admin/system/health', { headers }),
         fetch('/api/admin/audit-logs?limit=5', { headers }),
@@ -70,6 +71,9 @@ export default function AdminPage() {
         fetch('/api/products', { headers }),
         fetch('/api/leads/stats', { headers }),
         fetch('/api/admin/api-keys', { headers }),
+        fetch('/api/admin/tenants', { headers }),
+        fetch('/api/admin/staff', { headers }),
+        fetch('/api/operations/overview', { headers }),
       ])
 
       const overview = overviewRes.ok ? await overviewRes.json() : null
@@ -105,6 +109,21 @@ export default function AdminPage() {
       ])
 
       setHealth(healthRes.ok ? await healthRes.json() : [])
+
+      try {
+        const tenantsData = tenantsRes.ok ? await tenantsRes.json() : { businesses: [] }
+        const staffData = staffRes.ok ? await staffRes.json() : { staff: [] }
+        const opsData = opsRes.ok ? await opsRes.json() : null
+        setWorkspace({
+          businesses: tenantsData.businesses?.length || 0,
+          staff: staffData.staff?.length || 0,
+          pendingReceipts: Number(opsData?.documents?.pending_submission || 0) + Number(opsData?.documents?.awaiting_verification || 0),
+          pendingReports: Number(opsData?.work?.team_pending_reports || 0),
+          lowStock: Number(opsData?.inventory?.low_stock || 0),
+        })
+      } catch {
+        // workspace metrics are additive — never break the overview
+      }
 
       setRecentActions(logsData.slice(0, 5) || [])
     } catch (error) {
@@ -154,6 +173,27 @@ export default function AdminPage() {
             <div className="text-text-muted text-sm">{kpi.title}</div>
           </div>
         ))}
+      </div>
+
+      <div className="bg-white rounded-xl border border-border-subtle p-6 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-clash text-xl font-semibold text-text-primary">Workspace & Operations</h2>
+          <a href="/admin/operations" className="text-sm text-accent-primary font-medium">Operations oversight →</a>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {[
+            { label: 'Businesses', value: workspace.businesses, href: '/admin/tenants' },
+            { label: 'Staff', value: workspace.staff, href: '/admin/staff' },
+            { label: 'Open receipts', value: workspace.pendingReceipts, href: '/admin/operations' },
+            { label: 'Reports to review', value: workspace.pendingReports, href: '/admin/operations' },
+            { label: 'Low-stock SKUs', value: workspace.lowStock, href: '/admin/operations' },
+          ].map((w) => (
+            <a key={w.label} href={w.href} className="bg-bg-surface rounded-lg p-4 text-center hover:border hover:border-border-hover transition">
+              <p className="text-2xl font-bold text-text-primary">{w.value}</p>
+              <p className="text-xs text-text-muted mt-1">{w.label}</p>
+            </a>
+          ))}
+        </div>
       </div>
 
       {apiKeySummary.total > 0 && (
