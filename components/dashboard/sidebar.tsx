@@ -94,6 +94,7 @@ const HREF_MODULE: Record<string, string> = {
   "/dashboard/documents": "documents",
   "/dashboard/work": "work",
   "/dashboard/operations": "overview",
+  "/dashboard/search": "overview",
   "/dashboard/creative/images": "creative",
   "/dashboard/creative/video": "creative",
   "/dashboard/creative/banners": "creative",
@@ -147,6 +148,7 @@ const campaignSubItems = [
 
 const operationsSubItems = [
   { icon: ClipboardList, label: "Overview", href: "/dashboard/operations" },
+  { icon: Search, label: "Universal Search", href: "/dashboard/search" },
   { icon: Warehouse, label: "Inventory", href: "/dashboard/inventory" },
   { icon: Receipt, label: "Receipt Custody", href: "/dashboard/documents" },
   { icon: CalendarCheck, label: "Schedule & Reports", href: "/dashboard/work" },

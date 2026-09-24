@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
-import { requireAuth, audit, notifyUser } from '@/lib/operations/server'
+import { requireAuth, notifyUser } from '@/lib/operations/server'
+import { emitEvent } from '@/lib/operations/events'
 
 const db = new DBClient()
 
@@ -66,7 +67,16 @@ export async function POST(request: Request) {
       updated_at: new Date().toISOString(),
     }).select().single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    await audit(auth.user.userId, 'schedule.assign', 'work_schedule', (data as unknown as Record<string, unknown>).id as string, { title, assignedTo }, request)
+    const schedId = String((data as unknown as Record<string, unknown>).id)
+    await emitEvent(auth.user, {
+      event_type: 'task.assigned',
+      entity_type: 'work_schedule',
+      entity_id: schedId,
+      entity_ref: title,
+      title: `Task assigned — ${title}`,
+      summary: `To ${assignedTo} · due ${String(body.due_date || 'TBD')}`,
+      metadata: { title, assignedTo, priority: String(body.priority || 'medium') },
+    }, request)
     if (assignedTo !== auth.user.userId) {
       await notifyUser({ recipient_user_id: assignedTo, kind: 'task_assigned', title: 'New task assigned', message: `${title} — due ${String(body.due_date || 'TBD')}`, entity_type: 'work_schedule', entity_id: (data as unknown as Record<string, unknown>).id as string })
     }

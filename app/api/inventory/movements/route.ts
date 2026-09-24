@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
-import { requireAuth, audit, notifyUser } from '@/lib/operations/server'
+import { requireAuth, notifyUser } from '@/lib/operations/server'
+import { emitEvent, linkRecords } from '@/lib/operations/events'
 import { generateReference, type MovementType } from '@/lib/operations/types'
 
 const db = new DBClient()
@@ -122,7 +123,21 @@ export async function POST(request: Request) {
       .single()
     if (movErr) return NextResponse.json({ error: movErr.message }, { status: 500 })
 
-    await audit(auth.user.userId, 'inventory.movement', 'inventory_movement', (mov as unknown as Record<string, unknown>).id as string, { productId, movementType, qty }, request)
+    const movId = String((mov as unknown as Record<string, unknown>).id)
+    await emitEvent(auth.user, {
+      event_type: `stock.${movementType}`,
+      entity_type: 'inventory_movement',
+      entity_id: movId,
+      entity_ref: ref,
+      title: `Stock ${movementType} — ${String(product.name)}`,
+      summary: `Qty ${qty} · ${prevTotal} → ${newTotal}`,
+      metadata: { productId, movementType, qty, prevTotal, newTotal },
+      related_entity_type: String(body.related_document_type || ''),
+      related_entity_id: String(body.related_document_id || ''),
+    }, request)
+    if (body.related_document_type && body.related_document_id) {
+      await linkRecords({ source_type: String(body.related_document_type), source_id: String(body.related_document_id), target_type: 'inventory_movement', target_id: movId, link_type: 'posted', created_by: auth.user.userId })
+    }
     // Low-stock notification (no spam: only when crossing threshold)
     if (newTotal <= Number(product.reorder_level || 0) && Number(product.reorder_level || 0) > 0) {
       await notifyUser({ recipient_user_id: auth.user.userId, kind: 'low_stock', title: 'Low stock alert', message: `${String(product.name)} is at ${newTotal} (reorder ${String(product.reorder_level)})`, entity_type: 'product', entity_id: productId })

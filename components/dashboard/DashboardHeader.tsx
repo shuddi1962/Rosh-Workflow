@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTenant } from '@/lib/context/TenantContext';
 import { Bell, Search, ChevronDown, Plus } from 'lucide-react';
 
 export const DashboardHeader: React.FC = () => {
+  const router = useRouter();
   const { currentTenant, tenants, switchTenant, setIsRegistrationOpen } = useTenant();
   const [tenantOpen, setTenantOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [q, setQ] = useState('');
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
@@ -22,8 +25,14 @@ export const DashboardHeader: React.FC = () => {
       <div className="flex items-center gap-3">
         <div className="hidden md:flex items-center bg-slate-50 rounded-xl px-3 py-2 border border-slate-200">
           <Search className="w-4 h-4 text-slate-400 mr-2" />
-          <input placeholder="Search anything... e.g. 'Show me competitor ads for CCTV'" className="bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none w-40" />
-          <kbd className="text-[10px] text-slate-400 border border-slate-200 rounded px-1">⌘K</kbd>
+          <input
+            placeholder="Search PO, GRN, receipt, product, task..."
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && q.trim().length >= 2) router.push(`/dashboard/search?q=${encodeURIComponent(q.trim())}`) }}
+            className="bg-transparent text-sm text-slate-700 placeholder-slate-400 focus:outline-none w-56"
+          />
+          <kbd className="text-[10px] text-slate-400 border border-slate-200 rounded px-1">↵</kbd>
         </div>
         <div className="relative">
           <button onClick={() => setNotificationsOpen(!notificationsOpen)} className="relative p-2 rounded-xl hover:bg-slate-50 transition">

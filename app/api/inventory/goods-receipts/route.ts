@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
-import { requireAuth, audit, notifyUser } from '@/lib/operations/server'
+import { requireAuth, notifyUser } from '@/lib/operations/server'
+import { emitEvent, linkRecords } from '@/lib/operations/events'
 import { generateReference } from '@/lib/operations/types'
 
 const db = new DBClient()
@@ -110,7 +111,24 @@ export async function POST(request: Request) {
       }
     }
     await db.from('goods_receipts').update({ stock_posted: true }).eq('id', grnId)
-    await audit(auth.user.userId, 'inventory.grn', 'goods_receipt', grnId, { grnNumber, supplier }, request)
+    // Connected BOS: one event + graph edges (PO -> GRN -> movements), no duplicate entry.
+    await emitEvent(auth.user, {
+      event_type: 'goods.received',
+      entity_type: 'goods_receipt',
+      entity_id: grnId,
+      entity_ref: grnNumber,
+      title: `Goods received — ${grnNumber}`,
+      summary: `${supplier} · ${items.length} line(s) posted to stock`,
+      metadata: { supplier, purchase_order_ref: String(body.purchase_order_ref || '') },
+      related_entity_type: 'supplier',
+      related_entity_ref: supplier,
+    }, request)
+    if (body.purchase_order_id) {
+      await linkRecords({ source_type: 'purchase_order', source_id: String(body.purchase_order_id), target_type: 'goods_receipt', target_id: grnId, link_type: 'fulfilled_by', created_by: auth.user.userId })
+    } else if (body.purchase_order_ref) {
+      await linkRecords({ source_type: 'purchase_order_ref', source_id: String(body.purchase_order_ref), target_type: 'goods_receipt', target_id: grnId, link_type: 'fulfilled_by', created_by: auth.user.userId })
+    }
+    await linkRecords({ source_type: 'supplier', source_id: supplier, target_type: 'goods_receipt', target_id: grnId, link_type: 'delivered', created_by: auth.user.userId })
     await notifyUser({ recipient_user_id: auth.user.userId, kind: 'grn_posted', title: 'Goods received', message: `${grnNumber} from ${supplier} posted to stock`, entity_type: 'goods_receipt', entity_id: grnId })
     return NextResponse.json({ goods_receipt: { ...grn, stock_posted: true }, grn_number: grnNumber }, { status: 201 })
   } catch (e) {

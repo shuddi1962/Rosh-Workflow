@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
-import { requireAuth, audit, notifyUser } from '@/lib/operations/server'
+import { requireAuth } from '@/lib/operations/server'
+import { emitEvent, linkRecords } from '@/lib/operations/events'
 import { generateReference } from '@/lib/operations/types'
 
 const db = new DBClient()
@@ -128,7 +129,21 @@ export async function POST(request: Request) {
       notes: `Received from ${String(body.supplier_vendor || 'vendor')}`,
       created_at: new Date().toISOString(),
     })
-    await audit(auth.user.userId, 'receipt.create', 'receipt', String(created.id), { code, amount }, request)
+    await emitEvent(auth.user, {
+      event_type: 'receipt.received',
+      entity_type: 'receipt',
+      entity_id: String(created.id),
+      entity_ref: code,
+      title: `Receipt captured — ${code}`,
+      summary: `${String(body.supplier_vendor || 'vendor')} · ₦${Number(amount || 0).toLocaleString()}`,
+      metadata: { supplier: String(body.supplier_vendor || ''), amount, goods_receipt_ref: String(body.goods_receipt_ref || ''), purchase_order_ref: String(body.purchase_order_ref || '') },
+      related_entity_type: 'supplier',
+      related_entity_ref: String(body.supplier_vendor || ''),
+    }, request)
+    if (body.goods_receipt_ref) {
+      await linkRecords({ source_type: 'goods_receipt_ref', source_id: String(body.goods_receipt_ref), target_type: 'receipt', target_id: String(created.id), link_type: 'documented_by', created_by: auth.user.userId })
+    }
+    await linkRecords({ source_type: 'supplier', source_id: String(body.supplier_vendor || 'vendor'), target_type: 'receipt', target_id: String(created.id), link_type: 'issued', created_by: auth.user.userId })
     return NextResponse.json({ receipt: data }, { status: 201 })
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })

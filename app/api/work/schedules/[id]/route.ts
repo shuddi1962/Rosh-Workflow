@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
-import { requireAuth, audit, notifyUser } from '@/lib/operations/server'
+import { requireAuth, notifyUser } from '@/lib/operations/server'
+import { emitEvent } from '@/lib/operations/events'
 
 const db = new DBClient()
 
@@ -25,7 +26,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (action === 'start') {
       if (!isOwner && !isManager) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       const data = await save({ status: 'in_progress' })
-      await audit(auth.user.userId, 'schedule.start', 'work_schedule', params.id, {}, request)
+      await emitEvent(auth.user, { event_type: 'task.started', entity_type: 'work_schedule', entity_id: params.id, entity_ref: String(current.task_title), title: `Task started — ${String(current.task_title)}`, summary: `By ${auth.user.name}` }, request)
       return NextResponse.json({ schedule: data })
     }
     if (action === 'pause' || action === 'hold') {
@@ -38,13 +39,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const note = String(body.progress_notes || body.note || '')
       if (!note) return NextResponse.json({ error: 'progress_notes required' }, { status: 400 })
       const data = await save({ progress_notes: `${String(current.progress_notes || '')}\n[${new Date().toISOString().slice(0, 16)}] ${note}`.trim() })
-      await audit(auth.user.userId, 'schedule.progress', 'work_schedule', params.id, { note }, request)
+      await emitEvent(auth.user, { event_type: 'task.progress', entity_type: 'work_schedule', entity_id: params.id, entity_ref: String(current.task_title), title: `Task progress — ${String(current.task_title)}`, summary: note.slice(0, 200) }, request)
       return NextResponse.json({ schedule: data })
     }
     if (action === 'complete') {
       if (!isOwner && !isManager) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       const data = await save({ status: 'completed', completed_at: new Date().toISOString(), progress_notes: body.progress_notes ? `${String(current.progress_notes || '')}\n${String(body.progress_notes)}`.trim() : String(current.progress_notes || '') })
-      await audit(auth.user.userId, 'schedule.complete', 'work_schedule', params.id, {}, request)
+      await emitEvent(auth.user, { event_type: 'task.completed', entity_type: 'work_schedule', entity_id: params.id, entity_ref: String(current.task_title), title: `Task completed — ${String(current.task_title)}`, summary: `By ${auth.user.name} · feeds daily report automatically`, metadata: { related_module: String(current.related_module || 'other') } }, request)
       await notifyUser({ recipient_user_id: String(current.assigned_by || 'manager'), recipient_role: 'manager', kind: 'task_completed', title: 'Task completed', message: `${String(current.task_title)} completed by ${auth.user.name}`, entity_type: 'work_schedule', entity_id: params.id })
       return NextResponse.json({ schedule: data })
     }
@@ -52,6 +53,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const issue = String(body.issue || body.progress_notes || '')
       if (!issue) return NextResponse.json({ error: 'issue description required' }, { status: 400 })
       const data = await save({ progress_notes: `${String(current.progress_notes || '')}\n[ISSUE ${new Date().toISOString().slice(0, 16)}] ${issue}`.trim() })
+      await emitEvent(auth.user, { event_type: 'task.issue', entity_type: 'work_schedule', entity_id: params.id, entity_ref: String(current.task_title), title: `Task issue — ${String(current.task_title)}`, summary: issue.slice(0, 200) }, request)
       await notifyUser({ recipient_user_id: String(current.assigned_by || 'manager'), recipient_role: 'manager', kind: 'task_issue', title: 'Task issue reported', message: `${String(current.task_title)}: ${issue}`, entity_type: 'work_schedule', entity_id: params.id })
       return NextResponse.json({ schedule: data })
     }
@@ -63,7 +65,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
     if (isManager && body.assigned_to !== undefined) { patch.assigned_to = String(body.assigned_to); if (body.assigned_to_name !== undefined) patch.assigned_to_name = String(body.assigned_to_name) }
     const data = await save(patch)
-    await audit(auth.user.userId, 'schedule.update', 'work_schedule', params.id, { fields: Object.keys(patch) }, request)
+    await emitEvent(auth.user, { event_type: 'task.updated', entity_type: 'work_schedule', entity_id: params.id, entity_ref: String(current.task_title), title: `Task updated — ${String(current.task_title)}`, summary: `Fields: ${Object.keys(patch).join(', ')}` }, request)
     return NextResponse.json({ schedule: data })
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })

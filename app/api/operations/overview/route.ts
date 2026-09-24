@@ -11,13 +11,15 @@ export async function GET(request: Request) {
   try {
     const me = auth.user.userId
     const today = new Date().toISOString().slice(0, 10)
-    const [prods, movs, recs, schs, reps, notifs] = await Promise.all([
+    const [prods, movs, recs, schs, reps, notifs, approvals, events] = await Promise.all([
       db.from('products').select('*').limit(1000),
       db.from('inventory_movements').select('*').limit(1000),
       db.from('receipts').select('*').limit(1000),
       db.from('work_schedules').select('*').limit(500),
       db.from('daily_reports').select('*').limit(500),
       db.from('operations_notifications').select('*').eq('recipient_user_id', me).limit(100),
+      db.from('approvals').select('*').limit(200),
+      db.from('business_events').select('*').order('created_at', { ascending: false }).limit(15),
     ])
     const products = ((prods.data as unknown as Array<Record<string, unknown>>) || [])
     const movements = ((movs.data as unknown as Array<Record<string, unknown>>) || [])
@@ -25,6 +27,8 @@ export async function GET(request: Request) {
     const schedules = ((schs.data as unknown as Array<Record<string, unknown>>) || [])
     const reports = ((reps.data as unknown as Array<Record<string, unknown>>) || [])
     const notifications = (((notifs.data as unknown as Array<Record<string, unknown>>) || [])).filter((n) => !n.is_read)
+    const approvalRows = ((approvals.data as unknown as Array<Record<string, unknown>>) || [])
+    const eventRows = ((events.data as unknown as Array<Record<string, unknown>>) || [])
 
     const mySchedules = schedules.filter((s) => String(s.assigned_to) === me)
     const myReceipts = receipts.filter((r) => String(r.current_holder) === me)
@@ -51,6 +55,9 @@ export async function GET(request: Request) {
       },
       notifications: notifications.slice(0, 10),
       unread_count: notifications.length,
+      approvals_pending: approvalRows.filter((a) => String(a.status) === 'pending').length,
+      approvals_mine: approvalRows.filter((a) => String(a.status) === 'pending' && String(a.assigned_to) === me).length,
+      recent_events: eventRows.slice(0, 10).map((e) => ({ title: String(e.title), summary: String(e.summary || ''), at: String(e.created_at), entity_type: String(e.entity_type), entity_id: String(e.entity_id) })),
     })
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })

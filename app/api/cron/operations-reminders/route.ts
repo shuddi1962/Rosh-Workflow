@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
+import { evaluateAutomation } from '@/lib/operations/automation'
 
 const db = new DBClient()
 
@@ -15,6 +16,11 @@ export async function GET(request: Request) {
     }
     const today = new Date().toISOString().slice(0, 10)
     const results: Record<string, number> = { report_reminders: 0, receipt_reminders: 0, task_reminders: 0 }
+    // Shared BOS automation engine first (low-stock + held-receipt rules, deduped per day).
+    try {
+      const auto = await evaluateAutomation()
+      results.receipt_reminders += auto.receipt_reminders
+    } catch { /* engine must never break cron */ }
 
     // 1. Daily report reminders: active users without today's report
     const { data: users } = await db.from('users').select('*').eq('is_active', true).limit(200)

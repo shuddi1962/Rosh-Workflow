@@ -29,6 +29,7 @@ export default function OperationsOverviewPage() {
   const inv = (data?.inventory as Record<string, number>) || {}
   const doc = (data?.documents as Record<string, number>) || {}
   const work = (data?.work as Record<string, unknown>) || {}
+  const events = ((data?.recent_events as Array<Record<string, unknown>>) || [])
 
   const cards: Array<{ title: string; href: string; icon: typeof Package; rows: Array<[string, string]> }> = [
     { icon: Package, title: 'Inventory', rows: [[ 'SKUs', String(inv.total_skus || 0) ], ['Stock value', naira(Number((data?.inventory as Record<string, number>)?.stock_value_cost || 0))], ['Low stock', String(inv.low_stock || 0)], ['Movements today', String(inv.movements_today || 0)]], href: '/dashboard/inventory' },
@@ -48,6 +49,19 @@ export default function OperationsOverviewPage() {
             ))}
           </button>
         ))}
+      </div>
+      <div className="bg-white rounded-xl border border-border-subtle p-5 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-sm">Business activity — one connected stream</h3>
+          <button onClick={() => router.push('/dashboard/search')} className="text-xs text-accent-primary font-medium">Universal search →</button>
+        </div>
+        {events.map((e, i) => (
+          <p key={i} className="text-sm py-1 border-b border-border-ghost last:border-0"><span className="font-medium">{String(e.title)}</span> <span className="text-text-secondary">— {String(e.summary || '').slice(0, 120)}</span></p>
+        ))}
+        {events.length === 0 && <p className="text-sm text-text-muted">No business events yet. Goods receipts, stock moves, receipts and tasks will appear here automatically.</p>}
+        {(Number(data?.approvals_pending || 0) > 0 || Number(data?.approvals_mine || 0) > 0) && (
+          <p className="text-xs mt-2 text-text-secondary">{String(data?.approvals_pending || 0)} approvals pending · {String(data?.approvals_mine || 0)} assigned to you</p>
+        )}
       </div>
       <div className="bg-white rounded-xl border border-border-subtle p-5">
         <div className="flex items-center gap-2 mb-3"><Bell className="w-4 h-4 text-accent-gold" /><h3 className="font-bold text-sm">Notifications ({Number(data?.unread_count || 0)} unread)</h3></div>
