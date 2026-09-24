@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loader2, Receipt, Plus, Search, Download, Eye } from 'lucide-react'
 import { naira } from '@/lib/operations/types'
 import { downloadExport } from '@/lib/operations/client'
+import { RecordAttachments } from '@/components/drive/RecordAttachments'
 
 interface R {
   id: string; receipt_code: string; receipt_number: string; document_type: string
@@ -149,6 +150,7 @@ export default function DocumentsPage() {
               ))}
             </div>
             {detail.receipt.attachment_url ? <a className="text-accent-primary text-sm underline" href={String(detail.receipt.attachment_url)} target="_blank" rel="noreferrer">Open scan / attachment</a> : <p className="text-xs text-text-muted">No digital scan attached yet.</p>}
+            <RecordAttachments entityType="receipt" entityId={String(detail.receipt.id)} />
             <div><h4 className="font-semibold text-sm mb-2">Custody history (audit trail)</h4><div className="space-y-1">{(detail.custody_history || []).map((e, i) => (<p key={i} className="text-xs text-text-secondary font-mono">{String(e.created_at).slice(0, 16).replace('T', ' ')} · {String(e.event_type)} · {String(e.notes || '')}</p>))}{(detail.custody_history || []).length === 0 && <p className="text-xs text-text-muted">No events.</p>}</div></div>
             <div className="flex gap-2 flex-wrap">
               <Button size="sm" variant="outline" onClick={() => act(String(detail.receipt.id), 'upload_scan', { attachment_url: prompt('Paste scan/photo URL:') || '' })}>Upload scan</Button>

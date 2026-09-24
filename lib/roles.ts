@@ -39,6 +39,7 @@ export const MODULES = [
   'products',
   'inventory',
   'documents',
+  'drive',
   'work',
   'ugc',
   'creative',
@@ -61,6 +62,7 @@ export const MODULE_LABELS: Record<ModuleKey, string> = {
   products: 'Products',
   inventory: 'Inventory',
   documents: 'Receipt Custody',
+  drive: 'Cloud Drive',
   work: 'Schedule & Reports',
   ugc: 'UGC Creator',
   creative: 'Creative Studio',
@@ -87,12 +89,12 @@ export const STAFF_ROLES: Array<{
   modules: ModuleKey[]
 }> = [
   { value: 'owner', label: 'Owner', description: 'Full access to everything in the business workspace.', modules: [...MODULES] },
-  { value: 'manager', label: 'Line Manager', description: 'Team schedules, reviews, inventory, documents and reports.', modules: ['overview', 'products', 'inventory', 'documents', 'work', 'crm', 'analytics', 'settings'] },
-  { value: 'inventory_officer', label: 'Inventory Officer', description: 'Stock, warehouses, goods receiving and transfers.', modules: ['overview', 'products', 'inventory', 'documents', 'work'] },
-  { value: 'accounts_officer', label: 'Accounts Officer', description: 'Receipt verification, documents and reports.', modules: ['overview', 'documents', 'work', 'analytics', 'inventory'] },
-  { value: 'sales_rep', label: 'Sales Rep', description: 'CRM, campaigns, products and customer messaging.', modules: ['overview', 'crm', 'campaigns', 'products', 'whatsapp', 'work'] },
-  { value: 'marketer', label: 'Marketer', description: 'Content, social, trends, competitors and creative studio.', modules: ['overview', 'content', 'trends', 'competitors', 'social', 'ugc', 'creative', 'campaigns', 'analytics'] },
-  { value: 'support_rep', label: 'Support Rep', description: 'Inbox, reviews and customer follow-up.', modules: ['overview', 'whatsapp', 'crm', 'work'] },
+  { value: 'manager', label: 'Line Manager', description: 'Team schedules, reviews, inventory, documents and reports.', modules: ['overview', 'products', 'inventory', 'documents', 'drive', 'work', 'crm', 'analytics', 'settings'] },
+  { value: 'inventory_officer', label: 'Inventory Officer', description: 'Stock, warehouses, goods receiving and transfers.', modules: ['overview', 'products', 'inventory', 'documents', 'drive', 'work'] },
+  { value: 'accounts_officer', label: 'Accounts Officer', description: 'Receipt verification, documents and reports.', modules: ['overview', 'documents', 'drive', 'work', 'analytics', 'inventory'] },
+  { value: 'sales_rep', label: 'Sales Rep', description: 'CRM, campaigns, products and customer messaging.', modules: ['overview', 'crm', 'campaigns', 'products', 'drive', 'whatsapp', 'work'] },
+  { value: 'marketer', label: 'Marketer', description: 'Content, social, trends, competitors and creative studio.', modules: ['overview', 'content', 'trends', 'competitors', 'social', 'ugc', 'creative', 'drive', 'campaigns', 'analytics'] },
+  { value: 'support_rep', label: 'Support Rep', description: 'Inbox, reviews and customer follow-up.', modules: ['overview', 'whatsapp', 'crm', 'drive', 'work'] },
   { value: 'viewer', label: 'Viewer', description: 'Read-only overview and reports.', modules: ['overview', 'analytics'] },
 ]
 

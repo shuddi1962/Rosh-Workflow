@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, CalendarCheck, FileText, Plus, Download } from 'lucide-react'
 import { downloadExport } from '@/lib/operations/client'
+import { RecordAttachments } from '@/components/drive/RecordAttachments'
 
 function authHeaders(): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : ''
@@ -165,6 +166,7 @@ export default function WorkPage() {
                 <div key={k} className="bg-bg-surface rounded-lg p-3"><p className="text-xs font-bold uppercase text-text-muted mb-1">{k}</p><pre className="text-xs font-mono whitespace-pre-wrap">{JSON.stringify((monthly.live as Record<string, unknown>)[k], null, 2)}</pre></div>
               ))}
               <p className="text-xs text-text-muted">Compiled from actual daily reports, stock movements, receipts and schedules — never invented. Management approval stays human.</p>
+              <RecordAttachments entityType="monthly_report" entityId={month} />
             </div>
           )}
         </div>
@@ -217,6 +219,7 @@ export default function WorkPage() {
                 <div key={k}><label className="text-xs text-text-secondary">{label}</label><Textarea value={String((openReport.report as Record<string, unknown>)[k] || '')} onChange={(e) => setOpenReport({ ...openReport, report: { ...(openReport.report as Record<string, unknown>), [k]: e.target.value } })} rows={2} /></div>
               ))}
             </div>
+            <RecordAttachments entityType="daily_report" entityId={String((openReport.report as Record<string, unknown>).id)} />
             <div className="flex gap-2 flex-wrap">
               <Button size="sm" variant="outline" onClick={() => reportAction(String((openReport.report as Record<string, unknown>).id), 'save', { summary: String((openReport.report as Record<string, unknown>).summary || ''), challenges: String((openReport.report as Record<string, unknown>).challenges || ''), actions_taken: String((openReport.report as Record<string, unknown>).actions_taken || ''), achievements: String((openReport.report as Record<string, unknown>).achievements || ''), next_day_plan: String((openReport.report as Record<string, unknown>).next_day_plan || '') })}>Save draft</Button>
               <Button size="sm" onClick={() => reportAction(String((openReport.report as Record<string, unknown>).id), 'submit')}>Submit report</Button>

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loader2, Package, Warehouse, ArrowLeftRight, ClipboardCheck, Plus, Search, Download } from 'lucide-react'
 import { naira } from '@/lib/operations/types'
 import { downloadExport } from '@/lib/operations/client'
+import { RecordAttachments } from '@/components/drive/RecordAttachments'
 
 interface Item {
   id: string
@@ -235,9 +236,12 @@ export default function InventoryPage() {
           <Button className="mb-4 bg-accent-primary text-white" onClick={() => { setForm({}); setShowGrnModal(true) }}><ClipboardCheck className="w-4 h-4 mr-2" />New Goods Receipt</Button>
           <div className="space-y-3">
             {grns.map((g) => (
-              <div key={String(g.id)} className="bg-white rounded-xl border border-border-subtle p-4 flex flex-col md:flex-row md:items-center gap-2 justify-between">
-                <div><p className="font-medium">{String(g.grn_number)} · {String(g.supplier)}</p><p className="text-xs text-text-muted">PO: {String(g.purchase_order_ref || '—')} · Status: {String(g.verification_status)} · Stock posted: {g.stock_posted ? 'Yes' : 'No'} · {String(g.created_at).slice(0, 10)}</p></div>
-                <Badge>{(g.items as unknown[])?.length || 0} lines</Badge>
+              <div key={String(g.id)} className="bg-white rounded-xl border border-border-subtle p-4 flex flex-col gap-2">
+                <div className="flex flex-col md:flex-row md:items-center gap-2 justify-between">
+                  <div><p className="font-medium">{String(g.grn_number)} · {String(g.supplier)}</p><p className="text-xs text-text-muted">PO: {String(g.purchase_order_ref || '—')} · Status: {String(g.verification_status)} · Stock posted: {g.stock_posted ? 'Yes' : 'No'} · {String(g.created_at).slice(0, 10)}</p></div>
+                  <Badge>{(g.items as unknown[])?.length || 0} lines</Badge>
+                </div>
+                <RecordAttachments entityType="goods_receipt" entityId={String(g.id)} compact />
               </div>
             ))}
             {grns.length === 0 && <p className="text-text-muted text-sm">No goods receipts yet. Record one when supplier goods arrive.</p>}

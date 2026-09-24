@@ -20,7 +20,7 @@ interface UserProfile {
   created_at: string
 }
 
-type SettingsTab = 'profile' | 'business' | 'preferences' | 'notifications'
+type SettingsTab = 'profile' | 'business' | 'storage' | 'preferences' | 'notifications'
 
 interface Preferences {
   compact_view: boolean
@@ -214,6 +214,7 @@ export default function DashboardSettingsPage() {
   const tabs: Array<{ id: SettingsTab; label: string }> = [
     { id: 'profile', label: 'Profile' },
     { id: 'business', label: 'Business' },
+    { id: 'storage', label: 'Storage & Billing' },
     { id: 'preferences', label: 'Preferences' },
     { id: 'notifications', label: 'Notifications' },
   ]
@@ -534,6 +535,8 @@ export default function DashboardSettingsPage() {
         </motion.div>
       )}
 
+      {activeTab === 'storage' && <StorageBillingCard />}
+
       {activeTab === 'preferences' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -620,5 +623,49 @@ export default function DashboardSettingsPage() {
         </motion.div>
       )}
     </div>
+  )
+}
+
+function StorageBillingCard() {
+  const [data, setData] = useState<Record<string, unknown> | null>(null)
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken') || ''
+    fetch('/api/storage/subscription', { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => {})
+  }, [])
+  const pct = Number(data?.percent_used || 0)
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-xl border border-border-subtle p-6 space-y-4"
+    >
+      <h3 className="text-lg font-medium text-text-primary">Storage & Billing</h3>
+      {!data ? (
+        <p className="text-sm text-text-muted flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Loading subscription...</p>
+      ) : (
+        <>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-text-secondary">Current plan</span>
+            <span className="font-bold text-text-primary">{String((data.plan as Record<string, unknown> | undefined)?.name || 'Free')}</span>
+          </div>
+          <div>
+            <div className="flex items-center justify-between text-sm mb-1">
+              <span className="text-text-secondary">{String(data.used_display)} of {String(data.quota_display)}</span>
+              <span className="font-mono text-text-primary">{pct}%</span>
+            </div>
+            <div className="h-2.5 bg-bg-surface rounded-full overflow-hidden">
+              <div className={`h-full rounded-full ${pct >= 100 ? 'bg-accent-red' : pct >= 90 ? 'bg-accent-orange' : 'bg-accent-primary'}`} style={{ width: `${Math.min(100, pct)}%` }} />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <a href="/dashboard/drive?view=storage" className="inline-flex items-center px-4 py-2 rounded-lg bg-accent-primary text-white text-sm font-medium hover:bg-accent-primary/90">Manage storage & billing</a>
+          </div>
+          <p className="text-xs text-text-muted">Upgrades, plan changes, cancellation and full payment history live in Cloud Drive → Storage.</p>
+        </>
+      )}
+    </motion.div>
   )
 }

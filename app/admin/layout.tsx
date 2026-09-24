@@ -23,7 +23,8 @@ import {
   UserCog,
   ClipboardList,
   CreditCard,
-  Target
+  Target,
+  Cloud
 } from 'lucide-react'
 
 const adminNavSections = [
@@ -51,6 +52,7 @@ const adminNavSections = [
       { icon: Megaphone, label: 'Campaigns', href: '/admin/campaigns' },
       { icon: Share2, label: 'Social Accounts', href: '/admin/social-accounts' },
       { icon: CreditCard, label: 'Billing Plans', href: '/admin/plans' },
+      { icon: Cloud, label: 'Cloud Storage', href: '/admin/storage' },
     ]
   },
   {

@@ -133,6 +133,7 @@ export const MODULE_MIN_PLAN: Record<string, PlanName> = {
   products: 'Starter',
   inventory: 'Starter',
   documents: 'Starter',
+  drive: 'Starter',
   work: 'Professional',
   social: 'Professional',
   trends: 'Professional',

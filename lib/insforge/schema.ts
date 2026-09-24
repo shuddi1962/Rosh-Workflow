@@ -701,3 +701,123 @@ export interface MonthlyReport {
   created_at: string
   updated_at: string
 }
+
+// ---- Cloud Drive / Document Management (metadata; bytes in object storage) ----
+export interface StoragePlan {
+  id: string
+  name: string
+  rank: number
+  capacity_bytes: number
+  price_monthly_ngn: number
+  price_annual_ngn: number
+  currency: string
+  max_file_bytes: number
+  max_users: number
+  retention_days: number
+  features: string[]
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface StorageSubscription {
+  id: string
+  business_id: string
+  plan_id: string | null
+  plan_name: string
+  capacity_bytes: number
+  status: 'active' | 'expired' | 'cancelled' | 'trial'
+  billing_cycle: 'monthly' | 'annual'
+  provider: string
+  provider_reference: string
+  renews_at?: string
+  cancelled_at?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CloudFolder {
+  id: string
+  business_id: string
+  parent_id: string | null
+  name: string
+  created_by: string
+  is_starred: boolean
+  trashed_at?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CloudFile {
+  id: string
+  business_id: string
+  folder_id: string | null
+  name: string
+  mime_type: string
+  extension: string
+  size_bytes: number
+  storage_provider: string
+  storage_key: string
+  checksum: string
+  version: number
+  tags: string[]
+  created_by: string
+  created_by_name: string
+  is_starred: boolean
+  trashed_at?: string
+  trashed_by?: string
+  last_opened_at?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CloudFileVersion {
+  id: string
+  file_id: string
+  business_id: string
+  version: number
+  storage_key: string
+  size_bytes: number
+  checksum: string
+  created_by: string
+  created_by_name: string
+  note: string
+  created_at: string
+}
+
+export interface CloudShare {
+  id: string
+  business_id: string
+  file_id?: string
+  folder_id?: string
+  shared_with_user_id: string
+  shared_with_email: string
+  permission: 'viewer' | 'commenter' | 'editor'
+  created_by: string
+  created_at: string
+}
+
+export interface CloudFileLink {
+  id: string
+  business_id: string
+  file_id: string
+  entity_type: string
+  entity_id: string
+  created_by: string
+  created_at: string
+}
+
+export interface StorageTransaction {
+  id: string
+  business_id: string
+  subscription_id?: string
+  plan_name: string
+  billing_cycle: string
+  amount_ngn: number
+  currency: string
+  provider: string
+  provider_reference: string
+  status: 'pending' | 'verified' | 'failed'
+  verified_at?: string
+  created_at: string
+}
