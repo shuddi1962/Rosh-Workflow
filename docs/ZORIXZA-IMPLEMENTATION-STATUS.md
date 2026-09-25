@@ -14,7 +14,13 @@
 
 ## Phase 0 — Audit: VERIFIED (2026-09-25)
 
-## Zorixza standalone shell (`/zorixza`): IMPLEMENTED
+## Zorixza Enterprise shell (`/zorixza`): IMPLEMENTED
+
+- Light Marketing-style shell with emerald sidebar + topbar, grouped workspace
+  nav from `lib/zorixza/workspaces.ts` (single source: 8 live, 18 phased).
+- Live workspaces link to real pages; phased workspaces open the real
+  `/zorixza/roadmap?module=` view (scope, phase, reusable parts) — zero fake
+  dashboards, zero dead buttons.
 
 - Separate layout/brand/nav from `/dashboard` and `/admin`; middleware-protected.
 - 6 workspaces on real APIs with loading/error/empty states (overview, CRM,
