@@ -38,7 +38,7 @@ export function useZxQuery<T>(path: string | null) {
 }
 
 /** Pull an array out of the common envelope shapes. */
-export function asArray<T>(j: unknown, keys: string[] = ['items', 'rows', 'data', 'files', 'folders', 'leads', 'customers', 'warehouses', 'movements', 'schedules', 'approvals', 'receipts', 'reports']): T[] {
+export function asArray<T>(j: unknown, keys: string[] = ['items', 'rows', 'data', 'files', 'folders', 'leads', 'customers', 'suppliers', 'warehouses', 'movements', 'schedules', 'approvals', 'receipts', 'reports', 'purchase_orders', 'goods_receipts', 'staff']): T[] {
   if (Array.isArray(j)) return j as T[];
   if (j && typeof j === 'object') {
     const o = j as Record<string, unknown>;

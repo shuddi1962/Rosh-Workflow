@@ -17,21 +17,27 @@
 ## Zorixza Enterprise shell (`/zorixza`): IMPLEMENTED
 
 - Light Marketing-style shell with emerald sidebar + topbar, grouped workspace
-  nav from `lib/zorixza/workspaces.ts` (single source: 8 live, 18 phased).
+  nav from `lib/zorixza/workspaces.ts` (single source: 12 live, 19 phased).
 - Live workspaces link to real pages; phased workspaces open the real
   `/zorixza/roadmap?module=` view (scope, phase, reusable parts) — zero fake
   dashboards, zero dead buttons.
 - Module workspaces (§73): CRM (dashboard/leads+create/customers+create),
   Inventory (dashboard/stock/warehouses+create/movements/transfers),
+  Purchasing (overview/suppliers+create/orders+create/receipts),
   Operations (dashboard/schedules/approvals inbox with real approve/return/
-  reject), Documents (custody/drive file browser) — each with own header,
-  sub-nav and actions, all on real APIs. Global topbar carries the hover
-  workspaces catalog; left rail stays contextual.
+  reject), Documents (custody/drive file browser/document approval inbox),
+  Projects (overview/projects+create on work_schedules),
+  Field Service (overview/jobs+dispatch/schedules),
+  HR (overview/staff directory via read-only /api/hr/staff-directory) —
+  each with own header, sub-nav and actions, all on real APIs. Global topbar
+  carries the hover workspaces catalog; left rail stays contextual.
 
 - Separate layout/brand/nav from `/dashboard` and `/admin`; middleware-protected.
-- 6 workspaces on real APIs with loading/error/empty states (overview, CRM,
-  inventory, operations, documents, reports). Tests pending → next: TESTING.
+- 10 Enterprise workspaces on real APIs with loading/error/empty states
+  (overview, CRM, inventory, purchasing, operations, documents, projects,
+  field, HR, reports). Tests pending → next: TESTING.
 - Homepage presents GrowPilot + Zorixza as two businesses of one group.
+- Resume protocol: `docs/PROJECT_MEMORY.md` (keyword ZORIXZA-RESUME).
 
 ## Global shell / navigation: IMPLEMENTED
 
@@ -66,15 +72,17 @@
 | Analytics + Admin (tenants, users, staff, keys, toggles, health) | IMPLEMENTED | Real; tests pending |
 | Billing/subscriptions/storage plans | IMPLEMENTED | Real (Paystack/Flutterwave webhooks); tests pending |
 | New module shells (30 pages: business-profile, prospecting, marketing/*, ads, commerce/*, creative/*, automation/*, build/*, team) | IN PROGRESS | **UI shells only — backend NOT built. Do not mark complete.** |
-| Sales workspace (quotations, orders, waybills, deliveries, returns) | NOT STARTED | Only PO/GRN + receipts exist |
-| Waybill extraction (OCR/AI verify-before-post) | NOT STARTED | |
-| Purchasing (RFQ, quotes, bills, landed cost) | NOT STARTED | Suppliers + PO tables exist |
-| Accounting (CoA, GL, journals, TB, AR/AP, bank recon, tax, close) | NOT STARTED | No tables yet — Phase 10 |
-| AuditIQ workspace | NOT STARTED | Phase 11 |
-| HR (employees, ATS, attendance, leave, training, performance) | NOT STARTED | Phases 12–14 |
-| Payroll | NOT STARTED | Phase 15, jurisdiction rules TBD |
-| Document Control workflows / retention | IN PROGRESS | Drive + custody real; approval/retention rules pending |
-| Projects / Field Service / Installation / Support tickets | NOT STARTED | Phases 18–20 |
+| Sales workspace (quotations, orders, waybills, deliveries, returns) | NOT STARTED | Tables versioned in 010_sales.sql (pending apply); UI next |
+| Waybill extraction (OCR/AI verify-before-post) | NOT STARTED | 010 waybills table carries source/ocr_confidence/ocr_payload for the review screen |
+| Purchasing (suppliers, PO, GRN) | IMPLEMENTED | Real workspace; RFQ, supplier quotes, bills, landed cost pending (bills table in 011) |
+| Accounting (CoA, GL, journals, TB, AR/AP, bank recon, tax, close) | NOT STARTED | Tables versioned in 011_accounting.sql (pending apply) — Phase 10 |
+| AuditIQ workspace | NOT STARTED | Tables versioned in 012_hr_audit.sql (pending apply) |
+| HR (staff directory, headcount) | IMPLEMENTED | Real workspace on users/business_members; employee records, cases pending |
+| Attendance / Leave / Training / Performance | NOT STARTED | Tables versioned in 012 (pending apply); device-import architecture pending |
+| Payroll | NOT STARTED | Tables versioned in 012 (pending apply); jurisdiction rules TBD |
+| Document Control workflows / retention | IMPLEMENTED | Drive + custody + document approval inbox real; retention rules pending |
+| Projects / Field Service | IMPLEMENTED | Real workspaces on work_schedules; GPS, photos, checklists, sign-off pending |
+| Installation / Support tickets / Assets / Tasks & Calendar | NOT STARTED | Registry scoped with planned pages; reuse pointers set |
 | Communication center (unified history, provider abstraction) | IN PROGRESS | SendGrid/Twilio libs real; unified history pending |
 | AI assistant / NL commands / global command center | NOT STARTED | Claude libs real; assistant UI pending |
 | Analytics engine v2 (custom dashboards, saved views) | NOT STARTED | Charts on real data exist |
@@ -92,8 +100,8 @@
 
 ## Priority queue (next)
 
-1. Finish Inbox slice → TESTING → VERIFIED.
-2. Route audit (§136) across all 98 pages.
-3. Button/form audit on CRM + Campaigns.
-4. Sales Phase 8 (quotations → orders → waybills → delivery → invoice).
-5. Accounting Phase 10 (CoA → journals → TB/P&L).
+1. Apply 010_sales / 011_accounting / 012_hr_audit in Supabase SQL editor.
+2. Sales workspace UI (P8) on the real tables (quotations → orders → waybills → delivery → invoice).
+3. Accounting workspace UI (P10: CoA → journals → TB/P&L).
+4. Finish Inbox slice → TESTING → VERIFIED.
+5. Route audit (§136) across all pages including the new workspaces.

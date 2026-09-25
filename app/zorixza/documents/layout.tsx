@@ -13,6 +13,7 @@ export default function DocumentsLayout({ children }: { children: React.ReactNod
       tabs={[
         { label: 'Custody', href: '/zorixza/documents' },
         { label: 'Files', href: '/zorixza/documents/files' },
+        { label: 'Approvals', href: '/zorixza/documents/approvals' },
       ]}
     >
       {children}
