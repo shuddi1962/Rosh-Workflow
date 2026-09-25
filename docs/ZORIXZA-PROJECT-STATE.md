@@ -16,6 +16,12 @@
   covers /dashboard, /zorixza, /admin). Two-way switchers: Marketing header
   button + sidebar footer + mobile drawer → Enterprise; Enterprise header +
   sidebar → Marketing; Admin footer → Marketing + Enterprise.
+- Fixed Admin → Enterprise bounce to /login: access_token cookie lived only
+  15 min while localStorage persisted, so middleware rejected workspace
+  switches after cookie expiry. Cookie maxAge extended to 7 days to match
+  refresh-token/localStorage lifetime (`app/api/auth/login/route.ts`).
+  Note: sessions minted before this fix still carry the 15-min cookie —
+  one fresh login picks up the 7-day cookie.
 
 ## Completed tasks (Zorixza shell session)
 

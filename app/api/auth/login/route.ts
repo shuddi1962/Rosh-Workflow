@@ -46,7 +46,11 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60
+      // Must match the refresh-token/localStorage session lifetime (7 days).
+      // A short-lived cookie with a persistent localStorage token caused
+      // middleware to bounce workspace switches (e.g. Admin → Enterprise)
+      // back to /login after the cookie expired.
+      maxAge: 7 * 24 * 60 * 60
     })
     
     response.cookies.set({
