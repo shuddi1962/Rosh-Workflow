@@ -12,6 +12,10 @@
   protected by middleware; homepage presents GrowPilot + Zorixza together.
 - Next exact task: quality gates (tsc), then resume Inbox vertical slice
   (migration 009 → service → APIs → UI wiring → audit → test).
+- Done: single login opens all shells (same accessToken + cookie; middleware
+  covers /dashboard, /zorixza, /admin). Two-way switchers: Marketing header
+  button + sidebar footer + mobile drawer → Enterprise; Enterprise header +
+  sidebar → Marketing; Admin footer → Marketing + Enterprise.
 
 ## Completed tasks (Zorixza shell session)
 

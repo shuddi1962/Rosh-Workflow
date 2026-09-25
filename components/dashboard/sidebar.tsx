@@ -11,7 +11,6 @@ import {
   X,
   User,
   LogOut,
-  Sparkles,
   ChevronDown,
   ChevronRight,
   Warehouse,
@@ -24,6 +23,7 @@ import {
   HardDrive,
   Users,
   Star,
+  Hexagon,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { clsx } from "clsx"
@@ -294,6 +294,17 @@ export function DashboardSidebar() {
               <p className="text-xs text-text-muted">Operator</p>
             </div>
           </div>
+          <button
+            onClick={() => {
+              router.push("/zorixza")
+              setSidebarOpen(false)
+            }}
+            title="Switch to Enterprise workspace (same login)"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:bg-emerald-500/10 hover:text-emerald-600 transition-all"
+          >
+            <Hexagon className="w-5 h-5 flex-shrink-0" />
+            Enterprise
+          </button>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:bg-accent-red/10 hover:text-accent-red transition-all"

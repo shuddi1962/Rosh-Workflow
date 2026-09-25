@@ -18,6 +18,7 @@ import {
   X,
   LogOut,
   Sparkles,
+  Hexagon,
   ToggleRight,
   Building2,
   UserCog,
@@ -209,22 +210,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <p className="text-xs text-accent-primary font-medium">Administrator</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+            Switch business (same login)
+          </p>
+          <div className="grid grid-cols-2 gap-2 mb-2">
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-surface hover:text-text-primary transition-all"
+              title="Zorixza Marketing workspace"
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-surface hover:text-text-primary transition-all"
             >
               <Sparkles className="w-4 h-4" />
-              User workspace
+              Marketing
             </button>
             <button
-              onClick={handleLogout}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-accent-red/10 hover:text-accent-red transition-all"
+              onClick={() => router.push('/zorixza')}
+              title="Zorixza Enterprise workspace"
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-emerald-500/10 hover:text-emerald-600 transition-all"
             >
-              <LogOut className="w-4 h-4" />
-              Sign Out
+              <Hexagon className="w-4 h-4" />
+              Enterprise
             </button>
           </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-accent-red/10 hover:text-accent-red transition-all"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
         </div>
       </aside>
 

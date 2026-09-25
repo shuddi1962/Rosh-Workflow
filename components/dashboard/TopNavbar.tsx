@@ -13,6 +13,7 @@ import {
   LogOut,
   Plus,
   LayoutDashboard,
+  Hexagon,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { TOP_NAV, ALL_NAV_LINKS } from "@/lib/nav-config";
@@ -318,6 +319,16 @@ export function TopNavbar() {
                   )}
                 </div>
 
+                {/* Workspace switch — same login opens Zorixza Enterprise */}
+                <button
+                  onClick={() => go("/zorixza")}
+                  title="Switch to Enterprise workspace"
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl text-[13px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition"
+                >
+                  <Hexagon className="w-4 h-4" />
+                  <span className="hidden lg:inline">Enterprise</span>
+                </button>
+
                 {/* Profile */}
                 <div className="hidden sm:flex items-center gap-2.5 pl-1 pr-3 py-1.5 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg shadow-slate-900/20">
                   <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center font-extrabold text-sm">
@@ -542,20 +553,28 @@ export function TopNavbar() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 border-t border-slate-100 flex items-center gap-3">
-                <span className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold">
-                  {userName.charAt(0).toUpperCase()}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold truncate">{userName}</p>
-                  <p className="text-xs text-slate-400">Operator</p>
-                </div>
+              <div className="p-3 border-t border-slate-100 space-y-2">
                 <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition"
+                  onClick={() => go("/zorixza")}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200"
                 >
-                  <LogOut className="w-4 h-4" /> Out
+                  <Hexagon className="w-4 h-4" /> Switch to Enterprise (same login)
                 </button>
+                <div className="flex items-center gap-3">
+                  <span className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold">
+                    {userName.charAt(0).toUpperCase()}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{userName}</p>
+                    <p className="text-xs text-slate-400">Operator</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition"
+                  >
+                    <LogOut className="w-4 h-4" /> Out
+                  </button>
+                </div>
               </div>
             </motion.aside>
           </>

@@ -166,6 +166,14 @@ export default function ZorixzaLayout({ children }: { children: React.ReactNode 
             <span className="text-slate-500">{NAV.find((n) => isActive(pathname, n.href))?.label ?? 'Workspace'}</span>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => router.push('/dashboard')}
+              title="Switch to Marketing workspace (same login)"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1468F5] bg-[#1468F5]/5 border border-[#1468F5]/20 rounded-full px-3 py-1.5 hover:bg-[#1468F5]/10 transition"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5" />
+              Marketing
+            </button>
             <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Live data
