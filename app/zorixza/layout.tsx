@@ -18,6 +18,9 @@ import {
 import { clsx } from 'clsx';
 import { WORKSPACE_GROUPS } from '@/lib/zorixza/workspaces';
 
+// Authenticated shell: never statically prerender (session-gated, personalized).
+export const dynamic = 'force-dynamic';
+
 function isActive(pathname: string, href: string) {
   const clean = href.split('?')[0];
   if (clean === '/zorixza') return pathname === '/zorixza';

@@ -1,3 +1,5 @@
+'use client';
+
 import { Warehouse } from 'lucide-react';
 import { WorkspaceShell } from '@/components/zorixza/WorkspaceShell';
 

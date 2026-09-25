@@ -1,3 +1,5 @@
+'use client';
+
 import { FolderOpen } from 'lucide-react';
 import { WorkspaceShell } from '@/components/zorixza/WorkspaceShell';
 
