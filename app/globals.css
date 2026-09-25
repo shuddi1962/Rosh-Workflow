@@ -73,3 +73,48 @@ button {
 input, textarea, select {
   font-family: inherit;
 }
+
+/* ---- Premium platform polish ---- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #1468F5, #8B5CF6);
+  border-radius: 8px;
+  border: 2px solid #F6F9FD;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.premium-card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.premium-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px -20px rgba(20, 104, 245, 0.35);
+  border-color: rgba(20, 104, 245, 0.3);
+}
+
+.text-gradient {
+  background: linear-gradient(92deg, #1468F5, #8B5CF6 55%, #EF233C 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}

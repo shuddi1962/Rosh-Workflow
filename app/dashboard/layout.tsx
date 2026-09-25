@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { TenantProvider, useTenant } from '@/lib/context/TenantContext'
 import { DashboardSidebar } from '@/components/dashboard/sidebar'
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
+import { TopNavbar } from '@/components/dashboard/TopNavbar'
 import { RegisterBusinessModal } from '@/components/modals/RegisterBusinessModal'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -44,15 +44,23 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F9FD] flex w-full">
-      <DashboardSidebar />
-      <div className="flex-1 flex flex-col min-h-screen min-w-0">
-        <DashboardHeader />
-        <main className="flex-1 w-full overflow-x-auto p-4 sm:p-6 lg:p-8">
-          <div className="min-w-0 max-w-[1600px] mx-auto w-full">
-            {children}
-          </div>
-        </main>
+    <div className="min-h-screen bg-[#F6F9FD] flex flex-col w-full relative">
+      {/* premium ambient background */}
+      <div className="pointer-events-none fixed inset-0 -z-0">
+        <div className="absolute -top-32 left-1/4 w-[520px] h-[320px] rounded-full bg-[#1468F5]/10 blur-[110px]" />
+        <div className="absolute top-40 -right-24 w-[420px] h-[320px] rounded-full bg-[#8B5CF6]/10 blur-[110px]" />
+        <div className="absolute bottom-0 left-0 w-[380px] h-[260px] rounded-full bg-[#EF233C]/[0.06] blur-[110px]" />
+      </div>
+      <TopNavbar />
+      <div className="flex flex-1 min-h-0 w-full relative z-10">
+        <DashboardSidebar />
+        <div className="flex-1 flex flex-col min-h-0 min-w-0">
+          <main className="flex-1 w-full overflow-x-auto p-4 sm:p-6 lg:p-8">
+            <div className="min-w-0 max-w-[1600px] mx-auto w-full">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
       <RegisterBusinessModal
         isOpen={isRegistrationOpen}
