@@ -1,7 +1,8 @@
 'use client';
 
-import React, { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Menu,
   X,
@@ -12,6 +13,7 @@ import {
   ChevronDown,
   ChevronRight,
   Map as MapIcon,
+  LayoutGrid,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { WORKSPACE_GROUPS } from '@/lib/zorixza/workspaces';
@@ -46,6 +48,8 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState('User');
   const [query, setQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
     Overview: true,
     Revenue: true,
@@ -132,7 +136,17 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
   const go = (href: string) => {
     setOpen(false);
     setQuery('');
+    setMenuOpen(false);
     router.push(href);
+  };
+
+  const openMenu = () => {
+    if (menuTimer.current) clearTimeout(menuTimer.current);
+    setMenuOpen(true);
+  };
+  const scheduleMenuClose = () => {
+    if (menuTimer.current) clearTimeout(menuTimer.current);
+    menuTimer.current = setTimeout(() => setMenuOpen(false), 140);
   };
 
   const signOut = () => {
@@ -273,6 +287,68 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
               <span className="text-slate-500 truncate">{currentLabel}</span>
             </div>
             <div className="ml-auto flex items-center gap-2">
+              {/* Global workspace catalog (hover mega-menu) */}
+              <div className="hidden lg:block relative" onMouseEnter={openMenu} onMouseLeave={scheduleMenuClose}>
+                <button
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className={clsx(
+                    'flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold transition',
+                    menuOpen ? 'bg-emerald-600/[0.08] text-emerald-800' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  )}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  Workspaces
+                  <ChevronDown className={clsx('w-3.5 h-3.5 transition-transform', menuOpen && 'rotate-180')} />
+                </button>
+                <AnimatePresence>
+                  {menuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      transition={{ duration: 0.16, ease: 'easeOut' }}
+                      onMouseEnter={openMenu}
+                      onMouseLeave={scheduleMenuClose}
+                      className="absolute right-0 top-full pt-2 z-50"
+                    >
+                      <div className="w-[680px] max-w-[90vw] max-h-[70vh] overflow-y-auto bg-white border border-slate-200 rounded-2xl shadow-2xl p-4">
+                        <div className="h-1 -m-4 mb-4 rounded-t-2xl bg-gradient-to-r from-emerald-600 to-teal-500" />
+                        <div className="grid grid-cols-2 gap-4">
+                          {WORKSPACE_GROUPS.map((g) => (
+                            <div key={g.label}>
+                              <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400 px-1 mb-1.5">
+                                {g.label}
+                              </p>
+                              <div className="space-y-0.5">
+                                {g.workspaces.map((w) => (
+                                  <button
+                                    key={w.id}
+                                    onClick={() => go(w.href)}
+                                    className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-emerald-600/5 text-left transition group"
+                                  >
+                                    <span className="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center shrink-0 text-slate-600 transition">
+                                      <w.icon className="w-4 h-4" />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                      <span className="block text-[13px] font-bold text-slate-800">{w.label}</span>
+                                      <span className="block text-[11px] text-slate-400 truncate">{w.desc}</span>
+                                    </span>
+                                    {w.status === 'build' && (
+                                      <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 shrink-0">
+                                        {w.phase}
+                                      </span>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <div className="hidden md:block relative">
                 <div className="flex items-center bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 w-56 focus-within:bg-white focus-within:border-emerald-600/50 transition">
                   <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />

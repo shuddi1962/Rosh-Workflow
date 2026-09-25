@@ -21,6 +21,12 @@
 - Live workspaces link to real pages; phased workspaces open the real
   `/zorixza/roadmap?module=` view (scope, phase, reusable parts) — zero fake
   dashboards, zero dead buttons.
+- Module workspaces (§73): CRM (dashboard/leads+create/customers+create),
+  Inventory (dashboard/stock/warehouses+create/movements/transfers),
+  Operations (dashboard/schedules/approvals inbox with real approve/return/
+  reject), Documents (custody/drive file browser) — each with own header,
+  sub-nav and actions, all on real APIs. Global topbar carries the hover
+  workspaces catalog; left rail stays contextual.
 
 - Separate layout/brand/nav from `/dashboard` and `/admin`; middleware-protected.
 - 6 workspaces on real APIs with loading/error/empty states (overview, CRM,

@@ -1,127 +1,72 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
-import { zxFetch, AuthError } from '@/lib/zorixza/client';
-import { ZxSection, ZxLoading, ZxError, ZxEmpty, ZxPageHead } from '@/components/zorixza/ui';
+import { Users, ArrowRight } from 'lucide-react';
+import { fmtNaira } from '@/lib/zorixza/client';
+import { useZxQuery, asArray, ZxBadge } from '@/components/zorixza/data';
+import { ZxKpi, ZxSection, ZxLoading, ZxError, ZxEmpty } from '@/components/zorixza/ui';
 
-interface Lead extends Record<string, unknown> {
-  id: string;
-  full_name: string;
-  company: string | null;
-  phone: string;
-  stage: string;
-  score: number;
-}
+interface StageRow { id: string; count: number; total_value: number }
+interface Lead extends Record<string, unknown> { id: string; full_name: string; company: string | null; stage: string; score: number }
 
-const STAGES = ['new_lead', 'qualified', 'contacted', 'interested', 'quote_sent', 'negotiation', 'customer', 'lost'];
-
-export default function ZorixzaCrmPage() {
+export default function ZorixzaCrmDashboard() {
   const router = useRouter();
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [q, setQ] = useState('');
-  const [stage, setStage] = useState('');
+  const pipe = useZxQuery<{ pipeline: StageRow[]; total_leads: number }>('/api/crm/pipeline');
+  const leads = useZxQuery<{ leads: Lead[] }>('/api/crm/leads?limit=6');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const j = await zxFetch<{ leads: Lead[]; total: number }>('/api/crm/leads?limit=100');
-      setLeads(j.leads ?? []);
-      setTotal(j.total ?? 0);
-    } catch (e) {
-      if (e instanceof AuthError) {
-        router.replace('/login');
-        return;
-      }
-      setError(e instanceof Error ? e.message : 'Failed to load leads');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+  if (pipe.loading || leads.loading) return <ZxLoading label="Loading CRM…" />;
+  if (pipe.error) return <ZxError message={pipe.error} onRetry={() => { pipe.reload(); leads.reload(); }} />;
 
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    return leads.filter(
-      (l) =>
-        (!stage || String(l.stage) === stage) &&
-        (!needle ||
-          `${String(l.full_name)} ${String(l.company ?? '')} ${String(l.phone)}`.toLowerCase().includes(needle))
-    );
-  }, [leads, q, stage]);
+  const stages = pipe.data?.pipeline ?? [];
+  const value = stages.reduce((s, r) => s + Number(r.total_value || 0), 0);
+  const hot = stages.filter((s) => ['interested', 'quote_sent', 'negotiation'].includes(s.id))
+    .reduce((s, r) => s + Number(r.count || 0), 0);
+  const recent = asArray<Lead>(leads.data, ['leads']).slice(0, 6);
 
   return (
     <>
-      <ZxPageHead eyebrow="Zorixza · CRM" title="Customers & Pipeline" desc={`Live leads from the CRM service — ${total} total records.`} />
-      {loading ? (
-        <ZxLoading label="Loading leads…" />
-      ) : error ? (
-        <ZxError message={error} onRetry={load} />
-      ) : (
-        <ZxSection title="Leads" hint={`${filtered.length} shown`}>
-          <div className="flex flex-col sm:flex-row gap-2 mb-4">
-            <div className="flex items-center gap-2 flex-1 border border-slate-200 rounded-lg px-3 py-2">
-              <Search className="w-4 h-4 text-slate-400" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search name, company, phone…"
-                className="w-full text-sm focus:outline-none"
-              />
-            </div>
-            <select
-              value={stage}
-              onChange={(e) => setStage(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
-            >
-              <option value="">All stages</option>
-              {STAGES.map((s) => (
-                <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <ZxKpi icon={Users} label="Total leads" value={String(pipe.data?.total_leads ?? 0)} />
+        <ZxKpi icon={Users} label="Pipeline value" value={fmtNaira(value)} />
+        <ZxKpi icon={Users} label="Hot stages" value={String(hot)} sub="interested → negotiation" />
+        <ZxKpi icon={Users} label="Won" value={String(stages.find((s) => s.id === 'customer')?.count ?? 0)} />
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <ZxSection title="Pipeline by stage" hint="Live counts">
+          {stages.length === 0 ? <ZxEmpty title="No pipeline data yet" /> : (
+            <div className="space-y-2.5">
+              {stages.map((r) => (
+                <div key={r.id} className="flex items-center gap-3 text-sm">
+                  <span className="font-semibold text-slate-700 capitalize w-32 truncate">{r.id.replace(/_/g, ' ')}</span>
+                  <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="h-full rounded-full bg-emerald-500" style={{ width: `${Math.min(100, Number(r.count || 0) * 12)}%` }} />
+                  </div>
+                  <span className="text-slate-500 tabular-nums w-24 text-right">{r.count} · {fmtNaira(Number(r.total_value || 0))}</span>
+                </div>
               ))}
-            </select>
-          </div>
-          {filtered.length === 0 ? (
-            <ZxEmpty title="No leads found" hint="Adjust the search or create the first lead in Zorixza CRM." />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                    <th className="py-2 pr-3">Name</th>
-                    <th className="py-2 pr-3">Company</th>
-                    <th className="py-2 pr-3">Phone</th>
-                    <th className="py-2 pr-3">Stage</th>
-                    <th className="py-2 text-right">Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filtered.map((l) => (
-                    <tr key={String(l.id)} className="hover:bg-slate-50">
-                      <td className="py-2.5 pr-3 font-semibold text-slate-800">{String(l.full_name || '—')}</td>
-                      <td className="py-2.5 pr-3 text-slate-500">{String(l.company ?? '—')}</td>
-                      <td className="py-2.5 pr-3 text-slate-500 tabular-nums">{String(l.phone || '—')}</td>
-                      <td className="py-2.5 pr-3">
-                        <span className="inline-block text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">
-                          {String(l.stage).replace(/_/g, ' ')}
-                        </span>
-                      </td>
-                      <td className="py-2.5 text-right font-bold tabular-nums">{Number(l.score || 0)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           )}
         </ZxSection>
-      )}
+        <ZxSection title="Recent leads" hint="Latest records">
+          {recent.length === 0 ? <ZxEmpty title="No leads yet" hint="Create the first lead on the Leads tab." /> : (
+            <ul className="divide-y divide-slate-100">
+              {recent.map((l) => (
+                <li key={String(l.id)} className="py-2 flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 truncate">{String(l.full_name || '—')}</p>
+                    <p className="text-xs text-slate-400 truncate">{String(l.company ?? '')}</p>
+                  </div>
+                  <ZxBadge>{String(l.stage).replace(/_/g, ' ')}</ZxBadge>
+                </li>
+              ))}
+            </ul>
+          )}
+          <button onClick={() => router.push('/zorixza/crm/leads')} className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:gap-2.5 transition-all">
+            Open Leads <ArrowRight className="w-4 h-4" />
+          </button>
+        </ZxSection>
+      </div>
     </>
   );
 }

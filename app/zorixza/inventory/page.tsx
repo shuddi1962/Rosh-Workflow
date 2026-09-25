@@ -1,127 +1,69 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
-import { zxFetch, AuthError } from '@/lib/zorixza/client';
-import { ZxKpi, ZxSection, ZxLoading, ZxError, ZxEmpty, ZxPageHead } from '@/components/zorixza/ui';
-import { Boxes, Warehouse as WarehouseIcon, TriangleAlert } from 'lucide-react';
+import { Boxes, Warehouse as WhIcon, TriangleAlert, ArrowRight } from 'lucide-react';
+import { useZxQuery, asArray } from '@/components/zorixza/data';
+import { ZxKpi, ZxSection, ZxLoading, ZxError, ZxEmpty } from '@/components/zorixza/ui';
 
-interface Item extends Record<string, unknown> {
-  id: string;
-  name: string;
-  sku: string | null;
-  quantity_on_hand: number;
-  reorder_level: number;
-  warehouse_id: string | null;
-}
+interface Item extends Record<string, unknown> { id: string; name: string; quantity_on_hand: number; reorder_level: number }
+interface Movement extends Record<string, unknown> { id: string; product_id: string; movement_type: string; quantity: number; created_at: string; reference_number: string }
+interface Warehouse extends Record<string, unknown> { id: string; name: string }
 
-interface Warehouse extends Record<string, unknown> {
-  id: string;
-  name: string;
-  code: string;
-}
-
-export default function ZorixzaInventoryPage() {
+export default function ZorixzaInventoryDashboard() {
   const router = useRouter();
-  const [items, setItems] = useState<Item[]>([]);
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [q, setQ] = useState('');
+  const items = useZxQuery<{ items: Item[] }>('/api/inventory?limit=500');
+  const wh = useZxQuery<{ warehouses: Warehouse[] }>('/api/warehouses');
+  const mov = useZxQuery<{ movements: Movement[] }>('/api/inventory/movements?limit=50');
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [a, b] = await Promise.all([
-        zxFetch<{ items: Item[] }>('/api/inventory?limit=500'),
-        zxFetch<{ warehouses: Warehouse[] }>('/api/warehouses'),
-      ]);
-      setItems(a.items ?? []);
-      setWarehouses(b.warehouses ?? []);
-    } catch (e) {
-      if (e instanceof AuthError) {
-        router.replace('/login');
-        return;
-      }
-      setError(e instanceof Error ? e.message : 'Failed to load inventory');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+  if (items.loading || wh.loading || mov.loading) return <ZxLoading label="Loading inventory…" />;
+  if (items.error) return <ZxError message={items.error} onRetry={() => { items.reload(); wh.reload(); mov.reload(); }} />;
 
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  const whName = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const w of warehouses) m.set(String(w.id), String(w.name));
-    return m;
-  }, [warehouses]);
-
-  const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    if (!needle) return items;
-    return items.filter((i) => `${String(i.name)} ${String(i.sku ?? '')}`.toLowerCase().includes(needle));
-  }, [items, q]);
-
-  const low = items.filter((i) => Number(i.quantity_on_hand || 0) <= Number(i.reorder_level || 0)).length;
+  const stock = asArray<Item>(items.data, ['items']);
+  const low = stock.filter((i) => Number(i.quantity_on_hand || 0) <= Number(i.reorder_level || 0));
+  const recent = asArray<Movement>(mov.data, ['movements']).slice(0, 6);
 
   return (
     <>
-      <ZxPageHead eyebrow="Zorixza · Inventory" title="Stock & Warehouses" desc="Live stock lines and warehouse network." />
-      {loading ? (
-        <ZxLoading label="Loading stock…" />
-      ) : error ? (
-        <ZxError message={error} onRetry={load} />
-      ) : (
-        <>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <ZxKpi icon={Boxes} label="Stock lines" value={String(items.length)} />
-            <ZxKpi icon={WarehouseIcon} label="Warehouses" value={String(warehouses.length)} sub={warehouses.map((w) => String(w.name)).slice(0, 3).join(' · ')} />
-            <ZxKpi icon={TriangleAlert} label="At/below reorder" value={String(low)} />
-          </div>
-          <ZxSection title="Stock lines" hint={`${filtered.length} shown`}>
-            <div className="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 mb-4 max-w-sm">
-              <Search className="w-4 h-4 text-slate-400" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or SKU…" className="w-full text-sm focus:outline-none" />
-            </div>
-            {filtered.length === 0 ? (
-              <ZxEmpty title="No stock lines" hint="Receive goods or add products to populate inventory." />
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                      <th className="py-2 pr-3">Item</th>
-                      <th className="py-2 pr-3">SKU</th>
-                      <th className="py-2 pr-3">Warehouse</th>
-                      <th className="py-2 text-right">On hand</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {filtered.slice(0, 100).map((i) => {
-                      const qty = Number(i.quantity_on_hand || 0);
-                      const lowLine = qty <= Number(i.reorder_level || 0);
-                      return (
-                        <tr key={String(i.id)} className="hover:bg-slate-50">
-                          <td className="py-2.5 pr-3 font-semibold text-slate-800">{String(i.name)}</td>
-                          <td className="py-2.5 pr-3 text-slate-500 font-mono text-xs">{String(i.sku ?? '—')}</td>
-                          <td className="py-2.5 pr-3 text-slate-500">{whName.get(String(i.warehouse_id ?? '')) ?? '—'}</td>
-                          <td className={`py-2.5 text-right font-bold tabular-nums ${lowLine ? 'text-red-600' : ''}`}>{qty}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                {filtered.length > 100 && <p className="text-xs text-slate-400 mt-2">Showing first 100 of {filtered.length}.</p>}
-              </div>
-            )}
-          </ZxSection>
-        </>
-      )}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <ZxKpi icon={Boxes} label="Stock lines" value={String(stock.length)} />
+        <ZxKpi icon={WhIcon} label="Warehouses" value={String(asArray(wh.data, ['warehouses']).length)} />
+        <ZxKpi icon={TriangleAlert} label="At/below reorder" value={String(low.length)} />
+        <ZxKpi icon={Boxes} label="Movements tracked" value={String(asArray(mov.data, ['movements']).length)} sub="last 50 shown" />
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <ZxSection title="Needs reorder" hint={`${low.length} lines`}>
+          {low.length === 0 ? <ZxEmpty title="Stock levels healthy" /> : (
+            <ul className="divide-y divide-slate-100">
+              {low.slice(0, 6).map((i) => (
+                <li key={String(i.id)} className="py-2 flex items-center gap-3">
+                  <span className="text-sm font-bold text-slate-800 flex-1 truncate">{String(i.name)}</span>
+                  <span className="text-sm font-extrabold text-red-600 tabular-nums">{Number(i.quantity_on_hand || 0)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <button onClick={() => router.push('/zorixza/inventory/stock')} className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:gap-2.5 transition-all">
+            Open Stock <ArrowRight className="w-4 h-4" />
+          </button>
+        </ZxSection>
+        <ZxSection title="Latest movements" hint="Auditable trail">
+          {recent.length === 0 ? <ZxEmpty title="No movements yet" /> : (
+            <ul className="divide-y divide-slate-100">
+              {recent.map((m) => (
+                <li key={String(m.id)} className="py-2 flex items-center gap-3 text-sm">
+                  <span className="font-bold text-slate-700 capitalize">{String(m.movement_type).replace(/_/g, ' ')}</span>
+                  <span className="text-slate-400 truncate flex-1">ref {String(m.reference_number || '—')}</span>
+                  <span className="font-extrabold tabular-nums">×{Number(m.quantity || 0)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <button onClick={() => router.push('/zorixza/inventory/movements')} className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:gap-2.5 transition-all">
+            Open Movements <ArrowRight className="w-4 h-4" />
+          </button>
+        </ZxSection>
+      </div>
     </>
   );
 }
