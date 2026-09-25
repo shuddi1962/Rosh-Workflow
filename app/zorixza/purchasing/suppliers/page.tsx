@@ -19,7 +19,7 @@ const COLUMNS: ZxColumn<Supplier>[] = [
 
 export default function PurchasingSuppliersPage() {
   const router = useRouter();
-  const { data, loading, error, reload } = useZxQuery<{ suppliers: Supplier[] }>('/api/directory/suppliers?limit=500');
+  const { data, loading, error, reload } = useZxQuery<{ suppliers: Supplier[]; setup_required?: boolean; setup_hint?: string }>('/api/directory/suppliers?limit=500');
   const [formOpen, setFormOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -62,6 +62,13 @@ export default function PurchasingSuppliersPage() {
 
   return (
     <ZxSection title={`Suppliers (${rows.length})`} hint="Shared record — POs, receipts and bills read this same table">
+      {data?.setup_required && (
+        <p className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-800">
+          <span className="font-extrabold">Database setup required.</span>{' '}
+          {data.setup_hint ?? 'Run supabase/SETUP_MISSING_TABLES.sql in the Supabase SQL editor, then press Retry.'}{' '}
+          <button onClick={reload} className="font-extrabold underline">Retry</button>
+        </p>
+      )}
       <div className="flex justify-end mb-2">
         <button onClick={() => setFormOpen(true)} className="px-4 py-2 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-emerald-700 transition">
           + New supplier

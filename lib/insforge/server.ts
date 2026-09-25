@@ -15,9 +15,39 @@ function getClient(): SupabaseClient {
 interface QueryResult<T = Record<string, unknown>[]> {
   data: T | null
   error: { message: string; code?: string } | null
+  /** True when the underlying table is missing in Supabase (migrations not applied yet). */
+  setup_required?: boolean
+  setup_hint?: string
 }
 
 type OperationType = 'select' | 'insert' | 'update' | 'delete'
+
+/**
+ * Detects "table does not exist" failures from PostgREST/Supabase so API
+ * routes can degrade to empty lists instead of 500s.
+ * - PGRST205: "Could not find the table ... in the schema cache"
+ * - 42P01: Postgres undefined_table
+ */
+export function isMissingTableError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false
+  const e = err as { code?: unknown; message?: unknown }
+  const code = typeof e.code === 'string' ? e.code : ''
+  const msg = typeof e.message === 'string' ? e.message : ''
+  if (code === 'PGRST205' || code === '42P01') return true
+  return (
+    msg.includes('Could not find the table') ||
+    msg.includes('schema cache') ||
+    msg.includes('does not exist')
+  )
+}
+
+export function setupRequiredMessage(table: string): string {
+  return (
+    `Table '${table}' is not set up yet in Supabase. ` +
+    `Run supabase/005_operations.sql → 015_verticals.sql (or docs/SUPABASE-SETUP.md) ` +
+    `in the Supabase SQL editor, then retry.`
+  )
+}
 
 class QueryBuilder implements PromiseLike<QueryResult> {
   private _table: string
@@ -113,6 +143,16 @@ class QueryBuilder implements PromiseLike<QueryResult> {
           if (this._isSingle) q = q.single()
 
           const result = await q
+          // Missing table (migrations not applied yet) → degrade to an empty
+          // list so workspace pages show their empty state instead of a 500.
+          if (result.error && isMissingTableError(result.error)) {
+            return {
+              data: (this._isSingle ? null : []) as unknown as Record<string, unknown>[],
+              error: null,
+              setup_required: true,
+              setup_hint: setupRequiredMessage(this._table),
+            }
+          }
           return { data: result.data, error: result.error }
         }
 
@@ -130,6 +170,12 @@ class QueryBuilder implements PromiseLike<QueryResult> {
           }
 
           const result = await q
+          if (result.error && isMissingTableError(result.error)) {
+            return {
+              data: null,
+              error: { message: setupRequiredMessage(this._table), code: 'SETUP_REQUIRED' },
+            }
+          }
           return { data: result.data, error: result.error }
         }
 
@@ -148,6 +194,12 @@ class QueryBuilder implements PromiseLike<QueryResult> {
           }
 
           const result = await q
+          if (result.error && isMissingTableError(result.error)) {
+            return {
+              data: null,
+              error: { message: setupRequiredMessage(this._table), code: 'SETUP_REQUIRED' },
+            }
+          }
           return { data: result.data, error: result.error }
         }
 
@@ -160,6 +212,12 @@ class QueryBuilder implements PromiseLike<QueryResult> {
 
           const result = await q
           if (result.error) {
+            if (isMissingTableError(result.error)) {
+              return {
+                data: null,
+                error: { message: setupRequiredMessage(this._table), code: 'SETUP_REQUIRED' },
+              }
+            }
             return { data: null, error: result.error }
           }
           return { data: result.data, error: null }
@@ -198,6 +256,9 @@ export class DBClient {
         if (match) {
           const tableName = match[1]
           const { data, error } = await sb.from(tableName).select('*').limit(5)
+          if (error && isMissingTableError(error)) {
+            return { data: [], error: null, setup_required: true, setup_hint: setupRequiredMessage(tableName) }
+          }
           return { data, error: error ? { message: error.message, code: error.code } : null }
         }
       }

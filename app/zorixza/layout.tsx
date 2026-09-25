@@ -13,7 +13,6 @@ import {
   ChevronDown,
   ChevronRight,
   Map as MapIcon,
-  LayoutGrid,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { WORKSPACE_GROUPS } from '@/lib/zorixza/workspaces';
@@ -28,6 +27,14 @@ function isActive(pathname: string, href: string) {
   if (clean === '/dashboard' || clean === '/admin') return false;
   return pathname === clean || pathname.startsWith(clean + '/');
 }
+
+// ── Nav split (mirrors the Marketing shell: slim left rail + rich top menus) ──
+// Left sidebar keeps the daily-use core: Overview + Revenue.
+// Everything else (Operations, Finance, People, Industry, Platform) lives in
+// the TOP header as hover dropdown mega-menus — no href appears in both navs.
+const SIDEBAR_GROUP_LABELS = ['Overview', 'Revenue'];
+const TOP_MENU_GROUPS = WORKSPACE_GROUPS.filter((g) => !SIDEBAR_GROUP_LABELS.includes(g.label));
+const SIDEBAR_GROUPS = WORKSPACE_GROUPS.filter((g) => SIDEBAR_GROUP_LABELS.includes(g.label));
 
 export default function ZorixzaLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -51,15 +58,11 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState('User');
   const [query, setQuery] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
     Overview: true,
     Revenue: true,
-    Operations: false,
-    Finance: false,
-    People: false,
-    Platform: true,
   });
 
   useEffect(() => {
@@ -95,8 +98,9 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return WORKSPACE_GROUPS;
-    return WORKSPACE_GROUPS.map((g) => ({
+    const groups = SIDEBAR_GROUPS;
+    if (!q) return groups;
+    return groups.map((g) => ({
       ...g,
       workspaces: g.workspaces.filter(
         (w) => w.label.toLowerCase().includes(q) || w.desc.toLowerCase().includes(q)
@@ -107,7 +111,7 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
   const currentLabel = useMemo(() => {
     for (const g of WORKSPACE_GROUPS) {
       for (const w of g.workspaces) {
-        if (w.status === 'live' && isActive(pathname, w.href)) return w.label;
+        if (w.status !== 'build' && isActive(pathname, w.href)) return w.label;
         if (w.status === 'build' && pathname.startsWith('/zorixza/roadmap') && activeModule === w.id)
           return w.label;
       }
@@ -122,6 +126,11 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
       .filter((w) => w.label.toLowerCase().includes(q) || w.desc.toLowerCase().includes(q))
       .slice(0, 7);
   }, [query]);
+
+  const activeTopGroup = useMemo(
+    () => TOP_MENU_GROUPS.find((g) => g.workspaces.some((w) => isActive(pathname, w.href)))?.label ?? null,
+    [pathname]
+  );
 
   if (!ready) {
     return (
@@ -139,17 +148,17 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
   const go = (href: string) => {
     setOpen(false);
     setQuery('');
-    setMenuOpen(false);
+    setOpenGroup(null);
     router.push(href);
   };
 
-  const openMenu = () => {
-    if (menuTimer.current) clearTimeout(menuTimer.current);
-    setMenuOpen(true);
+  const openWithDelayCancel = (label: string) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenGroup(label);
   };
   const scheduleMenuClose = () => {
-    if (menuTimer.current) clearTimeout(menuTimer.current);
-    menuTimer.current = setTimeout(() => setMenuOpen(false), 140);
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenGroup(null), 140);
   };
 
   const signOut = () => {
@@ -224,7 +233,7 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
                     <div className="space-y-0.5 mt-1">
                       {group.workspaces.map((w) => {
                         const active =
-                          (w.status === 'live' && isActive(pathname, w.href)) ||
+                          (w.status !== 'build' && isActive(pathname, w.href)) ||
                           (w.status === 'build' && pathname.startsWith('/zorixza/roadmap') && activeModule === w.id);
                         return (
                           <button
@@ -244,6 +253,10 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
                               <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 shrink-0">
                                 {w.phase}
                               </span>
+                            ) : w.status === 'preview' ? (
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 shrink-0">
+                                Preview
+                              </span>
                             ) : (
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                             )}
@@ -256,6 +269,10 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+
+          <p className="px-5 pb-3 text-[11px] leading-relaxed text-slate-400">
+            Operations, Finance, People, Industry & Platform live in the top menu ☝️
+          </p>
 
           <div className="p-3 border-t border-slate-100 space-y-1">
             <button
@@ -280,7 +297,8 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
 
         {/* ── Content column ── */}
         <div className="flex-1 min-w-0 flex flex-col min-h-screen">
-          <header className="bg-white/90 backdrop-blur border-b border-slate-200 px-4 sm:px-6 h-16 flex items-center gap-3 sticky top-0 z-30">
+          <header className="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-30 relative">
+          <div className="px-4 sm:px-6 h-16 flex items-center gap-3">
             <button onClick={() => setOpen(true)} className="lg:hidden p-2 -ml-2 text-slate-500 hover:text-slate-900" aria-label="Open menu">
               <Menu className="w-5 h-5" />
             </button>
@@ -290,68 +308,38 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
               <span className="text-slate-500 truncate">{currentLabel}</span>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {/* Global workspace catalog (hover mega-menu) */}
-              <div className="hidden lg:block relative" onMouseEnter={openMenu} onMouseLeave={scheduleMenuClose}>
-                <button
-                  onClick={() => setMenuOpen((v) => !v)}
-                  className={clsx(
-                    'flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold transition',
-                    menuOpen ? 'bg-emerald-600/[0.08] text-emerald-800' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                  )}
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                  Workspaces
-                  <ChevronDown className={clsx('w-3.5 h-3.5 transition-transform', menuOpen && 'rotate-180')} />
-                </button>
-                <AnimatePresence>
-                  {menuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 6 }}
-                      transition={{ duration: 0.16, ease: 'easeOut' }}
-                      onMouseEnter={openMenu}
-                      onMouseLeave={scheduleMenuClose}
-                      className="absolute right-0 top-full pt-2 z-50"
+              {/* Top workspace menus (Marketing-shell pattern: hover dropdown per group) */}
+              <nav className="hidden lg:flex items-center gap-0.5" onMouseLeave={scheduleMenuClose}>
+                {TOP_MENU_GROUPS.map((group) => {
+                  const isOpen = openGroup === group.label;
+                  const isGroupActive = activeTopGroup === group.label;
+                  return (
+                    <div
+                      key={group.label}
+                      className="relative"
+                      onMouseEnter={() => openWithDelayCancel(group.label)}
                     >
-                      <div className="w-[680px] max-w-[90vw] max-h-[70vh] overflow-y-auto bg-white border border-slate-200 rounded-2xl shadow-2xl p-4">
-                        <div className="h-1 -m-4 mb-4 rounded-t-2xl bg-gradient-to-r from-emerald-600 to-teal-500" />
-                        <div className="grid grid-cols-2 gap-4">
-                          {WORKSPACE_GROUPS.map((g) => (
-                            <div key={g.label}>
-                              <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400 px-1 mb-1.5">
-                                {g.label}
-                              </p>
-                              <div className="space-y-0.5">
-                                {g.workspaces.map((w) => (
-                                  <button
-                                    key={w.id}
-                                    onClick={() => go(w.href)}
-                                    className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-emerald-600/5 text-left transition group"
-                                  >
-                                    <span className="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center shrink-0 text-slate-600 transition">
-                                      <w.icon className="w-4 h-4" />
-                                    </span>
-                                    <span className="min-w-0 flex-1">
-                                      <span className="block text-[13px] font-bold text-slate-800">{w.label}</span>
-                                      <span className="block text-[11px] text-slate-400 truncate">{w.desc}</span>
-                                    </span>
-                                    {w.status === 'build' && (
-                                      <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 shrink-0">
-                                        {w.phase}
-                                      </span>
-                                    )}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                      <button
+                        onClick={() => setOpenGroup(isOpen ? null : group.label)}
+                        className={clsx(
+                          'flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold transition whitespace-nowrap',
+                          isOpen
+                            ? 'bg-emerald-600/[0.08] text-emerald-800'
+                            : isGroupActive
+                              ? 'text-emerald-700 bg-emerald-600/[0.05]'
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        )}
+                      >
+                        {group.label}
+                        <ChevronDown className={clsx('w-3.5 h-3.5 transition-transform', isOpen && 'rotate-180')} />
+                      </button>
+                      {isGroupActive && !isOpen && (
+                        <span className="absolute -bottom-[13px] left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-emerald-600 to-teal-500" />
+                      )}
+                    </div>
+                  );
+                })}
+              </nav>
               <div className="hidden md:block relative">
                 <div className="flex items-center bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 w-56 focus-within:bg-white focus-within:border-emerald-600/50 transition">
                   <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
@@ -394,6 +382,101 @@ function ZorixzaShell({ children }: { children: React.ReactNode }) {
                 Live data
               </span>
             </div>
+          </div>
+
+          {/* Hover mega dropdown for the open top group */}
+          <AnimatePresence>
+            {openGroup && (
+              <motion.div
+                key={openGroup}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.16, ease: 'easeOut' }}
+                onMouseEnter={() => openWithDelayCancel(openGroup)}
+                onMouseLeave={scheduleMenuClose}
+                className="hidden lg:block absolute left-0 right-0 top-full z-50"
+              >
+                <div className="max-w-[1400px] mx-auto px-6 pb-4">
+                  <div className="bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-2xl shadow-[0_30px_80px_-20px_rgba(10,24,51,0.35)] overflow-hidden">
+                    <div className="h-[3px] w-full bg-gradient-to-r from-emerald-600 to-teal-500" />
+                    <div className="p-5">
+                      {TOP_MENU_GROUPS.filter((g) => g.label === openGroup).map((group) => (
+                        <div key={group.label}>
+                          <div className="flex items-center justify-between mb-4 px-1">
+                            <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
+                              {group.label} · {group.workspaces.length} workspaces
+                            </p>
+                            <p className="text-[11px] text-slate-400 font-medium hidden lg:block">
+                              Hover to explore — click to open
+                            </p>
+                          </div>
+                          <div
+                            className={clsx(
+                              'grid gap-2',
+                              group.workspaces.length > 8
+                                ? 'grid-cols-4'
+                                : group.workspaces.length > 4
+                                  ? 'grid-cols-3'
+                                  : 'grid-cols-2 max-w-3xl'
+                            )}
+                          >
+                            {group.workspaces.map((w) => {
+                              const active = isActive(pathname, w.href);
+                              return (
+                                <button
+                                  key={w.id}
+                                  onClick={() => go(w.href)}
+                                  title={w.desc}
+                                  className={clsx(
+                                    'group/item flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all duration-200 hover:-translate-y-0.5',
+                                    active
+                                      ? 'border-emerald-600/30 bg-emerald-600/[0.06] shadow-lg shadow-emerald-600/10'
+                                      : 'border-slate-100 bg-slate-50/60 hover:border-emerald-600/30 hover:bg-white hover:shadow-xl hover:shadow-emerald-600/10'
+                                  )}
+                                >
+                                  <span
+                                    className={clsx(
+                                      'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all',
+                                      active
+                                        ? 'bg-gradient-to-br from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-600/30'
+                                        : 'bg-white border border-slate-200 text-slate-600 group-hover/item:bg-gradient-to-br group-hover/item:from-emerald-600 group-hover/item:to-teal-500 group-hover/item:text-white group-hover/item:border-transparent group-hover/item:shadow-lg group-hover/item:shadow-emerald-600/30'
+                                    )}
+                                  >
+                                    <w.icon className="w-5 h-5" />
+                                  </span>
+                                  <span className="min-w-0 flex-1">
+                                    <span className="flex items-center gap-2">
+                                      <span className="text-[13.5px] font-bold text-slate-900">
+                                        {w.label}
+                                      </span>
+                                      {w.status === 'preview' && (
+                                        <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700">
+                                          Preview
+                                        </span>
+                                      )}
+                                      {w.status === 'build' && (
+                                        <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500">
+                                          {w.phase}
+                                        </span>
+                                      )}
+                                    </span>
+                                    <span className="block text-[12px] text-slate-500 leading-snug mt-0.5">
+                                      {w.desc}
+                                    </span>
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           </header>
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
             <div className="max-w-[1400px] mx-auto">{children}</div>

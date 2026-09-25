@@ -1,7 +1,9 @@
 // Zorixza Enterprise — workspace registry (single source of truth).
 // Rule (§115/§116): status 'live' ONLY when DB → API → UI → audit works on
-// real data. Everything else is 'build' and routes to the roadmap view with
-// honest phase tracking — never a fake dashboard.
+// real data. Status 'preview' means the workspace UI is visible with its full
+// scope (see first, make real later) while its backend phase is pending —
+// never a fake dashboard: previews carry no invented numbers and write no
+// data. Everything else is 'build' and routes to the roadmap view.
 //
 // Coverage: every module of the Zorixza master scope (§3–§83) appears here
 // exactly once — CRM, Sales, Marketing, Communication, Inventory, Products,
@@ -64,7 +66,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-export type WorkspaceStatus = 'live' | 'build';
+export type WorkspaceStatus = 'live' | 'preview' | 'build';
 
 export interface Workspace {
   id: string;
@@ -87,8 +89,6 @@ export interface WorkspaceGroup {
   workspaces: Workspace[];
 }
 
-const roadmap = (id: string) => `/zorixza/roadmap?module=${id}`;
-
 export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
   {
     label: 'Overview',
@@ -103,7 +103,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'analytics', label: 'Analytics', desc: 'Cross-module KPIs, trends and exports.', icon: BarChart3,
-        status: 'build', href: roadmap('analytics'), phase: 'P23',
+        status: 'preview', href: '/zorixza/analytics', phase: 'P23',
         plannedPages: [
           'KPI dashboards — role-aware metric boards per module',
           'Revenue & expense trends — time-series from real transactions',
@@ -115,7 +115,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'notifications', label: 'Notifications', desc: 'One inbox for approvals, payments, stock, tasks and security alerts.', icon: Bell,
-        status: 'build', href: roadmap('notifications'), phase: 'P17',
+        status: 'preview', href: '/zorixza/notifications', phase: 'P17',
         plannedPages: [
           'Activity stream — every business event the user may see',
           'Notification preferences — per-category in-app/email/SMS control',
@@ -125,7 +125,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'search', label: 'Global Search', desc: 'Search customers, products, invoices, documents, jobs and people.', icon: Search,
-        status: 'build', href: roadmap('search'), phase: 'P4',
+        status: 'preview', href: '/zorixza/search', phase: 'P4',
         plannedPages: [
           'Universal search — tenant- and permission-scoped results',
           'Command palette — “create invoice”, “find customer ABC” actions',
@@ -144,7 +144,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'sales', label: 'Sales', desc: 'Quotations → orders → waybills → delivery → invoice.', icon: ShoppingCart,
-        status: 'build', href: roadmap('sales'), phase: 'P8',
+        status: 'preview', href: '/zorixza/sales', phase: 'P8',
         plannedPages: [
           'Quotations — numbered quotes with items, tax, validity, approval, PDF',
           'Sales Orders — stock reservation, warehouse, fulfilment status',
@@ -159,7 +159,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'invoicing', label: 'Invoicing', desc: 'Draft, send, collect and age every invoice with receipts.', icon: ReceiptText,
-        status: 'build', href: roadmap('invoicing'), phase: 'P8',
+        status: 'preview', href: '/zorixza/invoicing', phase: 'P8',
         plannedPages: [
           'Invoices — numbered documents with tax, discount, due dates, PDF',
           'Send & Reminders — email/WhatsApp delivery with read tracking',
@@ -171,7 +171,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'pos', label: 'Point of Sale', desc: 'Counter sales with barcode scan, cash drawer and receipts.', icon: ShoppingBag,
-        status: 'build', href: roadmap('pos'), phase: 'P8',
+        status: 'preview', href: '/zorixza/pos', phase: 'P8',
         plannedPages: [
           'Sell Screen — barcode/QR scan, quantities, discounts, totals',
           'Cash Drawer — open/close floats with shift reconciliation',
@@ -186,7 +186,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'communication', label: 'Communication', desc: 'Unified email, SMS, notifications, templates and delivery history.', icon: Map,
-        status: 'build', href: roadmap('communication'), phase: 'P21',
+        status: 'preview', href: '/zorixza/communication', phase: 'P21',
         plannedPages: [
           'Unified inbox — email/SMS/WhatsApp threads per customer',
           'Campaigns — segments, scheduling, delivery and bounce tracking',
@@ -207,7 +207,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'products', label: 'Products', desc: 'Catalogue, SKUs, categories and price lists.', icon: Package,
-        status: 'build', href: roadmap('products'), phase: 'P7/P20',
+        status: 'preview', href: '/zorixza/products', phase: 'P7/P20',
         plannedPages: [
           'All Products — master with SKU, barcode, images, specs',
           'Categories & Brands — taxonomy shared by sales and purchasing',
@@ -240,7 +240,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'installation', label: 'Installation', desc: 'CCTV, access, marine and ICT install teams and jobs.', icon: HardHat,
-        status: 'build', href: roadmap('installation'), phase: 'P19',
+        status: 'preview', href: '/zorixza/installation', phase: 'P19',
         plannedPages: [
           'Install Jobs — site, crew, equipment and stage tracking',
           'Crews — team rosters, skills and availability',
@@ -252,7 +252,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'support', label: 'Support', desc: 'Tickets, SLA, assignment and satisfaction.', icon: LifeBuoy,
-        status: 'build', href: roadmap('support'), phase: 'P20',
+        status: 'preview', href: '/zorixza/support', phase: 'P20',
         plannedPages: [
           'Tickets — intake, categorisation and customer linkage',
           'SLA & Priorities — response/resolution clocks per plan',
@@ -264,7 +264,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'assets', label: 'Assets', desc: 'Equipment, vehicles, tools and office assets with custody.', icon: Archive,
-        status: 'build', href: roadmap('assets'), phase: 'P18',
+        status: 'preview', href: '/zorixza/assets', phase: 'P18',
         plannedPages: [
           'Asset Register — serial, model, cost, location, status',
           'Assignment — custodian, department, project/job linkage',
@@ -275,7 +275,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'tasks', label: 'Tasks & Calendar', desc: 'Universal tasks, team calendar and deadline tracking.', icon: ListTodo,
-        status: 'build', href: roadmap('tasks'), phase: 'P17',
+        status: 'preview', href: '/zorixza/tasks', phase: 'P17',
         plannedPages: [
           'My Tasks — due dates, priorities, checklists, dependencies',
           'Team Calendar — schedules, leave, interviews, deadlines',
@@ -285,7 +285,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'manufacturing', label: 'Manufacturing', desc: 'Bills of materials, work orders and production costing.', icon: Factory,
-        status: 'build', href: roadmap('manufacturing'), phase: 'P18',
+        status: 'preview', href: '/zorixza/manufacturing', phase: 'P18',
         plannedPages: [
           'Bills of Materials — components, quantities and wastage per product',
           'Work Orders — issue components, track labour, receive finished goods',
@@ -296,7 +296,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'fleet', label: 'Fleet & Transport', desc: 'Vehicles, drivers, trips, fuel and maintenance.', icon: Truck,
-        status: 'build', href: roadmap('fleet'), phase: 'P18',
+        status: 'preview', href: '/zorixza/fleet', phase: 'P18',
         plannedPages: [
           'Vehicles — registration, documents, insurance, assignment',
           'Trips — dispatch, routes, delivery linkage, mileage capture',
@@ -307,7 +307,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'mileage', label: 'Mileage Tracking', desc: 'Staff travel log with approval and reimbursement.', icon: Gauge,
-        status: 'build', href: roadmap('mileage'), phase: 'P18',
+        status: 'preview', href: '/zorixza/mileage', phase: 'P18',
         plannedPages: [
           'Trip Log — start/end odometer, purpose, customer linkage',
           'Approval — line-manager review with policy rates',
@@ -322,7 +322,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
     workspaces: [
       {
         id: 'accounting', label: 'Accounting', desc: 'Chart of accounts, ledger, journals, AR/AP, banking, close.', icon: Calculator,
-        status: 'build', href: roadmap('accounting'), phase: 'P10',
+        status: 'preview', href: '/zorixza/accounting', phase: 'P10',
         plannedPages: [
           'Chart of Accounts — assets, liabilities, equity, income, COS, expenses with hierarchy',
           'General Ledger — every balance traceable to its source document',
@@ -338,7 +338,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'finance', label: 'Finance', desc: 'Cash flow, budgets, fixed assets and management pack.', icon: Wallet,
-        status: 'build', href: roadmap('finance'), phase: 'P10',
+        status: 'preview', href: '/zorixza/finance', phase: 'P10',
         plannedPages: [
           'Cash Flow — actuals plus 13-week forecast',
           'Budgets vs Actual — departments, branches, cost centres, variance',
@@ -349,7 +349,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'banking', label: 'Banking & Feeds', desc: 'Accounts, imports, matching and reconciliation.', icon: Landmark,
-        status: 'build', href: roadmap('banking'), phase: 'P10',
+        status: 'preview', href: '/zorixza/banking', phase: 'P10',
         plannedPages: [
           'Bank Accounts — cash, bank and mobile-money with live balances',
           'Transactions — imports/feeds plus system postings, categorised',
@@ -360,7 +360,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'expenses', label: 'Expenses', desc: 'Staff claims and overheads with approval and posting.', icon: Coins,
-        status: 'build', href: roadmap('expenses'), phase: 'P10',
+        status: 'preview', href: '/zorixza/expenses', phase: 'P10',
         plannedPages: [
           'Expense Claims — receipts, categories, project tagging',
           'Approval — policy limits with manager/finance chain',
@@ -371,7 +371,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'fixed-assets', label: 'Fixed Assets', desc: 'Register, depreciation, transfers and disposal.', icon: Boxes,
-        status: 'build', href: roadmap('fixed-assets'), phase: 'P10',
+        status: 'preview', href: '/zorixza/fixed-assets', phase: 'P10',
         plannedPages: [
           'Asset Register — cost, location, custodian, warranty, documents',
           'Depreciation — straight-line/reducing schedules posted to GL',
@@ -382,7 +382,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'budgets', label: 'Budgets & Forecasts', desc: 'Plans, variance analysis and cash forecasting.', icon: Target,
-        status: 'build', href: roadmap('budgets'), phase: 'P10',
+        status: 'preview', href: '/zorixza/budgets', phase: 'P10',
         plannedPages: [
           'Budgets — by account, department, branch and period',
           'Variance — actual-vs-budget with commentary workflow',
@@ -393,7 +393,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'loans', label: 'Loans', desc: 'Borrowings, schedules, repayments and interest.', icon: PiggyBank,
-        status: 'build', href: roadmap('loans'), phase: 'P10',
+        status: 'preview', href: '/zorixza/loans', phase: 'P10',
         plannedPages: [
           'Loan Accounts — principal, rate, tenure, collateral records',
           'Repayment Schedules — amortisation with due-date alerts',
@@ -404,7 +404,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'tax', label: 'Tax & E-Filing', desc: 'Jurisdiction-configured tax computation and returns.', icon: FileText,
-        status: 'build', href: roadmap('tax'), phase: 'P10',
+        status: 'preview', href: '/zorixza/tax', phase: 'P10',
         plannedPages: [
           'Tax Profiles — VAT/WHT/PAYE rules per jurisdiction',
           'Computation — tax on sales, purchases and payroll drafts',
@@ -415,7 +415,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'auditiq', label: 'AuditIQ', desc: 'Engagements, working papers, tests, findings and sign-off.', icon: ScanSearch,
-        status: 'build', href: roadmap('auditiq'), phase: 'P11',
+        status: 'preview', href: '/zorixza/auditiq', phase: 'P11',
         plannedPages: [
           'Clients & Engagements — scoped audit jobs with teams',
           'Planning — materiality, risk areas and timetables',
@@ -438,7 +438,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'recruitment', label: 'Recruitment', desc: 'Requisitions, candidates, interviews, offers and analytics.', icon: UserPlus,
-        status: 'build', href: roadmap('recruitment'), phase: 'P13',
+        status: 'preview', href: '/zorixza/recruitment', phase: 'P13',
         plannedPages: [
           'Requisitions — headcount requests with approval chain',
           'Openings — public/internal adverts with screening questions',
@@ -451,7 +451,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'attendance', label: 'Attendance & Leave', desc: 'Shifts, device events, leave balances and approvals.', icon: CalendarCheck,
-        status: 'build', href: roadmap('attendance'), phase: 'P14',
+        status: 'preview', href: '/zorixza/attendance', phase: 'P14',
         plannedPages: [
           'Attendance — shifts vs device/CSV imports with exceptions',
           'Shifts — rosters, rotations and overtime rules',
@@ -463,7 +463,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'payroll', label: 'Payroll', desc: 'Salaries, allowances, deductions, tax, pension and payslips.', icon: Banknote,
-        status: 'build', href: roadmap('payroll'), phase: 'P15',
+        status: 'preview', href: '/zorixza/payroll', phase: 'P15',
         plannedPages: [
           'Pay Runs — period runs with approval before posting',
           'Allowances & Deductions — jurisdiction-configured components',
@@ -480,7 +480,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
     workspaces: [
       {
         id: 'construction', label: 'Construction', desc: 'BoQs, site progress, valuations and subcontractors.', icon: Building2,
-        status: 'build', href: roadmap('construction'), phase: 'P18',
+        status: 'preview', href: '/zorixza/construction', phase: 'P18',
         plannedPages: [
           'BoQs — bill items, quantities, rates and variations',
           'Site Progress — daily diaries, photos and percent-complete',
@@ -491,7 +491,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'school', label: 'School Module', desc: 'Students, fees, classes, attendance and results.', icon: GraduationCap,
-        status: 'build', href: roadmap('school'), phase: 'P18',
+        status: 'preview', href: '/zorixza/school', phase: 'P18',
         plannedPages: [
           'Students — admission, guardians, class placement, documents',
           'Fees — billing per term, discounts, receipts, defaulters',
@@ -502,7 +502,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'property', label: 'Property', desc: 'Units, tenants, leases, rent and maintenance.', icon: Building,
-        status: 'build', href: roadmap('property'), phase: 'P18',
+        status: 'preview', href: '/zorixza/property', phase: 'P18',
         plannedPages: [
           'Units — blocks, flats, shops, occupancy and condition',
           'Tenants — KYC, lease terms, deposits and history',
@@ -513,7 +513,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'healthcare', label: 'Healthcare', desc: 'Patients, visits, billing, pharmacy and lab.', icon: HeartPulse,
-        status: 'build', href: roadmap('healthcare'), phase: 'P18',
+        status: 'preview', href: '/zorixza/healthcare', phase: 'P18',
         plannedPages: [
           'Patients — records, allergies, visits and consent',
           'Encounters — triage, consultation, prescriptions, referrals',
@@ -524,7 +524,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'hospitality', label: 'Hospitality', desc: 'Reservations, front desk, housekeeping and billing.', icon: BedDouble,
-        status: 'build', href: roadmap('hospitality'), phase: 'P18',
+        status: 'preview', href: '/zorixza/hospitality', phase: 'P18',
         plannedPages: [
           'Reservations — bookings, room allocation and no-show control',
           'Front Desk — check-in/out, folios and guest history',
@@ -535,7 +535,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'ngo', label: 'NGO / Funds', desc: 'Grants, beneficiaries, disbursements and donor reports.', icon: Sprout,
-        status: 'build', href: roadmap('ngo'), phase: 'P18',
+        status: 'preview', href: '/zorixza/ngo', phase: 'P18',
         plannedPages: [
           'Grants — awards, budgets, tranches and conditions',
           'Beneficiaries — registration, eligibility and case files',
@@ -551,7 +551,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
     workspaces: [
       {
         id: 'ai', label: 'AI Assistant', desc: 'Ask questions, run commands, draft reports — permission-aware.', icon: Bot,
-        status: 'build', href: roadmap('ai'), phase: 'P22',
+        status: 'preview', href: '/zorixza/ai', phase: 'P22',
         plannedPages: [
           'Assistant Chat — natural-language business commands with confirm/cancel',
           'Document Processing — upload → OCR → review → post pipeline',
@@ -562,7 +562,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'automation', label: 'Automation', desc: 'Triggers, conditions, actions, logs and failure handling.', icon: Zap,
-        status: 'build', href: roadmap('automation'), phase: 'P17',
+        status: 'preview', href: '/zorixza/automation', phase: 'P17',
         plannedPages: [
           'Rules — WHEN/IF/THEN builders (overdue, low stock, expiring docs)',
           'Runs & Logs — every execution with retry and failure state',
@@ -572,7 +572,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'integrations', label: 'Integrations', desc: 'Providers, credentials, health, sync logs and mapping.', icon: Plug,
-        status: 'build', href: roadmap('integrations'), phase: 'P26',
+        status: 'preview', href: '/zorixza/integrations', phase: 'P26',
         plannedPages: [
           'Connected Apps — email, SMS, WhatsApp, banks, maps, AI, storage',
           'Credentials Vault — encrypted keys with test-connection',
@@ -583,7 +583,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'portals', label: 'Portals', desc: 'Customer, vendor, employee and partner self-service access.', icon: Globe,
-        status: 'build', href: roadmap('portals'), phase: 'P25',
+        status: 'preview', href: '/zorixza/portals', phase: 'P25',
         plannedPages: [
           'Customer Portal — quotes, orders, invoices, payments, jobs',
           'Vendor Portal — RFQs, POs, invoices, payment status',
@@ -594,7 +594,7 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
       },
       {
         id: 'billing', label: 'Billing', desc: 'Zorixza plans, subscriptions, storage quotas and invoices.', icon: CreditCard,
-        status: 'build', href: roadmap('billing'), phase: 'P31',
+        status: 'preview', href: '/zorixza/billing', phase: 'P31',
         plannedPages: [
           'Plans — tiers, limits and module entitlements',
           'Subscriptions — trials, renewals, upgrades, failed payments',

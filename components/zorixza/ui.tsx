@@ -57,12 +57,26 @@ export function ZxLoading({ label = 'Loading…' }: { label?: string }) {
 }
 
 export function ZxError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  const isSetupGap =
+    message.includes('not set up yet') ||
+    message.includes('schema cache') ||
+    message.includes('Could not find the table');
   return (
     <div className="bg-white border border-red-200 rounded-xl p-6 flex items-start gap-3" role="alert">
       <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-      <div>
-        <p className="font-bold text-slate-900">Could not load this workspace</p>
+      <div className="min-w-0 flex-1">
+        <p className="font-bold text-slate-900">
+          {isSetupGap ? 'Database setup required' : 'Could not load this workspace'}
+        </p>
         <p className="text-sm text-slate-500 mt-1">{message}</p>
+        {isSetupGap && (
+          <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+            One-time fix: open your Supabase project → SQL editor → run{' '}
+            <span className="font-mono font-bold text-slate-600">supabase/005_operations.sql</span> through{' '}
+            <span className="font-mono font-bold text-slate-600">015_verticals.sql</span> (or the combined{' '}
+            <span className="font-mono font-bold text-slate-600">supabase/SETUP_MISSING_TABLES.sql</span>), then press Retry.
+          </p>
+        )}
         <button
           onClick={onRetry}
           className="mt-3 px-4 py-2 rounded-lg text-sm font-bold bg-slate-900 text-white hover:bg-slate-700 transition"

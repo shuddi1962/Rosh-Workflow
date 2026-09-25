@@ -14,9 +14,10 @@
 - Auth: JWT (15m access + 7d refresh cookie), `middleware.ts` gates
   `/dashboard/*`, `/zorixza/*`, `/admin/*`, `/api/*`. Admin needs `role=admin`.
 - Enterprise shell: `app/zorixza/layout.tsx` ('use client') + registry
-  `lib/zorixza/workspaces.ts` (single source of truth — 48 workspaces across
-  Overview/Revenue/Operations/Finance/People/Industry/Platform) + roadmap
-  `app/zorixza/roadmap/page.tsx` + phases `lib/zorixza/program.ts`.
+  `lib/zorixza/workspaces.ts` (single source of truth — 50 workspaces: 12
+  live, 38 preview across Overview/Revenue/Operations/Finance/People/
+  Industry/Platform) + roadmap `app/zorixza/roadmap/page.tsx` + phases
+  `lib/zorixza/program.ts`.
 - UI kit: `components/zorixza/ui.tsx` (ZxKpi/Section/Loading/Error/Empty/
   PageHead), `components/zorixza/data.tsx` (useZxQuery/asArray/ZxTable/
   ZxBadge), `components/zorixza/WorkspaceShell.tsx` (module sub-nav).
@@ -31,8 +32,9 @@
 2. `export const dynamic` inside `'use client'` files is **ignored** — route
    segment config only works in Server Components.
 3. Registry rule (§115/§116): `status: 'live'` ONLY when DB → API → UI →
-   audit works on real data. Everything else is `'build'` → roadmap link.
-   No fake dashboards, no dead buttons, no mock success.
+   audit works on real data. `'preview'` = UI visible with full scope (see
+   first, make real later), no invented numbers, no writes. Everything else
+   is `'build'` → roadmap link. No fake dashboards, no dead buttons.
 4. Every mutation API: `requireAuth`/`requireRole` server-side + audit/event
    emit where the pattern exists. UI hiding is not security.
 5. Push all commits to `main` (Vercel auto-deploys). Verify with `npm run build`.
@@ -69,6 +71,17 @@ campaigns(+sequences/events), leads, crm_activities, audit_logs, api_keys,
   customer payments+allocations, supplier bills, budgets.
 - `supabase/012_hr_audit.sql` — departments/positions, employees, attendance,
   leave, payroll runs+payslips, audit engagements/workpapers/findings.
+- `supabase/013_field_people.sql` — service jobs, checklists, materials,
+  photos, support tickets, assets(+assignments/maintenance), BOMs, work
+  orders, vehicles, trips, fuel, mileage, requisitions, candidates,
+  interviews, offers.
+- `supabase/014_money.sql` — expense claims, fixed assets, depreciation runs,
+  loans, repayments, tax profiles, filings, POS registers/sales/items.
+- `supabase/015_verticals.sql` — construction, school, property, healthcare,
+  hospitality, NGO tables.
+- NOTE: DDL cannot run from this environment (no psql/DB URL/CLI token —
+  only Supabase URL+keys). A human must paste each file into the Supabase
+  SQL editor once, in numeric order.
 
 ## What is still build-status (roadmap has full per-module scope)
 
@@ -82,9 +95,9 @@ Maps/GPS, Mobile PWA, MFA/security hardening, E2E tests.
 ## Current task pointer
 
 - [x] Purchasing / Projects / Field / HR workspaces live; documents approvals
-      inbox live; registry covers all 31 master-scope modules; 010–012
-      versioned; roadmap renders full scope.
-- [ ] NEXT: apply 010–012 in Supabase SQL editor, then build Sales workspace
+      inbox live; registry covers all master-scope modules (50 workspaces:
+      12 live, 38 preview); 010–015 versioned; roadmap renders full scope.
+- [ ] NEXT: apply 010–015 in Supabase SQL editor, then build Sales workspace
       UI (P8) on the real tables, then Accounting UI (P10).
 - [ ] AFTER: E2E acceptance journeys (§81): customer→quote→order→waybill→
       delivery→invoice→payment→receipt→AR→GL; PO→receipt→bill→payment→AP.

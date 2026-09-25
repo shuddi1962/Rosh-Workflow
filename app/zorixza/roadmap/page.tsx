@@ -15,6 +15,7 @@ function RoadmapInner() {
   const selected = selectedId ? findWorkspace(selectedId) : null;
 
   const live = useMemo(() => ALL_WORKSPACES.filter((w) => w.status === 'live'), []);
+  const preview = useMemo(() => ALL_WORKSPACES.filter((w) => w.status === 'preview'), []);
   const build = useMemo(() => ALL_WORKSPACES.filter((w) => w.status === 'build'), []);
 
   return (
@@ -22,7 +23,7 @@ function RoadmapInner() {
       <ZxPageHead
         eyebrow="Zorixza · Program"
         title="Workspace rollout"
-        desc={`${live.length} workspaces live on real data · ${build.length} in phased build. Nothing here is faked — each card shows its exact phase and backing.`}
+        desc={`${live.length} workspaces live on real data · ${preview.length} in UI preview · ${build.length} in phased build. Nothing here is faked — each card shows its exact phase and backing.`}
       />
 
       {selected && (
@@ -33,12 +34,12 @@ function RoadmapInner() {
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
-                {selected.group} · {selected.phase} · {selected.status === 'live' ? 'Live' : 'In build'}
+                {selected.group} · {selected.phase} · {selected.status === 'live' ? 'Live' : selected.status === 'preview' ? 'Preview — UI first' : 'In build'}
               </p>
               <h2 className="text-xl font-extrabold text-slate-900">{selected.label}</h2>
               <p className="text-sm text-slate-500 mt-1">{selected.desc}</p>
             </div>
-            {selected.status === 'live' ? (
+            {selected.status === 'live' || selected.status === 'preview' ? (
               <button
                 onClick={() => router.push(selected.href)}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition shrink-0"
@@ -52,7 +53,7 @@ function RoadmapInner() {
             )}
           </div>
 
-          {selected.status === 'build' && (
+          {selected.status !== 'live' && (
             <div className="grid md:grid-cols-2 gap-4 mt-5">
               <div className="rounded-xl border border-slate-100 p-4">
                 <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-2">Planned pages</p>
@@ -143,11 +144,11 @@ function RoadmapInner() {
 
       <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6">
         <h2 className="font-bold text-slate-900 flex items-center gap-2">
-          <Hammer className="w-5 h-5 text-slate-400" /> Phased build ({build.length})
+          <Hammer className="w-5 h-5 text-amber-500" /> UI preview ({preview.length})
         </h2>
-        <p className="text-xs text-slate-400 mt-1">Click any workspace for its exact scope, phase and reusable parts.</p>
+        <p className="text-xs text-slate-400 mt-1">Visible now with full scope — backends land per phase. Click any workspace for its exact pages and reusable parts.</p>
         {WORKSPACE_GROUPS.map((g) => {
-          const items = g.workspaces.filter((w) => w.status === 'build');
+          const items = g.workspaces.filter((w) => w.status === 'preview');
           if (items.length === 0) return null;
           return (
             <div key={g.label} className="mt-4">
@@ -156,7 +157,7 @@ function RoadmapInner() {
                 {items.map((w) => (
                   <button
                     key={w.id}
-                    onClick={() => router.push(`/zorixza/roadmap?module=${w.id}`)}
+                    onClick={() => router.push(w.href)}
                     className={clsx(
                       'text-left rounded-xl border p-4 transition',
                       selected?.id === w.id

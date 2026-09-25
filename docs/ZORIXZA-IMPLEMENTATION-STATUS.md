@@ -17,10 +17,11 @@
 ## Zorixza Enterprise shell (`/zorixza`): IMPLEMENTED
 
 - Light Marketing-style shell with emerald sidebar + topbar, grouped workspace
-  nav from `lib/zorixza/workspaces.ts` (single source: 12 live, 36 phased).
-- Live workspaces link to real pages; phased workspaces open the real
-  `/zorixza/roadmap?module=` view (scope, phase, reusable parts) — zero fake
-  dashboards, zero dead buttons.
+  nav from `lib/zorixza/workspaces.ts` (single source: 12 live, 38 preview).
+- Live workspaces link to real pages; preview workspaces (`status: 'preview'`,
+  amber badge) open real UI-first pages showing full scope with no invented
+  data; anything still `build` opens the real `/zorixza/roadmap?module=` view
+  (scope, phase, reusable parts) — zero fake dashboards, zero dead buttons.
 - Module workspaces (§73): CRM (dashboard/leads+create/customers+create),
   Inventory (dashboard/stock/warehouses+create/movements/transfers),
   Purchasing (overview/suppliers+create/orders+create/receipts),
@@ -100,8 +101,8 @@
 
 ## Priority queue (next)
 
-1. Apply 010_sales / 011_accounting / 012_hr_audit in Supabase SQL editor.
+1. Apply 010–015 in Supabase SQL editor (sales → accounting → HR/audit → field/people → money → verticals).
 2. Sales workspace UI (P8) on the real tables (quotations → orders → waybills → delivery → invoice).
 3. Accounting workspace UI (P10: CoA → journals → TB/P&L).
-4. Finish Inbox slice → TESTING → VERIFIED.
-5. Route audit (§136) across all pages including the new workspaces.
+4. Convert preview workspaces to live one phase at a time (API + audit + tests each).
+5. Finish Inbox slice → TESTING → VERIFIED.

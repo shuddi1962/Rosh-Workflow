@@ -12,8 +12,11 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const q = (searchParams.get('search') || '').toLowerCase()
-    const { data, error } = await db.from('suppliers').select('*').order('name', { ascending: true }).limit(500)
+    const { data, error, setup_required, setup_hint } = await db.from('suppliers').select('*').order('name', { ascending: true }).limit(500)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (setup_required) {
+      return NextResponse.json({ suppliers: [], count: 0, setup_required: true, setup_hint })
+    }
     let rows = ((data as unknown as Array<Record<string, unknown>>) || [])
     if (q) {
       rows = rows.filter((r) =>

@@ -17,7 +17,7 @@ export const PROGRAM_PHASES: ProgramPhase[] = [
   { id: 'P2', label: 'Authentication & multi-tenancy', status: 'IMPLEMENTED', detail: 'JWT + refresh flow, middleware gates, businesses/members. Legacy row backfill pending.' },
   { id: 'P3', label: 'Roles & permissions', status: 'IMPLEMENTED', detail: '8 staff roles, module gating. Granular action permissions (crm.customer.view…) pending.' },
   { id: 'P4', label: 'Global shell & design system', status: 'IMPLEMENTED', detail: 'Top catalog + workspace rail + Enterprise shell. Device QA pending.' },
-  { id: 'P5', label: 'Database foundation & migrations', status: 'IMPLEMENTED', detail: 'Migrations 001–009 applied. 010 sales / 011 accounting / 012 HR-audit versioned, pending SQL-editor apply.' },
+  { id: 'P5', label: 'Database foundation & migrations', status: 'IMPLEMENTED', detail: 'Migrations 001–009 applied. 010 sales / 011 accounting / 012 HR-audit / 013 field-people / 014 money / 015 verticals versioned, pending SQL-editor apply.' },
   { id: 'P6', label: 'CRM & customers', status: 'IMPLEMENTED', detail: 'Leads, pipeline, qualify, customers, timeline. Tests pending.' },
   { id: 'P7', label: 'Products & inventory', status: 'IMPLEMENTED', detail: 'Catalog, stock, movements, transfers, GRN, warehouses. Tests pending.' },
   { id: 'P8', label: 'Sales, quotations, orders, waybills', status: 'NOT STARTED', detail: 'Quotations → orders → waybills → delivery → invoice chain + invoicing desk + POS to be built.' },
