@@ -1,4 +1,4 @@
--- Roshanal AI / GrowPilot — Operations Module (Part 5: Inventory, Receipt Custody & Staff Reporting)
+-- Roshanal AI / Zorixza — Operations Module (Part 5: Inventory, Receipt Custody & Staff Reporting)
 -- Run this in Supabase SQL Editor AFTER 001-004. Idempotent: uses IF NOT EXISTS + ADD COLUMN IF NOT EXISTS.
 -- Covers: warehouses, per-location stock, movements, transfers, purchase orders, goods receipts,
 -- receipt custody register + custody events, work schedules, daily/monthly reports, notifications.

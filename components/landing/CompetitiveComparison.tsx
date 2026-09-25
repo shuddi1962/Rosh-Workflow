@@ -17,7 +17,7 @@ export const CompetitiveComparison: React.FC = () => {
     <section id="compare" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F6F9FD]">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#0A1833] mb-4">GrowPilot vs Fragmented Multi-Tool Stack</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#0A1833] mb-4">Zorixza vs Fragmented Multi-Tool Stack</h2>
           <p className="text-lg text-slate-600">One operating system beats five disconnected tools.</p>
         </div>
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
@@ -25,7 +25,7 @@ export const CompetitiveComparison: React.FC = () => {
             <thead>
               <tr className="bg-[#F6F9FD]">
                 <th className="text-left p-4 font-semibold text-slate-700">Capability</th>
-                <th className="text-center p-4 font-semibold text-[#1468F5]">GrowPilot Operating System</th>
+                <th className="text-center p-4 font-semibold text-[#1468F5]">Zorixza Operating System</th>
                 <th className="text-center p-4 font-semibold text-slate-500">Fragmented Stack</th>
               </tr>
             </thead>

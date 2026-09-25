@@ -1,4 +1,4 @@
-// GrowPilot — departments, staff roles & module permissions.
+// Zorixza — departments, staff roles & module permissions.
 // A business owner assigns each staff member a department + staff role.
 // The staff role decides which modules the staff member may open; the
 // subscription plan decides which modules the business itself may use.

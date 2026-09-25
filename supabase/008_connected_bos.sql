@@ -1,4 +1,4 @@
--- GrowPilot — Connected Business Operating System layer (Part 8)
+-- Zorixza — Connected Business Operating System layer (Part 8)
 -- Run in Supabase SQL Editor AFTER 007. Idempotent.
 -- This is the Zorixza-style connective tissue: one business event stream,
 -- one generic approval engine, first-class suppliers/customers, generic

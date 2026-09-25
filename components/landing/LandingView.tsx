@@ -15,17 +15,20 @@ import { PricingSection } from './PricingSection';
 import { LandingFooter } from './LandingFooter';
 import { InteractiveRoiCalculator } from './InteractiveRoiCalculator';
 import { CompetitiveComparison } from './CompetitiveComparison';
+import { DualBusinessSection } from './DualBusinessSection';
 
 interface Props {
   onOpenDashboard: () => void;
   onOpenRegisterModal: () => void;
+  onOpenEnterprise: () => void;
 }
 
-export const LandingView: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterModal }) => (
+export const LandingView: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterModal, onOpenEnterprise }) => (
     <div id="top" className="min-h-screen bg-white">
-    <LandingNavbar onOpenDashboard={onOpenDashboard} onOpenRegisterModal={onOpenRegisterModal} />
+    <LandingNavbar onOpenDashboard={onOpenDashboard} onOpenRegisterModal={onOpenRegisterModal} onOpenZorixza={onOpenEnterprise} />
     <main>
       <HeroSection onOpenDashboard={onOpenDashboard} onOpenRegisterModal={onOpenRegisterModal} />
+      <DualBusinessSection onOpenMarketing={onOpenRegisterModal} onOpenEnterprise={onOpenEnterprise} />
       <TrustedLogos />
       <FeaturesGrid />
       <AnalyticsSection />

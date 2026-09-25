@@ -57,5 +57,5 @@ function decodeJWT(token: string): { userId: string; email: string; role: string
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/api/:path*']
+  matcher: ['/dashboard/:path*', '/zorixza/:path*', '/admin/:path*', '/api/:path*']
 }

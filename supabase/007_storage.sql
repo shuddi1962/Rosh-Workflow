@@ -1,4 +1,4 @@
--- GrowPilot — Cloud Drive / Document Management (Part 7: Storage)
+-- Zorixza — Cloud Drive / Document Management (Part 7: Storage)
 -- Run in Supabase SQL Editor AFTER 006. Idempotent.
 -- Object bytes live in the private `cloud-drive` storage bucket; every table
 -- below stores metadata only and is always scoped by business_id (tenant).

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { TenantProvider } from '@/lib/context/TenantContext';
 import { LandingView } from '@/components/landing/LandingView';
 import { RegisterBusinessModal } from '@/components/modals/RegisterBusinessModal';
-import { GrowPilotChat } from '@/components/livechat/GrowPilotChat';
+import { ZorixzaChat } from '@/components/livechat/ZorixzaChat';
 import { useTenant } from '@/lib/context/TenantContext';
 import { useRouter } from 'next/navigation';
 
@@ -18,6 +18,7 @@ const HomePageInner: React.FC = () => {
       <LandingView
         onOpenDashboard={() => router.push('/login')}
         onOpenRegisterModal={() => setRegisterOpen(true)}
+        onOpenEnterprise={() => router.push('/zorixza')}
       />
       <RegisterBusinessModal
         isOpen={registerOpen}
@@ -28,7 +29,7 @@ const HomePageInner: React.FC = () => {
           router.push('/dashboard');
         }}
       />
-      <GrowPilotChat />
+      <ZorixzaChat />
     </>
   );
 };

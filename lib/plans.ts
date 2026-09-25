@@ -1,4 +1,4 @@
-// GrowPilot — canonical subscription plans + feature gating.
+// Zorixza — canonical subscription plans + feature gating.
 // Every plan intentionally omits some features: locked features render an
 // "Upgrade to unlock" prompt instead of the feature itself.
 

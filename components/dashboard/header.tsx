@@ -34,7 +34,7 @@ export function DashboardHeader() {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 px-3 py-1.5 bg-bg-elevated rounded-lg border border-border-subtle">
           <Sparkles className="w-4 h-4 text-accent-primary-glow" />
-          <span className="text-xs text-text-secondary">GrowPilot Platform</span>
+          <span className="text-xs text-text-secondary">Zorixza Platform</span>
         </div>
         <div className="w-8 h-8 bg-accent-primary/20 rounded-full flex items-center justify-center text-accent-primary-glow font-semibold text-sm">
           {userName.charAt(0).toUpperCase()}

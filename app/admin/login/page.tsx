@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
           </div>
           <div>
             <p className="font-clash text-2xl font-bold text-text-primary">Admin Console</p>
-            <p className="text-xs text-text-muted">GrowPilot · administrators only</p>
+            <p className="text-xs text-text-muted">Zorixza · administrators only</p>
           </div>
         </div>
 

@@ -17,7 +17,7 @@ export const IndustriesSection: React.FC = () => (
     <div className="max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold text-[#0A1833] mb-4">Built for Every Industry</h2>
-        <p className="text-lg text-slate-600">GrowPilot adapts its AI, automations, and dashboards to your specific business model.</p>
+        <p className="text-lg text-slate-600">Zorixza adapts its AI, automations, and dashboards to your specific business model.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {industries.map((ind) => (

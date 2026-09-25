@@ -6,9 +6,10 @@ import { Sparkles, Menu, X, ChevronDown } from 'lucide-react';
 interface Props {
   onOpenDashboard: () => void;
   onOpenRegisterModal: () => void;
+  onOpenZorixza: () => void;
 }
 
-export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterModal }) => {
+export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegisterModal, onOpenZorixza }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -19,7 +20,7 @@ export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegister
             <div className="w-9 h-9 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">GrowPilot</span>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">Zorixza</span>
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
@@ -27,7 +28,7 @@ export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegister
             <a href="#features" className="hover:text-[#1468F5] transition">Solutions</a>
             <a href="#industries" className="hover:text-[#1468F5] transition">Industries</a>
             <a href="#pricing" className="hover:text-[#1468F5] transition">Pricing</a>
-            <a href="#resources" className="hover:text-[#1468F5] transition">Resources</a>
+            <button onClick={onOpenZorixza} className="hover:text-[#1468F5] transition font-semibold">Zorixza</button>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -51,7 +52,7 @@ export const LandingNavbar: React.FC<Props> = ({ onOpenDashboard, onOpenRegister
           <a href="#features" className="block py-2 text-sm font-medium text-slate-600">Solutions</a>
           <a href="#industries" className="block py-2 text-sm font-medium text-slate-600">Industries</a>
           <a href="#pricing" className="block py-2 text-sm font-medium text-slate-600">Pricing</a>
-          <a href="#resources" className="block py-2 text-sm font-medium text-slate-600">Resources</a>
+          <button onClick={onOpenZorixza} className="block py-2 text-sm font-semibold text-slate-600">Zorixza Enterprise</button>
           <div className="flex gap-2 pt-2">
             <button onClick={onOpenDashboard} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-slate-700 border border-slate-200">Sign In</button>
             <button onClick={onOpenRegisterModal} className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-[#1468F5] text-white">Get Started Free</button>

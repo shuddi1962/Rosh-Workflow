@@ -125,7 +125,7 @@ export function TopNavbar() {
                 </span>
                 <span className="text-left leading-none">
                   <span className="block font-extrabold tracking-tight text-slate-900 text-[17px]">
-                    GrowPilot
+                    Zorixza
                   </span>
                   <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
                     Roshanal AI
@@ -480,7 +480,7 @@ export function TopNavbar() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </span>
                 <div className="flex-1">
-                  <p className="font-extrabold text-slate-900 leading-none">GrowPilot</p>
+                  <p className="font-extrabold text-slate-900 leading-none">Zorixza</p>
                   <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 mt-1">
                     All tools
                   </p>

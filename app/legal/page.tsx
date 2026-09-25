@@ -10,7 +10,7 @@ export default function LegalPage() {
             <div className="w-8 h-8 bg-gradient-to-br from-[#1468F5] to-[#3B82F6] rounded-lg flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900">GrowPilot</span>
+            <span className="font-bold text-slate-900">Zorixza</span>
           </Link>
           <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[#1468F5]">
             <ArrowLeft className="w-4 h-4" /> Back to site
@@ -21,13 +21,13 @@ export default function LegalPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 space-y-12">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Legal & Trust Center</h1>
-          <p className="text-slate-600">How GrowPilot handles your data, our terms of service, and how we keep your workspace secure.</p>
+          <p className="text-slate-600">How Zorixza handles your data, our terms of service, and how we keep your workspace secure.</p>
         </div>
 
         <section id="privacy" className="scroll-mt-24">
           <div className="flex items-center gap-2 mb-3"><Lock className="w-5 h-5 text-[#1468F5]" /><h2 className="text-xl font-bold text-slate-900">Privacy Policy</h2></div>
           <div className="text-sm text-slate-600 space-y-3 leading-relaxed">
-            <p>GrowPilot collects only the data needed to run your workspace: account details, business profile information, leads and campaign content you create, and usage analytics.</p>
+            <p>Zorixza collects only the data needed to run your workspace: account details, business profile information, leads and campaign content you create, and usage analytics.</p>
             <p>We never sell your data. Lead contact details you upload or scrape remain inside your business workspace and are never shared with other businesses on the platform.</p>
             <p>API keys you store in the admin vault are encrypted at rest (AES-256-GCM) and only ever used server-side. To request export or deletion of your data, contact <a className="text-[#1468F5] underline" href="mailto:info@roshanalinfotech.com">info@roshanalinfotech.com</a>.</p>
           </div>

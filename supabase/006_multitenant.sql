@@ -1,4 +1,4 @@
--- GrowPilot — Multi-tenant foundation (Part 6: Businesses, Staff Roles, Plans)
+-- Zorixza — Multi-tenant foundation (Part 6: Businesses, Staff Roles, Plans)
 -- Run in Supabase SQL Editor AFTER 005. Idempotent.
 -- Businesses own a subscription plan; staff belong to a business with a
 -- department + staff role. Row-level tenant isolation of operational data

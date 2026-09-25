@@ -241,17 +241,13 @@ export function DashboardSidebar() {
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="p-6 border-b border-border-subtle">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-accent-primary to-accent-primary-glow rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-text-on-accent" />
-              </div>
-              <span className="font-clash text-lg font-bold text-text-primary">GrowPilot</span>
-            </div>
+        {/* Brand lives once in the top header — no duplicate logo here. */}
+        <div className="px-4 pt-4 lg:hidden">
+          <div className="flex items-center justify-end">
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-text-muted hover:text-text-primary"
+              className="text-text-muted hover:text-text-primary"
+              aria-label="Close menu"
             >
               <X className="w-5 h-5" />
             </button>
