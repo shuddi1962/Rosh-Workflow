@@ -39,13 +39,23 @@ export default function ZorixzaLayout({ children }: { children: React.ReactNode 
   const [userName, setUserName] = useState('User');
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.replace('/login');
-      return;
-    }
-    setUserName(localStorage.getItem('userName') || 'User');
-    setReady(true);
+    let cancelled = false;
+    (async () => {
+      // Cookie truth first (survives cleared/expired localStorage), with one
+      // silent refresh attempt before sending the user to /login.
+      const { zxSession } = await import('@/lib/zorixza/client');
+      const session = await zxSession();
+      if (cancelled) return;
+      if (!session.ok) {
+        router.replace('/login');
+        return;
+      }
+      setUserName(session.userName);
+      setReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (!ready) {

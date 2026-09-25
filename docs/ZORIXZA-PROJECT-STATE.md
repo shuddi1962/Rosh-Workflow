@@ -22,6 +22,12 @@
   refresh-token/localStorage lifetime (`app/api/auth/login/route.ts`).
   Note: sessions minted before this fix still carry the 15-min cookie —
   one fresh login picks up the 7-day cookie.
+- Fixed deeper cause of Enterprise bounce: the signed access JWT itself
+  expires in 15 min, so API calls 401'd even with a valid cookie and the
+  pages redirected to /login. Added POST /api/auth/refresh (7d httpOnly
+  refresh cookie → fresh access cookie); Enterprise `zxFetch` auto-refreshes
+  once and retries on 401; shell entry now verifies via /api/auth/me with
+  refresh fallback instead of localStorage-only.
 
 ## Completed tasks (Zorixza shell session)
 
