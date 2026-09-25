@@ -3,32 +3,15 @@
 import { usePathname, useRouter } from "next/navigation"
 import {
   LayoutDashboard,
-  Brain,
-  TrendingUp,
   Search,
-  Share2,
-  Video,
-  Megaphone,
-  Package,
-  BarChart3,
-  Settings,
-  Users,
-  LogOut,
-  Sparkles,
+  Phone,
+  Gift,
+  Printer,
   Menu,
   X,
   User,
-  MessageSquare,
-  ImageIcon,
-  Phone,
-  FileText,
-  Zap,
-  Mail,
-  Shield,
-  Star,
-  Gift,
-  Printer,
-  FolderOpen,
+  LogOut,
+  Sparkles,
   ChevronDown,
   ChevronRight,
   Warehouse,
@@ -39,6 +22,8 @@ import {
   Clock,
   Trash2,
   HardDrive,
+  Users,
+  Star,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { clsx } from "clsx"
@@ -48,29 +33,10 @@ import { roleAllows } from "@/lib/roles"
 
 // Minimum plan per workspace route. Routes not listed are open to all plans.
 const HREF_MIN_PLAN: Record<string, keyof typeof MODULE_MIN_PLAN | string> = {
-  "/dashboard/content": "content",
-  "/dashboard/trends": "trends",
-  "/dashboard/competitors": "competitors",
-  "/dashboard/crm": "crm",
-  "/dashboard/crm/leads": "crm",
-  "/dashboard/crm/qualification": "crm",
-  "/dashboard/social": "social",
-  "/dashboard/campaigns": "campaigns",
-  "/dashboard/campaigns/create": "campaigns",
-  "/dashboard/campaigns/templates": "campaigns",
-  "/dashboard/campaigns/automation": "automation",
-  "/dashboard/creative/images": "creative",
-  "/dashboard/creative/video": "video",
-  "/dashboard/creative/banners": "creative",
-  "/dashboard/creative/scraper": "creative",
-  "/dashboard/creative/library": "creative",
-  "/dashboard/creative/ugc": "ugc",
   "/dashboard/voice/agents": "voice",
-  "/dashboard/whatsapp": "whatsapp",
   "/dashboard/reviews": "whatsapp",
   "/dashboard/referrals": "whatsapp",
   "/dashboard/print": "whatsapp",
-  "/dashboard/analytics": "analytics",
   "/dashboard/work": "work",
   "/dashboard/drive": "drive",
 }
@@ -78,75 +44,28 @@ const HREF_MIN_PLAN: Record<string, keyof typeof MODULE_MIN_PLAN | string> = {
 // Workspace route → module key for department role checks.
 const HREF_MODULE: Record<string, string> = {
   "/dashboard": "overview",
-  "/dashboard/content": "content",
-  "/dashboard/trends": "trends",
-  "/dashboard/competitors": "competitors",
-  "/dashboard/crm": "crm",
-  "/dashboard/crm/leads": "crm",
-  "/dashboard/crm/qualification": "crm",
-  "/dashboard/social": "social",
-  "/dashboard/campaigns": "campaigns",
-  "/dashboard/campaigns/create": "campaigns",
-  "/dashboard/campaigns/templates": "campaigns",
-  "/dashboard/campaigns/automation": "campaigns",
-  "/dashboard/products": "products",
+  "/dashboard/operations": "overview",
+  "/dashboard/search": "overview",
   "/dashboard/inventory": "inventory",
   "/dashboard/documents": "documents",
   "/dashboard/work": "work",
-  "/dashboard/operations": "overview",
-  "/dashboard/search": "overview",
-  "/dashboard/creative/images": "creative",
-  "/dashboard/creative/video": "creative",
-  "/dashboard/creative/banners": "creative",
-  "/dashboard/creative/scraper": "creative",
-  "/dashboard/creative/library": "creative",
-  "/dashboard/creative/ugc": "ugc",
-  "/dashboard/voice/agents": "voice",
-  "/dashboard/whatsapp": "whatsapp",
-  "/dashboard/reviews": "whatsapp",
-  "/dashboard/referrals": "whatsapp",
-  "/dashboard/print": "whatsapp",
-  "/dashboard/analytics": "analytics",
-  "/dashboard/settings": "settings",
   "/dashboard/drive": "drive",
 }
 
-const mainNavItems = [
-  { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: Brain, label: "Content Brain", href: "/dashboard/content" },
-  { icon: TrendingUp, label: "Trends", href: "/dashboard/trends" },
-  { icon: Search, label: "Competitors", href: "/dashboard/competitors" },
-  { icon: Users, label: "CRM Pipeline", href: "/dashboard/crm" },
-  { icon: Share2, label: "Social Media", href: "/dashboard/social" },
-  { icon: Megaphone, label: "Campaigns", href: "/dashboard/campaigns" },
-  { icon: Package, label: "Products", href: "/dashboard/products" },
-  { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings" },
-]
+type SubItem = { icon: typeof LayoutDashboard; label: string; href: string }
 
-const creativeSubItems = [
-  { icon: ImageIcon, label: "Image Generator", href: "/dashboard/creative/images" },
-  { icon: Video, label: "Video Studio", href: "/dashboard/creative/video" },
-  { icon: FileText, label: "Banner Studio", href: "/dashboard/creative/banners" },
-  { icon: Search, label: "URL Scraper", href: "/dashboard/creative/scraper" },
-  { icon: FolderOpen, label: "Asset Library", href: "/dashboard/creative/library" },
-  { icon: Share2, label: "UGC Creator", href: "/dashboard/creative/ugc" },
-]
+// ─────────────────────────────────────────────────────────────
+// LEFT sidebar scope (Workspace rail):
+//   Overview home · Operations · Cloud Drive · unique Extras.
+// Everything else (Content, Trends, Competitors, CRM, Social,
+// Campaigns, Products, Commerce, Creative, Automation, Build,
+// Analytics, Settings…) lives ONLY in the TOP header mega-menu
+// (lib/nav-config.ts). No href appears in both navs.
+// ─────────────────────────────────────────────────────────────
 
-const crmSubItems = [
-  { icon: Users, label: "Pipeline", href: "/dashboard/crm" },
-  { icon: Users, label: "All Leads", href: "/dashboard/crm/leads" },
-  { icon: Zap, label: "Qualification", href: "/dashboard/crm/qualification" },
-]
+const homeItem = { icon: LayoutDashboard, label: "Overview", href: "/dashboard" }
 
-const campaignSubItems = [
-  { icon: Megaphone, label: "All Campaigns", href: "/dashboard/campaigns" },
-  { icon: Zap, label: "Campaign Builder", href: "/dashboard/campaigns/create" },
-  { icon: Mail, label: "Email Templates", href: "/dashboard/campaigns/templates" },
-  { icon: Shield, label: "Automation", href: "/dashboard/campaigns/automation" },
-]
-
-const operationsSubItems = [
+const operationsSubItems: SubItem[] = [
   { icon: ClipboardList, label: "Overview", href: "/dashboard/operations" },
   { icon: Search, label: "Universal Search", href: "/dashboard/search" },
   { icon: Warehouse, label: "Inventory", href: "/dashboard/inventory" },
@@ -154,21 +73,20 @@ const operationsSubItems = [
   { icon: CalendarCheck, label: "Schedule & Reports", href: "/dashboard/work" },
 ]
 
-const bonusItems = [
-  { icon: MessageSquare, label: "WhatsApp Inbox", href: "/dashboard/whatsapp" },
-  { icon: Phone, label: "Voice Agents", href: "/dashboard/voice/agents" },
-  { icon: Star, label: "Reviews", href: "/dashboard/reviews" },
-  { icon: Gift, label: "Referrals", href: "/dashboard/referrals" },
-  { icon: Printer, label: "Print Center", href: "/dashboard/print" },
-]
-
-const driveSubItems = [
+const driveSubItems: SubItem[] = [
   { icon: Cloud, label: "My Drive", href: "/dashboard/drive" },
   { icon: Users, label: "Shared with me", href: "/dashboard/drive?view=shared" },
   { icon: Clock, label: "Recent", href: "/dashboard/drive?view=recent" },
   { icon: Star, label: "Starred", href: "/dashboard/drive?view=starred" },
   { icon: Trash2, label: "Trash", href: "/dashboard/drive?view=trash" },
   { icon: HardDrive, label: "Storage", href: "/dashboard/drive?view=storage" },
+]
+
+// Only extras NOT covered by the top mega-menu.
+const extrasItems: SubItem[] = [
+  { icon: Phone, label: "Voice Agents", href: "/dashboard/voice/agents" },
+  { icon: Gift, label: "Referrals", href: "/dashboard/referrals" },
+  { icon: Printer, label: "Print Center", href: "/dashboard/print" },
 ]
 
 export function DashboardSidebar() {
@@ -179,10 +97,7 @@ export function DashboardSidebar() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     operations: true,
     drive: true,
-    creative: false,
-    crm: false,
-    campaigns: false,
-    bonus: false,
+    extras: true,
   })
 
   const { currentTenant } = useTenant()
@@ -265,7 +180,7 @@ export function DashboardSidebar() {
     )
   }
 
-  const CollapsibleSection = ({ title, items, sectionKey }: { title: string; items: typeof creativeSubItems; sectionKey: string }) => {
+  const CollapsibleSection = ({ title, items, sectionKey }: { title: string; items: SubItem[]; sectionKey: string }) => {
     const visibleItems = items.filter((item) => canSee(item.href))
     if (visibleItems.length === 0) return null
     const isExpanded = expandedSections[sectionKey]
@@ -344,9 +259,8 @@ export function DashboardSidebar() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {mainNavItems.map((item) => (
-            <NavItem key={item.href} icon={item.icon} label={item.label} href={item.href} />
-          ))}
+          <div className="pb-2 px-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Workspace</div>
+          <NavItem icon={homeItem.icon} label={homeItem.label} href={homeItem.href} />
 
           {sectionVisible(operationsSubItems) && (
             <>
@@ -362,25 +276,16 @@ export function DashboardSidebar() {
             </>
           )}
 
-          {sectionVisible(creativeSubItems) && (
-            <>
-              <div className="pt-4 pb-2 px-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Creative Studio</div>
-              <CollapsibleSection title="Creative Studio" items={creativeSubItems} sectionKey="creative" />
-            </>
-          )}
-
-          {(sectionVisible(crmSubItems) || sectionVisible(campaignSubItems)) && (
-            <div className="pt-4 pb-2 px-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Growth Tools</div>
-          )}
-          <CollapsibleSection title="CRM Pipeline" items={crmSubItems} sectionKey="crm" />
-          <CollapsibleSection title="Campaigns" items={campaignSubItems} sectionKey="campaigns" />
-
-          {sectionVisible(bonusItems) && (
+          {sectionVisible(extrasItems) && (
             <>
               <div className="pt-4 pb-2 px-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Extras</div>
-              <CollapsibleSection title="Bonus Features" items={bonusItems} sectionKey="bonus" />
+              <CollapsibleSection title="Extras" items={extrasItems} sectionKey="extras" />
             </>
           )}
+
+          <p className="pt-4 px-3 text-[11px] leading-relaxed text-text-muted">
+            All growth modules (Content, CRM, Social, Ads, Commerce, Creative…) live in the top menu ☝️
+          </p>
         </nav>
 
         <div className="p-4 border-t border-border-subtle">

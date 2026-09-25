@@ -37,6 +37,9 @@ import {
   PhoneCall,
   Radio,
   LayoutTemplate,
+  Layers,
+  Link,
+  FolderOpen,
   Server,
   Sparkles,
   CalendarDays,
@@ -75,12 +78,12 @@ export const TOP_NAV: NavGroup[] = [
     label: "Core",
     icon: Home,
     children: [
-      { label: "Home", href: "/dashboard", icon: Home, desc: "Command center overview" },
+      // NOTE: "Home" (/dashboard) lives in the LEFT sidebar (Overview) — not repeated here.
       { label: "Business Profile", href: "/dashboard/business-profile", icon: Building2, desc: "Company, branches & brand voice", isNew: true },
       { label: "Trend Discovery", href: "/dashboard/trends", icon: TrendingUp, desc: "Live marine + tech trends" },
       { label: "Contacts & CRM", href: "/dashboard/crm", icon: Users, desc: "Leads, pipeline & qualification" },
       { label: "Inbox", href: "/dashboard/inbox", icon: Inbox, desc: "WhatsApp, email & DM in one place", isNew: true },
-      { label: "Pipelines", href: "/dashboard/crm", icon: KanbanSquare, desc: "Visual sales pipeline", badge: "Improved" },
+      { label: "Pipelines", href: "/dashboard/crm?view=pipeline", icon: KanbanSquare, desc: "Visual sales pipeline", badge: "Improved" },
       { label: "Prospecting", href: "/dashboard/prospecting", icon: Radar, desc: "Find oil, marine & estate leads", isNew: true },
     ],
   },
@@ -116,8 +119,7 @@ export const TOP_NAV: NavGroup[] = [
     children: [
       { label: "Commerce Intelligence", href: "/dashboard/commerce/intelligence", icon: LineChart, desc: "Margins, demand & pricing", isNew: true },
       { label: "Product Research", href: "/dashboard/commerce/research", icon: FlaskConical, desc: "Winning marine & tech products", isNew: true },
-      { label: "Ad Intelligence", href: "/dashboard/competitors", icon: Eye, desc: "Competitor ad library" },
-      { label: "UGC Ads", href: "/dashboard/creative/ugc", icon: Clapperboard, desc: "Creative that converts" },
+      // NOTE: Ad Intelligence + UGC Ads live once in Ads Manager above — not repeated here.
       { label: "Online Store", href: "/dashboard/commerce/store", icon: ShoppingBag, desc: "Catalog, cart & checkout", isNew: true },
       { label: "Invoices & Payments", href: "/dashboard/commerce/invoices", icon: ReceiptText, desc: "₦ invoices & receipts", isNew: true },
     ],
@@ -133,6 +135,9 @@ export const TOP_NAV: NavGroup[] = [
       { label: "Presentations", href: "/dashboard/creative/presentations", icon: Presentation, desc: "Pitch decks for B2B", isNew: true },
       { label: "Logo Creator", href: "/dashboard/creative/logo", icon: Hexagon, desc: "Brand marks & variants", isNew: true },
       { label: "Article → Video", href: "/dashboard/creative/article-video", icon: Newspaper, desc: "Turn posts into reels", isNew: true },
+      { label: "Banner Studio", href: "/dashboard/creative/banners", icon: Layers, desc: "Promo & ad banners" },
+      { label: "URL Scraper", href: "/dashboard/creative/scraper", icon: Link, desc: "Pull content from any link" },
+      { label: "Asset Library", href: "/dashboard/creative/library", icon: FolderOpen, desc: "All brand assets in one place" },
     ],
   },
   {
