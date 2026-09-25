@@ -1,22 +1,13 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
 import { resetDailyUsage } from '@/lib/env'
-import { verifyToken } from '@/lib/auth'
+import { requireAdminUser } from '@/lib/operations/server'
 
 const db = new DBClient()
 
-function requireAdmin(request: Request) {
-  const authHeader = request.headers.get('Authorization')
-  const token = authHeader?.replace('Bearer ', '')
-  if (!token) return null
-  const user = verifyToken(token)
-  if (!user || user.role !== 'admin') return null
-  return user
-}
-
 export async function GET(request: Request) {
   try {
-    const user = requireAdmin(request)
+    const user = requireAdminUser(request)
     if (!user) return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
 
     const { data, error } = await db
@@ -46,7 +37,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const user = requireAdmin(request)
+    const user = requireAdminUser(request)
     if (!user) return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
 
     const result = await resetDailyUsage()

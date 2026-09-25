@@ -28,6 +28,15 @@
   refresh cookie → fresh access cookie); Enterprise `zxFetch` auto-refreshes
   once and retries on 401; shell entry now verifies via /api/auth/me with
   refresh fallback instead of localStorage-only.
+- Found + fixed ACTUAL root cause: `getAuth` (`lib/operations/server.ts`)
+  read ONLY the `Authorization: Bearer` header and ignored the login cookie,
+  while the Enterprise shell sends cookie-only requests — so every
+  Enterprise data call 401'd and bounced to /login on any session, fresh or
+  not. `getAuth` now falls back to the `access_token` cookie (same pattern
+  as /api/auth/me). Added shared cookie-aware `requireAdminUser` and
+  replaced 3 copy-pasted Bearer-only `requireAdmin` helpers in
+  `app/api/admin/api-keys/**`. Remaining inline Bearer-only reads in other
+  admin routes logged as follow-up (their UI sends Bearer, so unaffected).
 
 ## Completed tasks (Zorixza shell session)
 

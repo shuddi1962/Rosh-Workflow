@@ -5,7 +5,13 @@ import { createAuditLog } from '@/lib/audit'
 
 export function getAuth(request: Request): { token: string; user: JWTPayload } | null {
   const authHeader = request.headers.get('Authorization')
-  const token = authHeader?.replace('Bearer ', '')?.trim()
+  let token = authHeader?.replace('Bearer ', '')?.trim() || null
+  if (!token) {
+    // Fall back to the httpOnly login cookie (cookie-only clients such as
+    // the Enterprise shell never send an Authorization header).
+    const cookie = request.headers.get('cookie')
+    token = cookie?.match(/access_token=([^;]+)/)?.[1] || null
+  }
   if (!token) return null
   const user = verifyToken(token)
   if (!user) return null
@@ -16,6 +22,13 @@ export function requireAuth(request: Request): { user: JWTPayload } | NextRespon
   const auth = getAuth(request)
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   return { user: auth.user }
+}
+
+/** Shared admin gate: cookie- or Bearer-authenticated + role === 'admin'. */
+export function requireAdminUser(request: Request): JWTPayload | null {
+  const auth = getAuth(request)
+  if (!auth || auth.user.role !== 'admin') return null
+  return auth.user
 }
 
 export function requireRole(request: Request, roles: string[]): { user: JWTPayload } | NextResponse {

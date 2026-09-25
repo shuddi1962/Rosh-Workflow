@@ -1,23 +1,14 @@
 import { NextResponse } from 'next/server'
 import { DBClient } from '@/lib/insforge/server'
 import { decryptApiKey, encryptApiKey } from '@/lib/env'
-import { verifyToken } from '@/lib/auth'
+import { requireAdminUser } from '@/lib/operations/server'
 import { testApiKey } from '@/lib/ai/test-key'
 
 const db = new DBClient()
 
-function requireAdmin(request: Request) {
-  const authHeader = request.headers.get('Authorization')
-  const token = authHeader?.replace('Bearer ', '')
-  if (!token) return null
-  const user = verifyToken(token)
-  if (!user || user.role !== 'admin') return null
-  return user
-}
-
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
-    const user = requireAdmin(request)
+    const user = requireAdminUser(request)
     if (!user) return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
 
     const body = await request.json()
@@ -45,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
-    const user = requireAdmin(request)
+    const user = requireAdminUser(request)
     if (!user) return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
 
     const { data: keyData, error: fetchError } = await db
@@ -85,7 +76,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    const user = requireAdmin(request)
+    const user = requireAdminUser(request)
     if (!user) return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
 
     const { error } = await db
