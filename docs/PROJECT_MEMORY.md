@@ -14,7 +14,8 @@
 - Auth: JWT (15m access + 7d refresh cookie), `middleware.ts` gates
   `/dashboard/*`, `/zorixza/*`, `/admin/*`, `/api/*`. Admin needs `role=admin`.
 - Enterprise shell: `app/zorixza/layout.tsx` ('use client') + registry
-  `lib/zorixza/workspaces.ts` (single source of truth) + roadmap
+  `lib/zorixza/workspaces.ts` (single source of truth — 48 workspaces across
+  Overview/Revenue/Operations/Finance/People/Industry/Platform) + roadmap
   `app/zorixza/roadmap/page.tsx` + phases `lib/zorixza/program.ts`.
 - UI kit: `components/zorixza/ui.tsx` (ZxKpi/Section/Loading/Error/Empty/
   PageHead), `components/zorixza/data.tsx` (useZxQuery/asArray/ZxTable/

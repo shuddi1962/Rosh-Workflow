@@ -17,7 +17,7 @@
 ## Zorixza Enterprise shell (`/zorixza`): IMPLEMENTED
 
 - Light Marketing-style shell with emerald sidebar + topbar, grouped workspace
-  nav from `lib/zorixza/workspaces.ts` (single source: 12 live, 19 phased).
+  nav from `lib/zorixza/workspaces.ts` (single source: 12 live, 36 phased).
 - Live workspaces link to real pages; phased workspaces open the real
   `/zorixza/roadmap?module=` view (scope, phase, reusable parts) — zero fake
   dashboards, zero dead buttons.
