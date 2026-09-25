@@ -2,9 +2,10 @@
 
 import React, { Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Map as MapIcon, ArrowRight, CheckCircle2, Hammer, Database, Plug } from 'lucide-react';
+import { Map as MapIcon, ArrowRight, CheckCircle2, Hammer, Database, Plug, ListChecks } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ALL_WORKSPACES, WORKSPACE_GROUPS, findWorkspace } from '@/lib/zorixza/workspaces';
+import { PROGRAM_PHASES, PHASE_TONE } from '@/lib/zorixza/program';
 import { ZxPageHead } from '@/components/zorixza/ui';
 
 function RoadmapInner() {
@@ -82,6 +83,39 @@ function RoadmapInner() {
           )}
         </section>
       )}
+
+      <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4">
+        <h2 className="font-bold text-slate-900 flex items-center gap-2">
+          <ListChecks className="w-5 h-5 text-slate-700" /> Full program — every phase, nothing hidden
+        </h2>
+        <p className="text-xs text-slate-400 mt-1">P0–P33 from the build program. Counts update as phases land.</p>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                <th className="py-2 pr-3">Phase</th>
+                <th className="py-2 pr-3">Scope</th>
+                <th className="py-2 pr-3">State of play</th>
+                <th className="py-2 text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {PROGRAM_PHASES.map((p) => (
+                <tr key={p.id} className="hover:bg-slate-50">
+                  <td className="py-2.5 pr-3 font-mono font-extrabold text-slate-700 whitespace-nowrap">{p.id}</td>
+                  <td className="py-2.5 pr-3 font-semibold text-slate-800">{p.label}</td>
+                  <td className="py-2.5 pr-3 text-slate-500">{p.detail}</td>
+                  <td className="py-2.5 text-right">
+                    <span className={clsx('inline-block text-[11px] font-extrabold px-2 py-0.5 rounded-full whitespace-nowrap', PHASE_TONE[p.status])}>
+                      {p.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <section className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4">
         <h2 className="font-bold text-slate-900 flex items-center gap-2">

@@ -55,8 +55,8 @@
 | Trends / Competitors (+gap analysis, scrape) | IMPLEMENTED | Real; tests pending |
 | UGC / Creative (images, video, banners, library, scraper) | IMPLEMENTED | Real; tests pending |
 | Voice (agents, calls, ElevenLabs webhook) | IMPLEMENTED | Real; tests pending |
-| **Inbox (unified)** | IN PROGRESS | Vertical slice in progress: migration 009 + real WhatsApp APIs + UI wiring |
-| WhatsApp provider send | IN PROGRESS | Persist-first; live Cloud API call when creds present, else `queued` |
+| **Inbox (unified)** | TESTING | DONE: migration 009 (channels/conversations/messages) + real conversations/messages/send APIs + Meta webhook verify+persist+statuses + /dashboard/inbox rewired (threads, read receipts, send, polling, new chat) + 11 unit tests green. Needs: 009 run in SQL editor, live Meta end-to-end. |
+| WhatsApp provider send | IMPLEMENTED | Persist-first; live Cloud API call when creds present, honest `queued`/`failed` otherwise (never fake success) |
 | Documents (receipt custody) | IMPLEMENTED | Real; tests pending |
 | Cloud Drive (files/folders/shares/versions/trash/quotas/billing) | IMPLEMENTED | Real; tests pending |
 | Operations (overview, notifications, export, reminders, events) | IMPLEMENTED | Real; tests pending |
@@ -83,6 +83,12 @@
 | Mobile PWA / offline | NOT STARTED | Responsive only |
 | Security hardening (MFA, lockout, device mgmt) | NOT STARTED | JWT + RBAC + audit exist |
 | Observability / backups | NOT STARTED | Health endpoint exists |
+
+## Audits (2026-09-25)
+
+- Nav audit: **64/64 sidebar/top/Enterprise hrefs resolve to pages** — zero dead navigation.
+- Blank-page sweep: `creative/ugc` is a real redirect; `admin/products` + lead `[id]` are real data pages; `voice/calls` upgraded from static empty state to the live `call_logs` API.
+- Roadmap now renders the full P0–P33 program matrix (`lib/zorixza/program.ts`) — nothing hidden.
 
 ## Priority queue (next)
 
